@@ -125,7 +125,33 @@ body.v-detail .filter{display:none}
 
 /* drag feedback */
 .s-ghost{opacity:.3}
-.sortable-fallback{opacity:1!important;border-radius:14px;box-shadow:0 18px 40px var(--shadow)!important;transform:scale(1.03)}
+.sortable-fallback{opacity:1!important;border-radius:14px;box-shadow:0 18px 40px var(--shadow)!important;scale:1.03;transition:scale .2s,opacity .2s}
+body.hot-archive .sortable-fallback{scale:.55;opacity:.55!important}
+/* card grip, same feel as groups */
+.chat .grip{width:28px;height:auto;align-self:stretch;margin-left:3px}
+.chat .chat-main{padding-left:2px}
+/* archive dock */
+.dock{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 22px);z-index:65;display:flex;align-items:center;gap:12px;
+  padding:12px 22px 12px 14px;border-radius:999px;background:var(--sheet);border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);box-shadow:0 16px 40px var(--shadow);
+  transform:translate(-50%,160%);opacity:0;pointer-events:none;font-weight:650;white-space:nowrap;
+  transition:transform .4s cubic-bezier(.34,1.4,.5,1),opacity .25s,background .2s,border-color .2s}
+body.dragging .dock,body.archiving .dock{transform:translate(-50%,0);opacity:1}
+.dock.hot{transform:translate(-50%,0) scale(1.14);background:color-mix(in srgb,var(--dawn) 26%,var(--sheet));border-color:var(--dawn)}
+.bin{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--hi);color:var(--dawn)}
+.bin svg{width:26px;height:26px;overflow:visible}
+.bin .lid{transform-box:fill-box;transform-origin:0% 100%;transition:transform .35s cubic-bezier(.34,1.8,.5,1)}
+.dock.hot .lid{transform:rotate(-32deg) translate(-1px,-3px)}
+.dock .t2{display:none}
+.dock.hot .t1{display:none}.dock.hot .t2{display:inline}
+.dock.gulp .bin{animation:gulp .6s cubic-bezier(.34,1.6,.5,1)}
+@keyframes gulp{0%{transform:scale(1)}25%{transform:scale(.72) rotate(-6deg)}60%{transform:scale(1.18) rotate(4deg)}100%{transform:scale(1)}}
+.icon-btn.bump svg{animation:bump .6s cubic-bezier(.34,1.6,.5,1)}
+.icon-btn.bump .badge{animation:pop .5s .15s both}
+@keyframes bump{0%{transform:none}30%{transform:translateY(3px) scale(.85)}65%{transform:translateY(-3px) scale(1.12)}100%{transform:none}}
+@keyframes pop{0%{transform:scale(.4)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.arch-h{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin:6px 4px 8px}
+.arch-row .gicon{--c:var(--ink-3)}
 body.dragging{user-select:none;-webkit-user-select:none}
 .drop-hint{position:fixed;inset:12px;border:2px dashed var(--dawn);border-radius:28px;display:grid;place-items:center;z-index:70;
   background:color-mix(in srgb,var(--night) 70%,transparent);font-size:20px;font-weight:650;pointer-events:none}
@@ -218,6 +244,7 @@ body.dragging{user-select:none;-webkit-user-select:none}
 .btn.warn{background:var(--field);color:var(--danger)}
 .btn:disabled{opacity:.5}
 .btn + .btn{margin-top:10px}
+.btn svg{width:20px;height:20px;flex:none}
 .paste{height:76px;font-size:19px}
 .paste svg{width:24px;height:24px}
 .or{text-align:center;color:var(--ink-3);font-size:13px;margin:14px 0 10px}
@@ -272,6 +299,7 @@ body.dragging{user-select:none;-webkit-user-select:none}
 <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
 <div class="toast" id="toast" role="status"></div>
 <div class="drop-hint" id="drop" hidden>Drop to add</div>
+<div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- icons ----------
 const ICON = {
@@ -418,15 +446,17 @@ const secById = (id) => S.sections.find((s) => s.id === id);
 const chatById = (id) => S.chats.find((c) => c.id === id);
 const inbox = () => S.sections.find((s) => s.is_inbox) || S.sections[0];
 const parentOf = (s) => (s?.parent_id ? secById(s.parent_id) : null);
-const children = (pid) => S.sections.filter((s) => (s.parent_id && secById(s.parent_id) ? s.parent_id : null) === (pid || null)).sort(bySort('position'));
-function descendants(id) { const out = []; for (const c of children(id)) out.push(c.id, ...descendants(c.id)); return out; }
+const children = (pid, all = false) => S.sections.filter((s) => (s.parent_id && secById(s.parent_id) ? s.parent_id : null) === (pid || null) && (all || !s.archived_at)).sort(bySort('position'));
+function descendants(id) { const out = []; for (const c of children(id, true)) out.push(c.id, ...descendants(c.id)); return out; }
+const hiddenSec = (s) => { for (let x = s; x; x = parentOf(x)) if (x.archived_at) return true; return false; };
+const archivedGroups = () => S.sections.filter((s) => s.archived_at).sort((a, b) => String(b.archived_at).localeCompare(String(a.archived_at)));
 function tree(pid = null, depth = 0, skip = new Set()) {
   return children(pid).filter((s) => !skip.has(s.id)).flatMap((s) => [{ s, depth }, ...tree(s.id, depth + 1, skip)]);
 }
 const pathOf = (s) => { const p = []; for (let x = s; x; x = parentOf(x)) p.unshift(x.name); return p.join(' › '); };
 const colorOf = (s) => { for (let x = s; x; x = parentOf(x)) if (x.color) return x.color; return null; };
 const secOf = (c) => secById(c.section_id) || inbox();
-const active = () => S.chats.filter((c) => !c.archived_at);
+const active = () => S.chats.filter((c) => !c.archived_at && !hiddenSec(secOf(c)));
 const archived = () => S.chats.filter((c) => c.archived_at).sort((a, b) => String(b.archived_at).localeCompare(String(a.archived_at)));
 const chatsIn = (sid) => active().filter((c) => secOf(c)?.id === sid).sort(bySort('position'));
 const totalIn = (sid) => chatsIn(sid).length + children(sid).reduce((n, s) => n + totalIn(s.id), 0);
@@ -493,7 +523,7 @@ function renderTop() {
   const top = $('#top');
   if (!top) return;
   document.body.classList.toggle('v-detail', S.view === 'detail');
-  const n = archived().length;
+  const n = archived().length + archivedGroups().length;
   if (S.view === 'archive') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1>Archive</h1>`;
   else if (S.view === 'detail') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1></h1>`;
   else top.innerHTML = `<h1>Threads</h1>
@@ -516,7 +546,7 @@ function subline(c, showPath) {
 function chatRow(c, showPath) {
   const href = linkFor(c);
   const color = colorOf(secOf(c));
-  return `<div class="chat${colorCls(color)}" data-id="${c.id}">
+  return `<div class="chat${colorCls(color)}" data-id="${c.id}">${showPath ? '' : `<span class="grip cgrip" aria-label="Drag to move ${esc(c.name)}">${ICON.grip}</span>`}
     <button class="chat-main" data-act="detail" data-id="${c.id}"><span class="kic">${kindIcon(c.kind)}</span><span class="txt"><b>${esc(c.name)}${c.pinned ? '<i class="pinmark" aria-label="Pinned"></i>' : ''}</b><small>${subline(c, showPath)}</small></span></button>
     ${href ? `<a class="go" href="${esc(href)}"${linkTarget()} draggable="false" data-act="open" data-id="${c.id}" aria-label="Open ${esc(c.name)} in Claude"><span>${ICON.go}</span></a>`
     : `<button class="go none" data-act="detail" data-id="${c.id}" aria-label="No link yet"><span>${ICON.more}</span></button>`}</div>`;
@@ -547,10 +577,15 @@ function renderContent() {
 
   if (S.view === 'archive') {
     const list = archived().filter(match);
-    el.innerHTML = list.length
+    const gs = archivedGroups().filter((g) => !S.filter || g.name.toLowerCase().includes(S.filter.toLowerCase()));
+    const inside = (g) => { const ids = [g.id, ...descendants(g.id)]; return S.chats.filter((c) => ids.includes(c.section_id)).length; };
+    const groupsHTML = gs.length ? `<h3 class="arch-h">Groups</h3><div class="flat glass" style="gap:0;margin-bottom:16px">${gs.map((g) => `<div class="arch-row${colorCls(g.color)}">${gIcon(g)}<div style="flex:1;min-width:0"><b>${esc(g.name)}</b><span class="muted">${inside(g)} item${inside(g) === 1 ? '' : 's'} inside, archived ${ago(g.archived_at)}</span></div>
+          <button class="pill-btn" data-act="unarchive-group" data-id="${g.id}">Unarchive</button><button class="pill-btn warn" data-act="delete-group-forever" data-id="${g.id}">Delete</button></div>`).join('')}</div>` : '';
+    if (!list.length && gs.length) { el.innerHTML = groupsHTML; return; }
+    el.innerHTML = groupsHTML + (list.length && gs.length ? '<h3 class="arch-h">Items</h3>' : '') + (list.length
       ? `<div class="flat glass" style="gap:0">${list.map((c) => `<div class="arch-row"><button data-act="detail" data-id="${c.id}"><b>${esc(c.name)}</b><span class="muted">${esc(pathOf(secOf(c)))}, archived ${ago(c.archived_at)}</span></button>
           <button class="pill-btn" data-act="unarchive" data-id="${c.id}">Unarchive</button><button class="pill-btn warn" data-act="delete-chat" data-id="${c.id}">Delete</button></div>`).join('')}</div>`
-      : `<div class="empty glass"><h2>${S.filter ? 'No matches' : 'Archive is empty'}</h2><p>${S.filter ? 'Nothing archived matches that.' : 'Archive an item from its page to tuck it away here.'}</p></div>`;
+      : `<div class="empty glass"><h2>${S.filter ? 'No matches' : 'Archive is empty'}</h2><p>${S.filter ? 'Nothing archived matches that.' : 'Drag an item or a group onto the archive box that pops up while dragging.'}</p></div>`);
     return;
   }
 
@@ -588,19 +623,48 @@ const endDrag = () => { document.body.classList.remove('dragging'); setTimeout((
 function initSortables() {
   if (!window.Sortable) return;
   $$('.chat-list').forEach((list) => sortables.push(Sortable.create(list, dragOpts({
-    group: 'chats', draggable: '.chat',
-    onEnd: (e) => { endDrag(); if (e.from !== e.to || e.oldIndex !== e.newIndex) onChatDrop(e.from, e.to); },
+    group: 'chats', draggable: '.chat', handle: '.cgrip', delay: 120,
+    onEnd: (e) => { endDrag(); if (droppedOnArchive()) return archiveChat(e.item.dataset.id); if (e.from !== e.to || e.oldIndex !== e.newIndex) onChatDrop(e.from, e.to); },
   }))));
   // Groups reorder within their own level; use "Put inside" to nest.
   $$('#secs, .subs').forEach((box) => sortables.push(Sortable.create(box, dragOpts({
     handle: '.grip', draggable: '.sec', delay: 120,
-    onEnd: (e) => { endDrag(); if (e.oldIndex !== e.newIndex) onSecDrop(box); },
+    onEnd: (e) => { endDrag(); if (droppedOnArchive()) return archiveGroup(e.item.dataset.sid); if (e.oldIndex !== e.newIndex) onSecDrop(box); },
   }))));
   const p = $('#pins');
   if (p) sortables.push(Sortable.create(p, dragOpts({
     draggable: '.pin', direction: 'horizontal',
-    onEnd: (e) => { endDrag(); if (e.oldIndex !== e.newIndex) onPinDrop(); },
+    onEnd: (e) => { endDrag(); if (droppedOnArchive()) return archiveChat(e.item.dataset.id); if (e.oldIndex !== e.newIndex) onPinDrop(); },
   })));
+}
+// Archive box: shows up while dragging; drop on it to archive.
+function trackArchive(e) {
+  if (!S.dragging) return;
+  const p = e.touches?.[0] || e;
+  if (p.clientX == null) return;
+  const r = $('#dock').getBoundingClientRect(), pad = 18;
+  const over = p.clientX >= r.left - pad && p.clientX <= r.right + pad && p.clientY >= r.top - pad && p.clientY <= r.bottom + pad;
+  if (over === !!S.overArchive) return;
+  S.overArchive = over;
+  $('#dock').classList.toggle('hot', over);
+  document.body.classList.toggle('hot-archive', over);
+  if (over) navigator.vibrate?.(8);
+}
+['pointermove', 'touchmove', 'mousemove'].forEach((t) => document.addEventListener(t, trackArchive, { capture: true, passive: true }));
+function droppedOnArchive() {
+  const hit = !!S.overArchive;
+  S.overArchive = false;
+  $('#dock').classList.remove('hot'); document.body.classList.remove('hot-archive');
+  return hit;
+}
+function archiveFx() {
+  const d = $('#dock');
+  document.body.classList.add('archiving');
+  d.classList.remove('gulp'); void d.offsetWidth; d.classList.add('gulp');
+  clearTimeout(archiveFx.t);
+  archiveFx.t = setTimeout(() => { document.body.classList.remove('archiving'); d.classList.remove('gulp'); }, 800);
+  const b = $('[data-act="archive"]');
+  if (b) { b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); }
 }
 function onChatDrop(from, to) {
   const rows = [];
@@ -795,19 +859,49 @@ function archiveChat(id) {
   Object.assign(c, { archived_at: nowISO(), pinned: false, pin_position: null });
   const rows = [{ id: c.id, archived_at: c.archived_at, pinned: false, pin_position: null }, ...renumber(chatsIn(sid), 'position'), ...renumber(pins(), 'pin_position')];
   flushSaves(); closeSheet();
-  S.view = 'main'; S.detailId = null; renderTop(); renderContent(); toast('Archived');
+  if (S.view === 'detail') { S.view = 'main'; S.detailId = null; }
+  renderTop(); renderContent(); archiveFx(); toast(`Archived ${c.name}`);
   push([{ op: 'patch', table: 'chats', rows }]);
 }
 function unarchiveChat(id) {
   const c = chatById(id);
   if (!c) return;
-  const sid = secOf(c)?.id;
+  const sid = hiddenSec(secOf(c)) ? inbox().id : secOf(c)?.id; // its group is archived too, so land in Inbox
   Object.assign(c, { archived_at: null, section_id: sid, position: chatsIn(sid).length });
   closeSheet(); renderTop(); renderContent(); toast(`Back in ${secById(sid)?.name || 'Inbox'}`);
   push([{ op: 'patch', table: 'chats', rows: [{ id: c.id, archived_at: null, section_id: sid, position: c.position }] }]);
 }
 
 // Groups
+function archiveGroup(id) {
+  const s = secById(id);
+  if (!s) return;
+  if (s.is_inbox) { renderContent(); return toast("Inbox can't be archived.", true); }
+  s.archived_at = nowISO();
+  const rows = [{ id: s.id, archived_at: s.archived_at }, ...renumber(children(parentOf(s)?.id || null), 'position')];
+  closeSheet(); renderTop(); renderContent(); archiveFx(); toast(`Archived ${s.name}`);
+  push([{ op: 'patch', table: 'sections', rows }]);
+}
+function unarchiveGroup(id) {
+  const s = secById(id);
+  if (!s) return;
+  const par = parentOf(s);
+  const parent_id = par && !hiddenSec(par) ? par.id : null; // parent gone or archived: back to top level
+  Object.assign(s, { archived_at: null, parent_id, position: children(parent_id).filter((x) => x.id !== s.id).length });
+  renderTop(); renderContent(); toast(`${s.name} is back`);
+  push([{ op: 'patch', table: 'sections', rows: [{ id: s.id, archived_at: null, parent_id, position: s.position }] }]);
+}
+function deleteGroupForever(id, btn) {
+  const s = secById(id);
+  if (!s || s.is_inbox) return;
+  const ids = [s.id, ...descendants(s.id)];
+  const chatIds = S.chats.filter((c) => ids.includes(c.section_id)).map((c) => c.id);
+  if (!btn.dataset.sure) { btn.dataset.sure = '1'; btn.textContent = chatIds.length ? `Delete ${chatIds.length} items too?` : 'Sure?'; return; }
+  S.chats = S.chats.filter((c) => !chatIds.includes(c.id));
+  S.sections = S.sections.filter((x) => !ids.includes(x.id));
+  renderTop(); renderContent(); toast(`Deleted ${s.name}`);
+  push([...(chatIds.length ? [{ op: 'delete_many', table: 'chats', ids: chatIds }] : []), { op: 'delete_many', table: 'sections', ids }]);
+}
 function openGroupForm(id, parentId) {
   const s = id ? secById(id) : null;
   const skip = s ? new Set([s.id, ...descendants(s.id)]) : new Set();
@@ -818,7 +912,7 @@ function openGroupForm(id, parentId) {
   if (s?.is_inbox) del = `<p class="muted" style="margin-top:14px">Inbox is where new items land by default, so it can't be deleted.</p>`;
   else if (s) {
     const par = parentOf(s);
-    const n = S.chats.filter((c) => secOf(c)?.id === s.id).length, k = children(s.id).length;
+    const n = S.chats.filter((c) => secOf(c)?.id === s.id).length, k = children(s.id, true).length;
     const what = [n && `${n} item${n > 1 ? 's' : ''}`, k && `${k} subgroup${k > 1 ? 's' : ''}`].filter(Boolean).join(' and ');
     del = `<button class="btn warn" data-act="sec-delete" data-id="${s.id}">${what ? `Delete group, move ${what} to ${esc(par ? par.name : n ? 'Inbox' : 'top level')}` : 'Delete group'}</button>`;
   }
@@ -831,7 +925,8 @@ function openGroupForm(id, parentId) {
     <label class="field"><span>Claude project link (optional, adds an open-project button)</span><input class="inp" id="g-proj" value="${s?.project_uuid ? `https://claude.ai/project/${s.project_uuid}` : ''}" placeholder="claude.ai/project/…" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
     <p class="err" id="g-err"></p>
     <button class="btn" data-act="g-save" data-id="${s?.id || ''}">${s ? 'Save group' : 'Create group'}</button>
-    ${s ? `<button class="btn ghost" data-act="sec-new-sub" data-id="${s.id}">${ICON.plus}Add a group inside this one</button>` : ''}${del}`);
+    ${s ? `<button class="btn ghost" data-act="sec-new-sub" data-id="${s.id}">${ICON.plus}Add a group inside this one</button>` : ''}
+    ${s && !s.is_inbox ? `<button class="btn ghost" data-act="sec-archive" data-id="${s.id}">${ICON.archive}Archive group</button>` : ''}${del}`);
   if (!s) setTimeout(() => $('#g-name')?.focus(), 350);
 }
 function saveGroup(id) {
@@ -873,7 +968,7 @@ function deleteGroup(id, btn) {
   let base = chatsIn(target).length;
   const chatRows = moving.map((c) => { c.section_id = target; c.position = base++; return { id: c.id, section_id: target, position: c.position }; });
   let sbase = children(par?.id || null).length;
-  const secRows = children(s.id).map((k) => { k.parent_id = par?.id || null; k.position = sbase++; return { id: k.id, parent_id: k.parent_id, position: k.position }; });
+  const secRows = children(s.id, true).map((k) => { k.parent_id = par?.id || null; k.position = sbase++; return { id: k.id, parent_id: k.parent_id, position: k.position }; });
   S.sections = S.sections.filter((x) => x.id !== s.id);
   collapsed.delete(s.id);
   closeSheet(); renderContent(); toast(`Deleted ${s.name}`);
@@ -1020,6 +1115,9 @@ const A = {
   'sec-new-sub': (el) => openGroupForm(null, el.dataset.id),
   'g-save': (el) => saveGroup(el.dataset.id),
   'sec-delete': (el) => deleteGroup(el.dataset.id, el),
+  'sec-archive': (el) => archiveGroup(el.dataset.id),
+  'unarchive-group': (el) => unarchiveGroup(el.dataset.id),
+  'delete-group-forever': (el) => deleteGroupForever(el.dataset.id, el),
   archive: () => { S.view = 'archive'; hideBanner(); renderTop(); renderContent(); scrollTo(0, 0); },
   settings: () => openSettings(),
   'theme-set': (el) => {

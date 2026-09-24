@@ -3,7 +3,7 @@ import { db, q } from './_lib/db.js';
 
 const T = { sections: 'threads_sections', chats: 'threads_chats', settings: 'threads_settings' };
 const COLS = {
-  sections: ['id', 'name', 'position', 'is_inbox', 'created_at', 'parent_id', 'color', 'icon', 'project_uuid'],
+  sections: ['id', 'name', 'position', 'is_inbox', 'created_at', 'parent_id', 'color', 'icon', 'project_uuid', 'archived_at'],
   chats: ['id', 'section_id', 'name', 'chat_uuid', 'kind', 'url', 'notes', 'todos', 'position', 'pinned', 'pin_position', 'archived_at', 'last_opened_at', 'created_at'],
   settings: ['id', 'value'],
 };
@@ -74,6 +74,14 @@ async function apply(op) {
       if (s?.is_inbox) throw bad("Inbox can't be deleted.");
     }
     await q(db().from(table).delete().eq('id', op.id));
+  } else if (op.op === 'delete_many') {
+    const ids = Array.isArray(op.ids) ? op.ids.map(String).slice(0, 500) : [];
+    if (!ids.length || op.table === 'settings') throw bad('Bad delete.');
+    if (op.table === 'sections') {
+      const rows = await q(db().from(T.sections).select('is_inbox').in('id', ids));
+      if (rows.some((r) => r.is_inbox)) throw bad("Inbox can't be deleted.");
+    }
+    await q(db().from(table).delete().in('id', ids));
   } else {
     throw bad('Unknown operation.');
   }
