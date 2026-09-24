@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1424">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Threads">
+<title>Threads</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<link rel="icon" type="image/png" href="/icon-192.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<style>
+:root{
+  --night:#0d1424; --night-2:#141d31;
+  --ink:#eef2f8; --ink-2:#aab3c5; --ink-3:#6f7a91;
+  --line:rgba(255,255,255,.09); --glass:rgba(255,255,255,.055);
+  --sheet:rgba(21,30,51,.9); --bar:rgba(22,31,52,.72);
+  --hi:rgba(255,255,255,.12); --field:rgba(255,255,255,.07); --shadow:rgba(3,6,15,.32);
+  --dawn:#f2c46d; --dawn-ink:#1d1606; --danger:#ff6b61; --ok:#3ecf8e;
+  --sky:rgba(90,165,255,.20); --sky2:rgba(120,200,255,.10);
+  --r-lg:22px; --r-md:16px; --r-sm:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;color:var(--ink);
+  background:linear-gradient(180deg,var(--night),var(--night-2)) fixed;background-color:var(--night);
+  -webkit-font-smoothing:antialiased;transition:background .6s,color .6s}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:radial-gradient(120% 60% at 15% -10%,var(--sky),transparent 60%),radial-gradient(90% 50% at 100% 0%,var(--sky2),transparent 60%)}
+button,input,select{font:inherit;color:inherit;background:none;border:0;outline:0}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--dawn);outline-offset:2px}
+[hidden]{display:none!important}
+.glass{background:var(--glass);border:1px solid var(--line);
+  -webkit-backdrop-filter:blur(22px) saturate(1.4);backdrop-filter:blur(22px) saturate(1.4);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 32px var(--shadow)}
+.muted{color:var(--ink-3);font-size:14px}
+svg{display:block}
+
+/* shell */
+.app{max-width:640px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 40px)}
+.top{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.top h1{font-size:30px;font-weight:750;letter-spacing:-.02em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icon-btn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--ink-2);position:relative}
+.icon-btn svg{width:22px;height:22px}
+.icon-btn .badge{position:absolute;top:4px;right:2px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--hi);color:var(--ink-2);font-size:11px;font-weight:650;display:grid;place-items:center}
+.add-btn{height:42px;padding:0 16px 0 12px;border-radius:999px;background:var(--dawn);color:var(--dawn-ink);font-weight:650;display:flex;align-items:center;gap:6px;box-shadow:0 8px 22px var(--shadow)}
+.add-btn svg{width:20px;height:20px}
+
+.filter{display:flex;align-items:center;gap:10px;height:46px;padding:0 8px 0 14px;border-radius:var(--r-md);margin-bottom:16px}
+.filter svg{width:18px;height:18px;color:var(--ink-3);flex:none}
+.filter input{flex:1;min-width:0;height:100%;font-size:16px}
+.filter input::placeholder{color:var(--ink-3)}
+.filter .clear{width:32px;height:32px;border-radius:50%;color:var(--ink-3);font-size:20px;line-height:1}
+
+.banner{display:flex;align-items:center;gap:10px;padding:12px 12px 12px 16px;border-radius:var(--r-md);margin-bottom:16px;border-color:var(--dawn)}
+.banner b{flex:1;font-weight:600;font-size:15px}
+.banner .add-btn{height:36px;padding:0 14px}
+.banner .x{width:32px;height:32px;color:var(--ink-3);font-size:20px}
+
+/* pinned row */
+.pins{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 14px;margin:0 -2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.pins::-webkit-scrollbar{display:none}
+.pin{flex:none;max-width:190px;display:flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 12px;border-radius:999px;font-weight:600;font-size:15px;
+  -webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
+.pin span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pin i{width:8px;height:8px;border-radius:50%;background:var(--dawn);flex:none}
+
+/* sections */
+.secs{display:grid;gap:14px}
+.sec{border-radius:var(--r-lg);padding:4px 0 6px}
+.sec-h{display:flex;align-items:center;gap:2px;padding:4px 6px 2px 2px}
+.grip{width:36px;height:40px;display:grid;place-items:center;color:var(--ink-3);touch-action:none;cursor:grab}
+.grip svg{width:18px;height:18px}
+.sec-name{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:40px;text-align:left;font-size:17px;font-weight:680}
+.sec-name span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sec-name small{font-size:13px;font-weight:600;color:var(--ink-3)}
+.sec-name .chev{width:16px;height:16px;color:var(--ink-3);transition:transform .25s;flex:none}
+.sec.closed .chev{transform:rotate(-90deg)}
+.sec.closed .chat-list{display:none}
+.more{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--ink-3)}
+.more svg{width:20px;height:20px}
+.chat-list{min-height:10px;padding:0 6px}
+.chat-list:empty{min-height:52px;margin:2px 8px 6px;border:1.5px dashed var(--line);border-radius:var(--r-sm)}
+.chat-list:empty::before{content:'Drag chats here';display:grid;place-items:center;height:48px;color:var(--ink-3);font-size:14px}
+.chat{display:flex;align-items:center;border-radius:var(--r-sm);-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
+.chat + .chat{box-shadow:inset 0 1px 0 var(--line)}
+.chat a{flex:1;min-width:0;display:flex;align-items:center;gap:10px;min-height:50px;padding:6px 4px 6px 12px;font-size:16px}
+.chat a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chat a small{display:block;color:var(--ink-3);font-size:13px}
+.chat .pinmark{width:7px;height:7px;border-radius:50%;background:var(--dawn);flex:none}
+.new-sec{width:100%;height:50px;margin-top:14px;border-radius:var(--r-lg);border:1.5px dashed var(--line);color:var(--ink-2);font-weight:600}
+
+/* drag feedback */
+.s-ghost{opacity:.3}
+.s-chosen{background:var(--hi)}
+.sortable-fallback{opacity:1!important;background:var(--sheet)!important;border-radius:var(--r-sm);box-shadow:0 18px 40px var(--shadow)!important;transform:scale(1.03)}
+body.dragging{user-select:none;-webkit-user-select:none}
+
+/* lists outside the main view */
+.flat{border-radius:var(--r-lg);padding:4px 6px}
+.flat .chat a{padding-left:10px}
+.arch-row{display:flex;align-items:center;gap:6px;padding:8px 4px 8px 10px}
+.arch-row + .arch-row{box-shadow:inset 0 1px 0 var(--line)}
+.arch-row div{flex:1;min-width:0}
+.arch-row b{display:block;font-weight:560;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill-btn{height:34px;padding:0 12px;border-radius:999px;background:var(--field);font-size:14px;font-weight:600;color:var(--ink)}
+.pill-btn.warn{color:var(--danger)}
+.empty{border-radius:var(--r-lg);padding:26px 22px;text-align:center;display:grid;gap:12px;justify-items:center}
+.empty h2{font-size:19px}
+.empty p{color:var(--ink-2);max-width:32ch}
+
+/* sheet */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .3s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-width:640px;margin:0 auto;max-height:90vh;overflow:auto;z-index:41;
+  padding:10px 20px calc(env(safe-area-inset-bottom) + 24px);border-radius:26px 26px 0 0;
+  background:var(--sheet);-webkit-backdrop-filter:blur(26px) saturate(1.4);backdrop-filter:blur(26px) saturate(1.4);
+  border:1px solid var(--line);border-bottom:0;
+  transform:translateY(105%);transition:transform .42s cubic-bezier(.2,.9,.2,1.02)}
+.sheet.on{transform:none}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--ink-3);margin:0 auto 14px;opacity:.6}
+.sheet h2{font-size:22px;font-weight:720;letter-spacing:-.01em;margin-bottom:14px}
+.sheet .lede{color:var(--ink-2);margin:-6px 0 16px}
+.field{display:grid;gap:6px;margin-bottom:14px}
+.field > span{font-size:13px;color:var(--ink-3);font-weight:600}
+.inp{width:100%;min-height:48px;padding:12px 14px;border-radius:var(--r-sm);background:var(--field);border:1px solid var(--line);font-size:16px}
+.inp::placeholder{color:var(--ink-3)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{height:38px;padding:0 14px;border-radius:999px;background:var(--field);border:1px solid var(--line);color:var(--ink-2);font-weight:600;font-size:15px}
+.chip.on{background:var(--dawn);border-color:var(--dawn);color:var(--dawn-ink)}
+.btn{width:100%;height:52px;border-radius:var(--r-md);background:var(--dawn);color:var(--dawn-ink);font-weight:680;font-size:16px;margin-top:6px}
+.btn.ghost{background:var(--field);color:var(--ink)}
+.btn.warn{background:var(--field);color:var(--danger)}
+.btn:disabled{opacity:.5}
+.btn + .btn{margin-top:10px}
+.paste{height:76px;font-size:19px;display:flex;align-items:center;justify-content:center;gap:10px}
+.paste svg{width:24px;height:24px}
+.or{text-align:center;color:var(--ink-3);font-size:13px;margin:14px 0 10px}
+.err{color:var(--danger);font-size:14px;margin:8px 2px 0;min-height:1em}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:50px;font-weight:560;margin:4px 0 8px}
+.switch input{appearance:none;-webkit-appearance:none;width:50px;height:30px;border-radius:999px;background:var(--hi);position:relative;transition:background .2s;flex:none}
+.switch input::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .25s cubic-bezier(.34,1.3,.5,1);box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.switch input:checked{background:var(--ok)}
+.switch input:checked::after{transform:translateX(20px)}
+.set{padding:4px 0 18px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.set h3{font-size:16px;font-weight:680;margin-bottom:4px}
+.set .muted{margin-bottom:12px}
+.theme-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.th{padding:12px 10px;border-radius:var(--r-md);border:1px solid var(--line);display:grid;gap:8px;justify-items:center;font-size:12px;color:var(--ink-2)}
+.th .sw{width:100%;height:34px;border-radius:10px;position:relative;overflow:hidden}
+.th .sw i{position:absolute;right:7px;top:7px;width:14px;height:14px;border-radius:50%}
+.th.on{border-color:var(--dawn);color:var(--ink)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);background:var(--field);border-radius:var(--r-sm);padding:4px;gap:4px}
+.seg button{height:40px;border-radius:9px;font-size:14px;font-weight:600;color:var(--ink-2)}
+.seg button.on{background:var(--hi);color:var(--ink)}
+.dup{border-radius:var(--r-md);padding:16px;margin-bottom:14px}
+.dup b{font-weight:650}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 24px);transform:translate(-50%,16px);opacity:0;padding:11px 16px;border-radius:14px;
+  background:var(--sheet);border:1px solid var(--line);font-size:15px;font-weight:560;z-index:60;transition:opacity .25s,transform .3s;pointer-events:none;max-width:88vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast.bad{color:var(--danger)}
+
+/* login */
+.login{min-height:80vh;display:grid;place-items:center}
+.login form{width:100%;max-width:360px;border-radius:26px;padding:28px 22px;display:grid;gap:12px;text-align:center}
+.login h1{font-size:32px;font-weight:760;letter-spacing:-.02em}
+.login p{color:var(--ink-2);margin-bottom:6px}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+// ---------- icons ----------
+const ICON = {
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  archive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg>',
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>',
+  grip: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>',
+  chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
+  clip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg>',
+};
+
+// ---------- themes (same set as Launch) ----------
+const THEMES = {
+  midnight: { name: 'Midnight', v: { night: '#0d1424', 'night-2': '#141d31', ink: '#eef2f8', 'ink-2': '#aab3c5', 'ink-3': '#6f7a91', line: 'rgba(255,255,255,.09)', glass: 'rgba(255,255,255,.055)', sheet: 'rgba(21,30,51,.9)', bar: 'rgba(22,31,52,.72)', hi: 'rgba(255,255,255,.12)', field: 'rgba(255,255,255,.07)', shadow: 'rgba(3,6,15,.32)', dawn: '#f2c46d', 'dawn-ink': '#1d1606' },
+    skies: [['rgba(90,80,210,.20)', 'rgba(60,90,200,.10)'], ['rgba(242,170,90,.26)', 'rgba(255,120,150,.12)'], ['rgba(90,165,255,.20)', 'rgba(120,200,255,.10)'], ['rgba(255,125,90,.22)', 'rgba(190,90,220,.12)'], ['rgba(140,95,230,.20)', 'rgba(70,90,210,.10)']] },
+  slate: { name: 'Slate', v: { night: '#14171c', 'night-2': '#1c2128', ink: '#f0f2f5', 'ink-2': '#a8b0bd', 'ink-3': '#6e7684', line: 'rgba(255,255,255,.1)', glass: 'rgba(255,255,255,.05)', sheet: 'rgba(28,33,40,.92)', bar: 'rgba(28,33,40,.75)', hi: 'rgba(255,255,255,.13)', field: 'rgba(255,255,255,.07)', shadow: 'rgba(0,0,0,.35)', dawn: '#7fd1e8', 'dawn-ink': '#04222b' },
+    skies: [['rgba(120,140,170,.12)', 'rgba(80,110,140,.08)'], ['rgba(127,209,232,.16)', 'rgba(150,180,210,.09)'], ['rgba(127,209,232,.14)', 'rgba(120,150,190,.08)'], ['rgba(150,170,200,.14)', 'rgba(100,130,170,.08)'], ['rgba(90,110,150,.14)', 'rgba(60,80,120,.08)']] },
+  espresso: { name: 'Espresso', v: { night: '#191310', 'night-2': '#241b16', ink: '#f6eee6', 'ink-2': '#c0ab9a', 'ink-3': '#8a7767', line: 'rgba(255,240,225,.1)', glass: 'rgba(255,240,225,.05)', sheet: 'rgba(36,27,22,.93)', bar: 'rgba(36,27,22,.78)', hi: 'rgba(255,240,225,.13)', field: 'rgba(255,240,225,.07)', shadow: 'rgba(0,0,0,.4)', dawn: '#e8a765', 'dawn-ink': '#241404' },
+    skies: [['rgba(150,90,50,.16)', 'rgba(110,70,50,.1)'], ['rgba(232,167,101,.22)', 'rgba(200,110,70,.12)'], ['rgba(210,150,90,.16)', 'rgba(160,110,70,.1)'], ['rgba(220,120,70,.2)', 'rgba(150,80,60,.12)'], ['rgba(140,85,55,.18)', 'rgba(90,60,45,.1)']] },
+  forest: { name: 'Forest', v: { night: '#0c1713', 'night-2': '#12211b', ink: '#eaf4ee', 'ink-2': '#a2bdae', 'ink-3': '#6b8578', line: 'rgba(230,255,240,.09)', glass: 'rgba(230,255,240,.05)', sheet: 'rgba(18,33,27,.93)', bar: 'rgba(18,33,27,.76)', hi: 'rgba(230,255,240,.12)', field: 'rgba(230,255,240,.07)', shadow: 'rgba(0,10,6,.38)', dawn: '#8fd6a0', 'dawn-ink': '#052012' },
+    skies: [['rgba(60,130,100,.16)', 'rgba(40,90,80,.1)'], ['rgba(143,214,160,.2)', 'rgba(200,220,140,.1)'], ['rgba(110,190,150,.16)', 'rgba(90,160,140,.09)'], ['rgba(180,190,110,.16)', 'rgba(110,150,110,.1)'], ['rgba(50,110,90,.18)', 'rgba(30,70,70,.1)']] },
+  ink: { name: 'Ink', v: { night: '#060709', 'night-2': '#0e1114', ink: '#f2f5f8', 'ink-2': '#9aa3ad', 'ink-3': '#606a75', line: 'rgba(255,255,255,.11)', glass: 'rgba(255,255,255,.045)', sheet: 'rgba(14,17,20,.94)', bar: 'rgba(14,17,20,.8)', hi: 'rgba(255,255,255,.13)', field: 'rgba(255,255,255,.06)', shadow: 'rgba(0,0,0,.5)', dawn: '#6ee7d4', 'dawn-ink': '#00211c' },
+    skies: [['rgba(60,90,110,.14)', 'rgba(40,60,90,.08)'], ['rgba(110,231,212,.14)', 'rgba(80,140,160,.08)'], ['rgba(90,150,170,.12)', 'rgba(60,110,140,.07)'], ['rgba(110,231,212,.12)', 'rgba(70,100,140,.07)'], ['rgba(50,80,100,.14)', 'rgba(30,50,80,.08)']] },
+  blossom: { name: 'Blossom', v: { night: '#1b1117', 'night-2': '#27171f', ink: '#fbeef3', 'ink-2': '#d6afbf', 'ink-3': '#9a7584', line: 'rgba(255,228,240,.1)', glass: 'rgba(255,228,240,.055)', sheet: 'rgba(39,23,31,.93)', bar: 'rgba(39,23,31,.78)', hi: 'rgba(255,228,240,.13)', field: 'rgba(255,228,240,.07)', shadow: 'rgba(10,0,5,.4)', dawn: '#f5a3c0', 'dawn-ink': '#2a0915' },
+    skies: [['rgba(200,90,150,.16)', 'rgba(140,70,150,.1)'], ['rgba(245,163,192,.24)', 'rgba(255,190,150,.12)'], ['rgba(240,150,190,.18)', 'rgba(200,150,230,.1)'], ['rgba(255,140,160,.22)', 'rgba(190,100,200,.12)'], ['rgba(170,90,160,.2)', 'rgba(110,70,150,.1)']] },
+  daylight: { name: 'Daylight', v: { night: '#f4f6fa', 'night-2': '#e9edf4', ink: '#131720', 'ink-2': '#4d5768', 'ink-3': '#7b8598', line: 'rgba(20,30,50,.12)', glass: 'rgba(255,255,255,.66)', sheet: 'rgba(250,251,253,.95)', bar: 'rgba(252,253,255,.82)', hi: 'rgba(20,30,50,.09)', field: 'rgba(20,30,50,.05)', shadow: 'rgba(40,60,100,.14)', dawn: '#b06d18', 'dawn-ink': '#fff8ec' },
+    skies: [['rgba(120,130,200,.14)', 'rgba(150,170,220,.1)'], ['rgba(255,190,110,.24)', 'rgba(255,160,180,.12)'], ['rgba(120,180,255,.18)', 'rgba(160,210,255,.1)'], ['rgba(255,160,110,.2)', 'rgba(200,140,230,.12)'], ['rgba(150,140,230,.16)', 'rgba(120,150,220,.1)']] },
+};
+function setSky() {
+  const h = new Date().getHours();
+  const i = h < 5 ? 0 : h < 10 ? 1 : h < 16 ? 2 : h < 19 ? 3 : 4;
+  const [a, b] = (THEMES[S.theme] || THEMES.midnight).skies[i];
+  document.documentElement.style.setProperty('--sky', a);
+  document.documentElement.style.setProperty('--sky2', b);
+}
+function applyTheme(id) {
+  const t = THEMES[id] || THEMES.midnight;
+  const r = document.documentElement.style;
+  for (const [k, v] of Object.entries(t.v)) r.setProperty('--' + k, v);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t.v.night);
+  S.theme = THEMES[id] ? id : 'midnight';
+  localStorage.setItem('threads.theme', S.theme);
+  setSky();
+}
+
+// ---------- helpers ----------
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }));
+const nowISO = () => new Date().toISOString();
+function ago(iso) {
+  if (!iso) return '';
+  const m = Math.round((Date.now() - new Date(iso)) / 6e4);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.round(h / 24);
+  return d < 30 ? `${d}d ago` : new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+let toastT;
+function toast(msg, bad) {
+  const t = $('#toast');
+  t.textContent = msg; t.classList.toggle('bad', !!bad); t.classList.add('on');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), bad ? 4200 : 2200);
+}
+
+// ---------- chat links ----------
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function parseChat(text) {
+  const t = String(text || '').trim();
+  if (!t) return { error: 'Nothing to paste. Copy a chat link first.' };
+  if (/claude\.ai\/share\//i.test(t)) return { error: "That's a share link, which is a public snapshot. Copy the chat's own link (claude.ai/chat/…) instead." };
+  if (/claude\.ai\/project\//i.test(t)) return { error: "That's a project link. Threads holds chats, so copy a chat link instead." };
+  const m = t.match(/claude\.ai\/chat\/([0-9a-f-]{36})/i);
+  if (m && UUID_RE.test(m[1])) return { uuid: m[1].toLowerCase() };
+  if (UUID_RE.test(t)) return { uuid: t.toLowerCase() };
+  return { error: "That isn't a Claude chat link. It should look like claude.ai/chat/…" };
+}
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const linkPref = () => localStorage.getItem('threads.link') || 'auto';
+const linkMode = () => (linkPref() === 'auto' ? (isIOS ? 'web' : 'app') : linkPref());
+const chatURL = (uuid, mode = linkMode()) => (mode === 'app' ? `claude://claude.ai/chat/${uuid}` : `https://claude.ai/chat/${uuid}`);
+const linkTarget = () => (linkMode() === 'web' && !isIOS ? ' target="_blank" rel="noopener"' : '');
+
+// ---------- state ----------
+const S = {
+  token: localStorage.getItem('threads.token') || '',
+  theme: localStorage.getItem('threads.theme') || 'midnight',
+  sections: [], chats: [], settings: {},
+  view: 'main', filter: '', dragging: false, loaded: false,
+};
+const collapsed = new Set(JSON.parse(localStorage.getItem('threads.collapsed') || '[]'));
+const dismissed = new Set();
+
+function loadCache() {
+  try {
+    const c = JSON.parse(localStorage.getItem('threads.cache') || 'null');
+    if (c) { S.sections = c.sections || []; S.chats = c.chats || []; S.settings = c.settings || {}; S.loaded = true; }
+  } catch {}
+}
+const saveCache = () => localStorage.setItem('threads.cache', JSON.stringify({ sections: S.sections, chats: S.chats, settings: S.settings }));
+
+const bySort = (k) => (a, b) => (a[k] ?? 0) - (b[k] ?? 0) || String(a.created_at || '').localeCompare(String(b.created_at || ''));
+const sections = () => [...S.sections].sort(bySort('position'));
+const inbox = () => S.sections.find((s) => s.is_inbox) || sections()[0];
+const secOf = (c) => S.sections.find((s) => s.id === c.section_id) || inbox();
+const active = () => S.chats.filter((c) => !c.archived_at);
+const archived = () => S.chats.filter((c) => c.archived_at).sort((a, b) => String(b.archived_at).localeCompare(String(a.archived_at)));
+const chatsIn = (sid) => active().filter((c) => secOf(c)?.id === sid).sort(bySort('position'));
+const pins = () => active().filter((c) => c.pinned).sort(bySort('pin_position'));
+const chatById = (id) => S.chats.find((c) => c.id === id);
+const secById = (id) => S.sections.find((s) => s.id === id);
+
+// ---------- server ----------
+async function api(path, opts = {}) {
+  const res = await fetch(path, {
+    method: opts.method || 'GET',
+    headers: { 'Content-Type': 'application/json', ...(S.token ? { Authorization: 'Bearer ' + S.token } : {}) },
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+    keepalive: !!opts.keepalive,
+  });
+  let j = {};
+  try { j = await res.json(); } catch {}
+  if (res.status === 401 && path !== '/api/login') { signOut(j.error); throw new Error(j.error || 'Signed out.'); }
+  if (!res.ok) throw new Error(j.error || `Request failed (${res.status}).`);
+  return j;
+}
+async function load() {
+  try {
+    const j = await api('/api/data');
+    S.sections = j.sections || []; S.chats = j.chats || [];
+    S.settings = Object.fromEntries((j.settings || []).map((r) => [r.id, r.value]));
+    S.loaded = true; saveCache();
+    const t = S.settings.theme?.preset;
+    if (t && THEMES[t] && t !== S.theme) applyTheme(t);
+    renderContent(); renderTop();
+  } catch (err) {
+    if (S.token) toast(S.loaded ? 'Offline. Showing your saved list.' : err.message, true);
+  }
+}
+// Writes go out in order. If one fails, reload the truth from the server.
+let chain = Promise.resolve();
+function push(ops) {
+  saveCache();
+  chain = chain.then(() => api('/api/data', { method: 'POST', body: { ops } }))
+    .catch((err) => { toast(`Couldn't save. ${err.message}`, true); return load(); });
+  return chain;
+}
+// Renumber a list and return only the rows that actually changed.
+function renumber(list, key, extra = {}) {
+  const changed = [];
+  list.forEach((c, i) => {
+    const diff = c[key] !== i || Object.entries(extra).some(([k, v]) => c[k] !== v);
+    if (diff) { c[key] = i; Object.assign(c, extra); changed.push({ id: c.id, [key]: i, ...extra }); }
+  });
+  return changed;
+}
+
+// ---------- render ----------
+function render() {
+  if (!S.token) return renderLogin();
+  if (!$('#top')) {
+    $('#app').innerHTML = `<header class="top" id="top"></header>
+      <div id="banner"></div>
+      <label class="filter glass">${ICON.search}<input id="filter" type="search" placeholder="Filter chats" autocomplete="off" enterkeyhint="search"><button class="clear" data-act="filter-clear" aria-label="Clear filter" hidden>×</button></label>
+      <main id="content"></main>`;
+  }
+  renderTop(); renderContent();
+}
+function renderTop() {
+  const top = $('#top');
+  if (!top) return;
+  const n = archived().length;
+  top.innerHTML = S.view === 'archive'
+    ? `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1>Archive</h1>`
+    : `<h1>Threads</h1>
+      <button class="icon-btn" data-act="archive" aria-label="Archive">${ICON.archive}${n ? `<span class="badge">${n}</span>` : ''}</button>
+      <button class="icon-btn" data-act="settings" aria-label="Settings">${ICON.gear}</button>
+      <button class="add-btn" data-act="add">${ICON.plus}Add</button>`;
+  $('#filter').placeholder = S.view === 'archive' ? 'Filter archive' : 'Filter chats';
+}
+
+function chatRow(c, sub) {
+  return `<div class="chat" data-id="${c.id}"><a href="${esc(chatURL(c.chat_uuid))}"${linkTarget()} draggable="false" data-act="open" data-id="${c.id}">${c.pinned ? '<i class="pinmark" aria-label="Pinned"></i>' : ''}<span>${esc(c.name)}${sub ? `<small>${esc(sub)}</small>` : ''}</span></a><button class="more" data-act="chat-menu" data-id="${c.id}" aria-label="Edit ${esc(c.name)}">${ICON.more}</button></div>`;
+}
+const match = (c) => !S.filter || c.name.toLowerCase().includes(S.filter.toLowerCase());
+
+let sortables = [];
+function renderContent() {
+  const el = $('#content');
+  if (!el) return;
+  sortables.forEach((s) => s.destroy()); sortables = [];
+  $('.filter .clear') && ($('.filter .clear').hidden = !S.filter);
+
+  if (!S.loaded) { el.innerHTML = '<p class="muted" style="text-align:center;margin-top:40px">Loading…</p>'; return; }
+
+  if (S.view === 'archive') {
+    const list = archived().filter(match);
+    el.innerHTML = list.length
+      ? `<div class="flat glass">${list.map((c) => `<div class="arch-row"><div><b>${esc(c.name)}</b><span class="muted">${esc(secOf(c)?.name || 'Inbox')}, archived ${ago(c.archived_at)}</span></div>
+          <button class="pill-btn" data-act="unarchive" data-id="${c.id}">Unarchive</button><button class="pill-btn warn" data-act="delete-chat" data-id="${c.id}">Delete</button></div>`).join('')}</div>`
+      : `<div class="empty glass"><h2>${S.filter ? 'No matches' : 'Archive is empty'}</h2><p>${S.filter ? 'Nothing archived matches that name.' : 'Archive a chat from its menu to tuck it away here.'}</p></div>`;
+    return;
+  }
+
+  if (S.filter) {
+    const list = active().filter(match).sort((a, b) => String(b.last_opened_at || b.created_at).localeCompare(String(a.last_opened_at || a.created_at)));
+    el.innerHTML = list.length
+      ? `<div class="flat glass">${list.map((c) => chatRow(c, secOf(c)?.name)).join('')}</div>`
+      : `<div class="empty glass"><h2>No matches</h2><p>No active chat has that in its name. Archived chats live in the archive.</p></div>`;
+    return;
+  }
+
+  const p = pins();
+  const secs = sections();
+  const anyChats = active().length > 0;
+  el.innerHTML = `${p.length ? `<div class="pins" id="pins">${p.map((c) => `<a class="pin glass" href="${esc(chatURL(c.chat_uuid))}"${linkTarget()} draggable="false" data-act="open" data-id="${c.id}"><i></i><span>${esc(c.name)}</span></a>`).join('')}</div>` : ''}
+    ${!anyChats ? `<div class="empty glass" style="margin-bottom:14px"><h2>Add your first chat</h2><p>Copy a chat's link in Claude, then come back and paste it here.</p><button class="add-btn" data-act="add">${ICON.plus}Add a chat</button></div>` : ''}
+    <div class="secs" id="secs">${secs.map((s) => {
+      const list = chatsIn(s.id);
+      return `<section class="sec glass${collapsed.has(s.id) ? ' closed' : ''}" data-sid="${s.id}">
+        <div class="sec-h"><span class="grip" aria-label="Drag to reorder ${esc(s.name)}">${ICON.grip}</span>
+          <button class="sec-name" data-act="sec-toggle" data-id="${s.id}"><span>${esc(s.name)}</span><small>${list.length}</small>${ICON.chev}</button>
+          <button class="more" data-act="sec-menu" data-id="${s.id}" aria-label="Edit ${esc(s.name)}">${ICON.more}</button></div>
+        <div class="chat-list" data-sid="${s.id}">${list.map((c) => chatRow(c)).join('')}</div></section>`;
+    }).join('')}</div>
+    <button class="new-sec" data-act="sec-new">New section</button>`;
+  initSortables();
+}
+
+// ---------- drag and drop ----------
+function dragOpts(extra) {
+  return {
+    animation: 180, delay: 280, delayOnTouchOnly: true, touchStartThreshold: 8,
+    forceFallback: true, fallbackOnBody: true, fallbackTolerance: 4,
+    ghostClass: 's-ghost', chosenClass: 's-chosen',
+    onStart: () => { S.dragging = true; document.body.classList.add('dragging'); navigator.vibrate?.(10); },
+    ...extra,
+  };
+}
+const endDrag = () => { document.body.classList.remove('dragging'); setTimeout(() => { S.dragging = false; }, 300); };
+function initSortables() {
+  if (!window.Sortable) return;
+  $$('.chat-list').forEach((list) => sortables.push(Sortable.create(list, dragOpts({
+    group: 'chats', draggable: '.chat',
+    onEnd: (e) => { endDrag(); if (e.from !== e.to || e.oldIndex !== e.newIndex) onChatDrop(e.from, e.to); },
+  }))));
+  const secs = $('#secs');
+  if (secs) sortables.push(Sortable.create(secs, dragOpts({
+    handle: '.grip', draggable: '.sec', delay: 120,
+    onEnd: (e) => { endDrag(); if (e.oldIndex !== e.newIndex) onSecDrop(); },
+  })));
+  const p = $('#pins');
+  if (p) sortables.push(Sortable.create(p, dragOpts({
+    draggable: '.pin', direction: 'horizontal',
+    onEnd: (e) => { endDrag(); if (e.oldIndex !== e.newIndex) onPinDrop(); },
+  })));
+}
+function onChatDrop(from, to) {
+  const rows = [];
+  for (const list of new Set([from, to])) {
+    const sid = list.dataset.sid;
+    const ordered = $$('.chat', list).map((r) => chatById(r.dataset.id)).filter(Boolean);
+    rows.push(...renumber(ordered, 'position', { section_id: sid }));
+  }
+  renderContent();
+  if (rows.length) push([{ op: 'patch', table: 'chats', rows }]);
+}
+function onSecDrop() {
+  const ordered = $$('#secs .sec').map((el) => secById(el.dataset.sid)).filter(Boolean);
+  const rows = renumber(ordered, 'position');
+  renderContent();
+  if (rows.length) push([{ op: 'patch', table: 'sections', rows }]);
+}
+function onPinDrop() {
+  const ordered = $$('#pins .pin').map((el) => chatById(el.dataset.id)).filter(Boolean);
+  const rows = renumber(ordered, 'pin_position');
+  renderContent();
+  if (rows.length) push([{ op: 'patch', table: 'chats', rows }]);
+}
+
+// ---------- sheets ----------
+function openSheet(html) {
+  $('#sheet').innerHTML = `<div class="grab"></div>${html}`;
+  $('#sheet').classList.add('on'); $('#scrim').classList.add('on');
+}
+function closeSheet() { $('#sheet').classList.remove('on'); $('#scrim').classList.remove('on'); }
+const secChips = (id, on) => `<div class="chips" id="${id}">${sections().map((s) => `<button class="chip${s.id === on ? ' on' : ''}" data-act="chip" data-v="${s.id}">${esc(s.name)}</button>`).join('')}</div>`;
+const chipVal = (id) => $(`#${id} .chip.on`)?.dataset.v;
+
+// Add a chat
+function openAdd(prefill) {
+  openSheet(`<h2>Add a chat</h2>
+    <button class="btn paste" data-act="paste">${ICON.clip}Paste chat</button>
+    <div class="or">or paste the link into the box</div>
+    <input class="inp" id="add-text" placeholder="claude.ai/chat/…" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url">
+    <p class="err" id="add-err"></p>`);
+  if (prefill) handleAddText(prefill);
+}
+function handleAddText(text) {
+  const r = parseChat(text);
+  if (r.error) { const e = $('#add-err'); if (e) e.textContent = r.error; else toast(r.error, true); return; }
+  showAddForm(r.uuid);
+}
+function showAddForm(uuid) {
+  hideBanner();
+  const ex = S.chats.find((c) => c.chat_uuid === uuid);
+  if (ex) {
+    return openSheet(`<h2>Already saved</h2>
+      <div class="dup glass">This chat is saved as <b>${esc(ex.name)}</b> in ${esc(secOf(ex)?.name || 'Inbox')}${ex.archived_at ? ', in the archive' : ''}.</div>
+      ${ex.archived_at ? `<button class="btn" data-act="unarchive" data-id="${ex.id}">Unarchive it</button>` : `<a class="btn" style="display:grid;place-items:center" href="${esc(chatURL(uuid))}"${linkTarget()} data-act="open" data-id="${ex.id}">Open it</a>`}
+      <button class="btn ghost" data-act="chat-menu" data-id="${ex.id}">Edit it</button>`);
+  }
+  const last = localStorage.getItem('threads.lastSection');
+  const sid = secById(last) ? last : inbox()?.id;
+  openSheet(`<h2>Add this chat?</h2>
+    <label class="field"><span>Name</span><input class="inp" id="ac-name" placeholder="What's this chat about?" maxlength="80" autocomplete="off" enterkeyhint="done"></label>
+    <div class="field"><span>Section</span>${secChips('ac-sec', sid)}</div>
+    <label class="switch">Pin to the top row<input type="checkbox" id="ac-pin"></label>
+    <button class="btn" data-act="add-save" data-uuid="${uuid}">Save chat</button>`);
+  setTimeout(() => $('#ac-name')?.focus(), 350);
+}
+function saveNewChat(uuid) {
+  if (S.chats.some((c) => c.chat_uuid === uuid)) return showAddForm(uuid);
+  const name = ($('#ac-name').value.trim() || 'Untitled chat').slice(0, 80);
+  const sid = chipVal('ac-sec') || inbox()?.id;
+  const pin = $('#ac-pin').checked;
+  const c = { id: uid(), section_id: sid, name, chat_uuid: uuid, position: 0, pinned: pin, pin_position: pin ? pins().length : null, archived_at: null, last_opened_at: null, created_at: nowISO() };
+  S.chats.push(c);
+  // New chats go to the top of their section.
+  const ordered = [c, ...chatsIn(sid).filter((x) => x.id !== c.id)];
+  const moved = renumber(ordered, 'position').filter((r) => r.id !== c.id);
+  localStorage.setItem('threads.lastSection', sid);
+  closeSheet(); renderContent();
+  toast(`Saved to ${secById(sid)?.name || 'Inbox'}`);
+  push([{ op: 'upsert', table: 'chats', row: c }, ...(moved.length ? [{ op: 'patch', table: 'chats', rows: moved }] : [])]);
+}
+
+// Edit a chat
+function openChatMenu(id) {
+  const c = chatById(id);
+  if (!c) return;
+  openSheet(`<h2>Edit chat</h2>
+    <label class="field"><span>Name</span><input class="inp" id="cm-name" value="${esc(c.name)}" maxlength="80" autocomplete="off"></label>
+    ${c.archived_at ? '' : `<div class="field"><span>Section</span>${secChips('cm-sec', secOf(c)?.id)}</div>
+    <label class="switch">Pin to the top row<input type="checkbox" id="cm-pin" ${c.pinned ? 'checked' : ''}></label>`}
+    <button class="btn" data-act="cm-save" data-id="${c.id}">Save changes</button>
+    <button class="btn ghost" data-act="copy-link" data-id="${c.id}">Copy chat link</button>
+    ${c.archived_at ? `<button class="btn ghost" data-act="unarchive" data-id="${c.id}">Unarchive</button>` : `<button class="btn ghost" data-act="archive-chat" data-id="${c.id}">Archive</button>`}`);
+}
+function saveChat(id) {
+  const c = chatById(id);
+  if (!c) return;
+  const name = $('#cm-name').value.trim();
+  if (!name) { $('#cm-name').focus(); return toast('Give it a name first.', true); }
+  const rows = [];
+  const patch = { id: c.id };
+  if (name !== c.name) { c.name = name.slice(0, 80); patch.name = c.name; }
+  if (!c.archived_at) {
+    const sid = chipVal('cm-sec');
+    if (sid && sid !== secOf(c)?.id) {
+      const oldSid = secOf(c)?.id;
+      c.section_id = sid; patch.section_id = sid;
+      c.position = chatsIn(sid).length; patch.position = c.position; // lands at the bottom
+      rows.push(...renumber(chatsIn(oldSid), 'position'));
+    }
+    const pin = $('#cm-pin').checked;
+    if (pin !== !!c.pinned) {
+      c.pinned = pin; patch.pinned = pin;
+      c.pin_position = pin ? pins().length : null; patch.pin_position = c.pin_position;
+      if (!pin) rows.push(...renumber(pins(), 'pin_position'));
+    }
+  }
+  closeSheet(); renderContent();
+  if (Object.keys(patch).length > 1) rows.unshift(patch);
+  if (rows.length) { push([{ op: 'patch', table: 'chats', rows }]); toast('Saved'); }
+}
+function archiveChat(id) {
+  const c = chatById(id);
+  if (!c) return;
+  const sid = secOf(c)?.id;
+  Object.assign(c, { archived_at: nowISO(), pinned: false, pin_position: null });
+  const rows = [{ id: c.id, archived_at: c.archived_at, pinned: false, pin_position: null }, ...renumber(chatsIn(sid), 'position'), ...renumber(pins(), 'pin_position')];
+  closeSheet(); renderTop(); renderContent(); toast('Archived');
+  push([{ op: 'patch', table: 'chats', rows }]);
+}
+function unarchiveChat(id) {
+  const c = chatById(id);
+  if (!c) return;
+  const sid = secOf(c)?.id;
+  Object.assign(c, { archived_at: null, section_id: sid, position: chatsIn(sid).length });
+  closeSheet(); renderTop(); renderContent(); toast(`Back in ${secById(sid)?.name || 'Inbox'}`);
+  push([{ op: 'patch', table: 'chats', rows: [{ id: c.id, archived_at: null, section_id: sid, position: c.position }] }]);
+}
+
+// Sections
+function openSecNew() {
+  openSheet(`<h2>New section</h2>
+    <label class="field"><span>Name</span><input class="inp" id="sn-name" placeholder="Project name" maxlength="80" autocomplete="off" enterkeyhint="done"></label>
+    <button class="btn" data-act="sec-create">Create section</button>`);
+  setTimeout(() => $('#sn-name')?.focus(), 350);
+}
+function createSection() {
+  const name = $('#sn-name').value.trim();
+  if (!name) return $('#sn-name').focus();
+  const s = { id: uid(), name: name.slice(0, 80), position: S.sections.length ? Math.max(...S.sections.map((x) => x.position || 0)) + 1 : 0, is_inbox: false, created_at: nowISO() };
+  S.sections.push(s);
+  closeSheet(); renderContent(); toast(`Created ${s.name}`);
+  push([{ op: 'upsert', table: 'sections', row: s }]);
+}
+function openSecMenu(id) {
+  const s = secById(id);
+  if (!s) return;
+  const all = S.chats.filter((c) => secOf(c)?.id === s.id);
+  const del = s.is_inbox
+    ? `<p class="muted" style="margin-top:14px">Inbox is where new chats land by default, so it can't be deleted.</p>`
+    : `<button class="btn warn" data-act="sec-delete" data-id="${s.id}">${all.length ? `Move ${all.length} chat${all.length > 1 ? 's' : ''} to Inbox and delete` : 'Delete section'}</button>`;
+  openSheet(`<h2>Edit section</h2>
+    <label class="field"><span>Name</span><input class="inp" id="sm-name" value="${esc(s.name)}" maxlength="80" autocomplete="off"></label>
+    <button class="btn" data-act="sec-rename" data-id="${s.id}">Save name</button>${del}`);
+}
+function renameSection(id) {
+  const s = secById(id), name = $('#sm-name').value.trim();
+  if (!s || !name) return;
+  s.name = name.slice(0, 80);
+  closeSheet(); renderContent();
+  push([{ op: 'patch', table: 'sections', rows: [{ id: s.id, name: s.name }] }]);
+}
+function deleteSection(id, btn) {
+  const s = secById(id), ib = inbox();
+  if (!s || s.is_inbox || !ib) return;
+  if (!btn.dataset.sure) { btn.dataset.sure = '1'; btn.textContent = 'Tap again to delete'; return; }
+  const moving = S.chats.filter((c) => c.section_id === s.id);
+  const base = chatsIn(ib.id).length;
+  const rows = moving.map((c, i) => { c.section_id = ib.id; c.position = base + i; return { id: c.id, section_id: ib.id, position: c.position }; });
+  S.sections = S.sections.filter((x) => x.id !== s.id);
+  collapsed.delete(s.id);
+  closeSheet(); renderContent(); toast(`Deleted ${s.name}`);
+  push([...(rows.length ? [{ op: 'patch', table: 'chats', rows }] : []), { op: 'delete', table: 'sections', id: s.id }]);
+}
+
+// Settings
+function openSettings() {
+  const pref = linkPref();
+  openSheet(`<h2>Settings</h2>
+    <section class="set"><h3>Theme</h3><p class="muted">Same themes as Launch. Follows you to every device.</p>
+      <div class="theme-grid">${Object.entries(THEMES).map(([id, t]) => `<button class="th${id === S.theme ? ' on' : ''}" data-act="theme-set" data-v="${id}"><span class="sw" style="background:linear-gradient(135deg,${t.v.night},${t.v['night-2']})"><i style="background:${t.v.dawn}"></i></span>${t.name}</button>`).join('')}</div>
+    </section>
+    <section class="set"><h3>Open chats with</h3>
+      <p class="muted">This device only. Auto uses the web link on iPhone (it hands off to the Claude app) and the app link on Mac and PC. Right now: <b>${linkMode() === 'app' ? 'claude://' : 'https://'}</b></p>
+      <div class="seg" id="link-seg">${[['auto', 'Auto'], ['app', 'App link'], ['web', 'Web link']].map(([v, l]) => `<button class="${pref === v ? 'on' : ''}" data-act="link-set" data-v="${v}">${l}</button>`).join('')}</div>
+    </section>
+    <button class="btn warn" data-act="signout">Sign out on this device</button>`);
+}
+
+// Clipboard banner (Mac/PC, after you've allowed clipboard access once)
+function showBanner(uuid) {
+  const b = $('#banner');
+  if (!b) return;
+  b.innerHTML = `<div class="banner glass"><b>Add the chat you just copied?</b><button class="add-btn" data-act="banner-add" data-uuid="${uuid}">Add</button><button class="x" data-act="banner-x" data-uuid="${uuid}" aria-label="Dismiss">×</button></div>`;
+}
+function hideBanner() { const b = $('#banner'); if (b) b.innerHTML = ''; }
+async function checkClipboard() {
+  if (isIOS || !S.token || S.view !== 'main' || !navigator.clipboard?.readText || !navigator.permissions) return;
+  try { const p = await navigator.permissions.query({ name: 'clipboard-read' }); if (p.state !== 'granted') return; } catch { return; }
+  try {
+    const r = parseChat(await navigator.clipboard.readText());
+    if (!r.uuid || dismissed.has(r.uuid) || S.chats.some((c) => c.chat_uuid === r.uuid)) return hideBanner();
+    showBanner(r.uuid);
+  } catch {}
+}
+
+// Opening a chat
+function markOpened(id) {
+  const c = chatById(id);
+  if (!c) return;
+  c.last_opened_at = nowISO(); saveCache();
+  api('/api/data', { method: 'POST', keepalive: true, body: { ops: [{ op: 'patch', table: 'chats', rows: [{ id, last_opened_at: c.last_opened_at }] }] } }).catch(() => {});
+}
+
+// ---------- login ----------
+function renderLogin() {
+  $('#app').innerHTML = `<div class="login"><form class="glass" id="login-form">
+    <h1>Threads</h1><p>Enter your passcode. You only do this once per device.</p>
+    <input class="inp" id="pass" type="password" autocomplete="current-password" placeholder="Passcode">
+    <button class="btn" type="submit">Sign in</button><p class="err" id="login-err"></p></form></div>`;
+}
+async function login(e) {
+  e.preventDefault();
+  const btn = $('#login-form .btn');
+  btn.disabled = true; $('#login-err').textContent = '';
+  try {
+    const j = await api('/api/login', { method: 'POST', body: { passcode: $('#pass').value } });
+    S.token = j.token; localStorage.setItem('threads.token', j.token);
+    $('#app').innerHTML = ''; loadCache(); render(); await load(); handleQuery();
+  } catch (err) { btn.disabled = false; $('#login-err').textContent = err.message; }
+}
+function signOut(msg) {
+  S.token = ''; localStorage.removeItem('threads.token'); localStorage.removeItem('threads.cache');
+  S.sections = []; S.chats = []; S.loaded = false;
+  closeSheet(); $('#app').innerHTML = ''; render();
+  if (msg) toast(msg, true);
+}
+
+// ---------- actions ----------
+const A = {
+  open: (el, ev) => { if (S.dragging) { ev.preventDefault(); return; } markOpened(el.dataset.id); },
+  add: () => openAdd(),
+  paste: async () => {
+    try { handleAddText(await navigator.clipboard.readText()); }
+    catch { $('#add-err').textContent = "Couldn't read the clipboard. Paste into the box instead."; $('#add-text')?.focus(); }
+  },
+  'add-save': (el) => saveNewChat(el.dataset.uuid),
+  chip: (el) => { el.parentElement.querySelectorAll('.chip').forEach((b) => b.classList.toggle('on', b === el)); },
+  'chat-menu': (el) => openChatMenu(el.dataset.id),
+  'cm-save': (el) => saveChat(el.dataset.id),
+  'copy-link': async (el) => {
+    const c = chatById(el.dataset.id);
+    try { await navigator.clipboard.writeText(chatURL(c.chat_uuid, 'web')); dismissed.add(c.chat_uuid); toast('Link copied'); } catch { toast("Couldn't copy.", true); }
+  },
+  'archive-chat': (el) => archiveChat(el.dataset.id),
+  unarchive: (el) => unarchiveChat(el.dataset.id),
+  'delete-chat': (el) => {
+    if (!el.dataset.sure) { el.dataset.sure = '1'; el.textContent = 'Sure?'; return; }
+    S.chats = S.chats.filter((c) => c.id !== el.dataset.id);
+    renderTop(); renderContent(); toast('Deleted');
+    push([{ op: 'delete', table: 'chats', id: el.dataset.id }]);
+  },
+  'sec-toggle': (el) => {
+    const id = el.dataset.id;
+    collapsed.has(id) ? collapsed.delete(id) : collapsed.add(id);
+    localStorage.setItem('threads.collapsed', JSON.stringify([...collapsed]));
+    el.closest('.sec').classList.toggle('closed', collapsed.has(id));
+  },
+  'sec-menu': (el) => openSecMenu(el.dataset.id),
+  'sec-new': () => openSecNew(),
+  'sec-create': () => createSection(),
+  'sec-rename': (el) => renameSection(el.dataset.id),
+  'sec-delete': (el) => deleteSection(el.dataset.id, el),
+  archive: () => { S.view = 'archive'; hideBanner(); renderTop(); renderContent(); scrollTo(0, 0); },
+  main: () => { S.view = 'main'; renderTop(); renderContent(); },
+  settings: () => openSettings(),
+  'theme-set': (el) => {
+    applyTheme(el.dataset.v);
+    S.settings.theme = { preset: S.theme };
+    openSettings();
+    push([{ op: 'upsert', table: 'settings', row: { id: 'theme', value: { preset: S.theme } } }]);
+  },
+  'link-set': (el) => { localStorage.setItem('threads.link', el.dataset.v); openSettings(); renderContent(); },
+  signout: () => signOut(),
+  'filter-clear': (el, ev) => { ev.preventDefault(); $('#filter').value = ''; S.filter = ''; renderContent(); },
+  'banner-add': (el) => { openAdd(); showAddForm(el.dataset.uuid); },
+  'banner-x': (el) => { dismissed.add(el.dataset.uuid); hideBanner(); },
+};
+document.addEventListener('click', (ev) => {
+  if (ev.target.id === 'scrim') return closeSheet();
+  const el = ev.target.closest('[data-act]');
+  if (el && A[el.dataset.act]) A[el.dataset.act](el, ev);
+});
+document.addEventListener('submit', (ev) => { if (ev.target.id === 'login-form') login(ev); });
+document.addEventListener('input', (ev) => {
+  if (ev.target.id === 'filter') { S.filter = ev.target.value.trim(); renderContent(); }
+  if (ev.target.id === 'add-text') {
+    const v = ev.target.value.trim();
+    if (!v) { $('#add-err').textContent = ''; return; }
+    const r = parseChat(v);
+    if (r.uuid) showAddForm(r.uuid); else $('#add-err').textContent = r.error;
+  }
+});
+document.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Escape') closeSheet();
+  if (ev.key !== 'Enter') return;
+  if (ev.target.id === 'ac-name') { ev.preventDefault(); $('[data-act="add-save"]')?.click(); }
+  if (ev.target.id === 'sn-name') { ev.preventDefault(); createSection(); }
+  if (ev.target.id === 'cm-name') { ev.preventDefault(); $('[data-act="cm-save"]')?.click(); }
+  if (ev.target.id === 'sm-name') { ev.preventDefault(); $('[data-act="sec-rename"]')?.click(); }
+});
+// iOS shows the link preview on long-press; drag needs that press instead.
+document.addEventListener('contextmenu', (ev) => { if (ev.target.closest('.chat, .pin')) ev.preventDefault(); });
+
+// ?add=<link> opens the add card (handy for a share-sheet Shortcut later)
+function handleQuery() {
+  const u = new URL(location.href);
+  const add = u.searchParams.get('add');
+  if (!add || !S.token) return;
+  history.replaceState(null, '', location.pathname);
+  openAdd(add);
+}
+
+let lastLoad = Date.now();
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden || !S.token) return;
+  setSky();
+  if (Date.now() - lastLoad > 60e3) { lastLoad = Date.now(); load(); }
+  checkClipboard();
+});
+window.addEventListener('focus', checkClipboard);
+
+// ---------- boot ----------
+applyTheme(S.theme);
+if (S.token) loadCache();
+render();
+if (S.token) { load().then(checkClipboard); handleQuery(); }
+</script>
+</body>
+</html>
