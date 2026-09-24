@@ -31,7 +31,7 @@ body{font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sys
   -webkit-font-smoothing:antialiased;transition:background .6s,color .6s}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;
   background:radial-gradient(120% 60% at 15% -10%,var(--sky),transparent 60%),radial-gradient(90% 50% at 100% 0%,var(--sky2),transparent 60%)}
-button,input,select{font:inherit;color:inherit;background:none;border:0;outline:0}
+button,input,select,textarea{font:inherit;color:inherit;background:none;border:0;outline:0}
 button{cursor:pointer}
 a{color:inherit;text-decoration:none}
 :focus-visible{outline:2px solid var(--dawn);outline-offset:2px}
@@ -43,13 +43,13 @@ a{color:inherit;text-decoration:none}
 svg{display:block}
 
 /* shell */
-.app{max-width:640px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 40px)}
-.top{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.app{max-width:680px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 48px)}
+.top{display:flex;align-items:center;gap:8px;margin-bottom:14px;min-height:46px}
 .top h1{font-size:30px;font-weight:750;letter-spacing:-.02em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.icon-btn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--ink-2);position:relative}
+.icon-btn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--ink-2);position:relative;flex:none}
 .icon-btn svg{width:22px;height:22px}
 .icon-btn .badge{position:absolute;top:4px;right:2px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--hi);color:var(--ink-2);font-size:11px;font-weight:650;display:grid;place-items:center}
-.add-btn{height:42px;padding:0 16px 0 12px;border-radius:999px;background:var(--dawn);color:var(--dawn-ink);font-weight:650;display:flex;align-items:center;gap:6px;box-shadow:0 8px 22px var(--shadow)}
+.add-btn{height:42px;padding:0 16px 0 12px;border-radius:999px;background:var(--dawn);color:var(--dawn-ink);font-weight:650;display:flex;align-items:center;gap:6px;box-shadow:0 8px 22px var(--shadow);flex:none}
 .add-btn svg{width:20px;height:20px}
 
 .filter{display:flex;align-items:center;gap:10px;height:46px;padding:0 8px 0 14px;border-radius:var(--r-md);margin-bottom:16px}
@@ -57,6 +57,7 @@ svg{display:block}
 .filter input{flex:1;min-width:0;height:100%;font-size:16px}
 .filter input::placeholder{color:var(--ink-3)}
 .filter .clear{width:32px;height:32px;border-radius:50%;color:var(--ink-3);font-size:20px;line-height:1}
+body.v-detail .filter{display:none}
 
 .banner{display:flex;align-items:center;gap:10px;padding:12px 12px 12px 16px;border-radius:var(--r-md);margin-bottom:16px;border-color:var(--dawn)}
 .banner b{flex:1;font-weight:600;font-size:15px}
@@ -66,84 +67,163 @@ svg{display:block}
 /* pinned row */
 .pins{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 14px;margin:0 -2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .pins::-webkit-scrollbar{display:none}
-.pin{flex:none;max-width:190px;display:flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 12px;border-radius:999px;font-weight:600;font-size:15px;
+.pin{flex:none;max-width:200px;display:flex;align-items:center;gap:8px;height:46px;padding:0 16px 0 8px;border-radius:999px;font-weight:600;font-size:15px;
   -webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
 .pin span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pin i{width:8px;height:8px;border-radius:50%;background:var(--dawn);flex:none}
+.pin .kic{width:30px;height:30px}
 
-/* sections */
-.secs{display:grid;gap:14px}
-.sec{border-radius:var(--r-lg);padding:4px 0 6px}
-.sec-h{display:flex;align-items:center;gap:2px;padding:4px 6px 2px 2px}
-.grip{width:36px;height:40px;display:grid;place-items:center;color:var(--ink-3);touch-action:none;cursor:grab}
+
+/* groups */
+.secs,.subs{display:grid;gap:14px}
+.subs{gap:10px;padding:4px 10px 6px 14px}
+.subs:empty{display:none}
+.sec{--c:var(--ink-3);border-radius:var(--r-lg);padding:4px 0 8px}
+.sec.sub{background:var(--field);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:none;padding:2px 0 6px}
+.sec-h{display:flex;align-items:center;gap:4px;padding:6px 6px 4px 2px}
+.grip{width:32px;height:40px;display:grid;place-items:center;color:var(--ink-3);touch-action:none;cursor:grab;flex:none}
 .grip svg{width:18px;height:18px}
-.sec-name{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:40px;text-align:left;font-size:17px;font-weight:680}
+.gicon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:18px;flex:none;
+  background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c)}
+.gicon svg{width:18px;height:18px}
+.sub .gicon{width:28px;height:28px;border-radius:9px;font-size:15px}
+.sec-name{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:40px;text-align:left;font-size:18px;font-weight:700;padding-left:4px}
+.sub .sec-name{font-size:16px;font-weight:650}
 .sec-name span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sec-name small{font-size:13px;font-weight:600;color:var(--ink-3)}
+.sec-name small{font-size:12px;font-weight:700;color:var(--ink-2);background:var(--hi);border-radius:999px;padding:2px 8px;flex:none}
 .sec-name .chev{width:16px;height:16px;color:var(--ink-3);transition:transform .25s;flex:none}
-.sec.closed .chev{transform:rotate(-90deg)}
-.sec.closed .chat-list{display:none}
-.more{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--ink-3)}
-.more svg{width:20px;height:20px}
-.chat-list{min-height:10px;padding:0 6px}
-.chat-list:empty{min-height:52px;margin:2px 8px 6px;border:1.5px dashed var(--line);border-radius:var(--r-sm)}
-.chat-list:empty::before{content:'Drag chats here';display:grid;place-items:center;height:48px;color:var(--ink-3);font-size:14px}
-.chat{display:flex;align-items:center;border-radius:var(--r-sm);-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
-.chat + .chat{box-shadow:inset 0 1px 0 var(--line)}
-.chat a{flex:1;min-width:0;display:flex;align-items:center;gap:10px;min-height:50px;padding:6px 4px 6px 12px;font-size:16px}
-.chat a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.chat a small{display:block;color:var(--ink-3);font-size:13px}
-.chat .pinmark{width:7px;height:7px;border-radius:50%;background:var(--dawn);flex:none}
+.sec.closed > .sec-h .chev{transform:rotate(-90deg)}
+.sec.closed > .chat-list,.sec.closed > .subs{display:none}
+.more,.proj-btn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--ink-3);flex:none}
+.more svg,.proj-btn svg{width:20px;height:20px}
+.proj-btn{color:var(--c)}
+
+/* item cards */
+.chat-list{display:grid;gap:8px;padding:4px 10px 6px;min-height:8px}
+.chat-list.bare:empty{min-height:54px;margin:2px 10px 6px;padding:0;border:1.5px dashed var(--line);border-radius:var(--r-sm)}
+.chat-list.bare:empty::before{content:'Drag items here';display:grid;place-items:center;height:50px;color:var(--ink-3);font-size:14px}
+.chat{--c:var(--dawn);display:flex;align-items:stretch;border-radius:14px;overflow:hidden;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--c) 14%,transparent),var(--field) 55%);
+  border:1px solid color-mix(in srgb,var(--c) 30%,var(--line));
+  box-shadow:inset 3px 0 0 var(--c),0 4px 14px var(--shadow);
+  -webkit-touch-callout:none;user-select:none;-webkit-user-select:none;transition:transform .15s}
+.chat:active{transform:scale(.985)}
+.chat-main{flex:1;min-width:0;display:flex;align-items:center;gap:12px;min-height:60px;padding:9px 6px 9px 14px;text-align:left}
+.kic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none;
+  background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c)}
+.kic svg{width:18px;height:18px}
+.txt{min-width:0;flex:1}
+.txt b{display:block;font-weight:620;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.txt small{display:block;color:var(--ink-3);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.txt small em{font-style:normal;color:var(--ink-2)}
+.pinmark{width:7px;height:7px;border-radius:50%;background:var(--dawn);display:inline-block;margin-left:6px;vertical-align:middle}
+.go{width:52px;display:grid;place-items:center;flex:none;color:var(--c);border-left:1px solid var(--line)}
+.go span{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 20%,transparent)}
+.go svg{width:18px;height:18px}
+.go.none{color:var(--ink-3)}
+.go.none span{background:var(--field)}
 .new-sec{width:100%;height:50px;margin-top:14px;border-radius:var(--r-lg);border:1.5px dashed var(--line);color:var(--ink-2);font-weight:600}
 
 /* drag feedback */
 .s-ghost{opacity:.3}
-.s-chosen{background:var(--hi)}
-.sortable-fallback{opacity:1!important;background:var(--sheet)!important;border-radius:var(--r-sm);box-shadow:0 18px 40px var(--shadow)!important;transform:scale(1.03)}
+.sortable-fallback{opacity:1!important;border-radius:14px;box-shadow:0 18px 40px var(--shadow)!important;transform:scale(1.03)}
 body.dragging{user-select:none;-webkit-user-select:none}
+.drop-hint{position:fixed;inset:12px;border:2px dashed var(--dawn);border-radius:28px;display:grid;place-items:center;z-index:70;
+  background:color-mix(in srgb,var(--night) 70%,transparent);font-size:20px;font-weight:650;pointer-events:none}
 
-/* lists outside the main view */
-.flat{border-radius:var(--r-lg);padding:4px 6px}
-.flat .chat a{padding-left:10px}
+/* flat lists */
+.flat{border-radius:var(--r-lg);padding:10px;display:grid;gap:8px}
 .arch-row{display:flex;align-items:center;gap:6px;padding:8px 4px 8px 10px}
 .arch-row + .arch-row{box-shadow:inset 0 1px 0 var(--line)}
-.arch-row div{flex:1;min-width:0}
+.arch-row > button:first-child{flex:1;min-width:0;text-align:left}
 .arch-row b{display:block;font-weight:560;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pill-btn{height:34px;padding:0 12px;border-radius:999px;background:var(--field);font-size:14px;font-weight:600;color:var(--ink)}
+.pill-btn{height:34px;padding:0 12px;border-radius:999px;background:var(--field);font-size:14px;font-weight:600;color:var(--ink);flex:none}
 .pill-btn.warn{color:var(--danger)}
 .empty{border-radius:var(--r-lg);padding:26px 22px;text-align:center;display:grid;gap:12px;justify-items:center}
 .empty h2{font-size:19px}
-.empty p{color:var(--ink-2);max-width:32ch}
+.empty p{color:var(--ink-2);max-width:34ch}
+
+/* detail page */
+.hero{--c:var(--dawn);border-radius:var(--r-lg);padding:18px;margin-bottom:14px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(90% 80% at 0% 0%,color-mix(in srgb,var(--c) 22%,transparent),transparent 70%);pointer-events:none}
+.hero > *{position:relative}
+.crumbs{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--ink-2);font-size:13px;font-weight:600;margin-bottom:10px}
+.tag{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;background:color-mix(in srgb,var(--c) 20%,transparent);color:var(--c)}
+.tag svg{width:14px;height:14px}
+.title-inp{width:100%;font-size:26px;font-weight:750;letter-spacing:-.02em;padding:4px 0;border-bottom:1px solid transparent}
+.title-inp:focus{border-bottom-color:var(--line)}
+.open-big{display:flex;align-items:center;justify-content:center;gap:10px;height:56px;border-radius:var(--r-md);background:var(--c);color:#111;font-weight:700;font-size:17px;margin-top:14px;box-shadow:0 10px 26px var(--shadow)}
+.open-big svg{width:20px;height:20px}
+.open-big.none{background:var(--field);color:var(--ink-2);box-shadow:none}
+.hero-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.card{border-radius:var(--r-lg);padding:16px;margin-bottom:14px}
+.card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.card-h h3{font-size:15px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--ink-2)}
+.saved{font-size:12px;color:var(--ok);opacity:0;transition:opacity .3s}
+.saved.on{opacity:1}
+.todo{display:flex;align-items:center;gap:10px;min-height:44px}
+.todo + .todo{box-shadow:inset 0 1px 0 var(--line)}
+.tick{width:26px;height:26px;border-radius:50%;border:2px solid var(--ink-3);display:grid;place-items:center;flex:none;color:transparent}
+.tick svg{width:14px;height:14px}
+.todo.done .tick{background:var(--ok);border-color:var(--ok);color:#06220f}
+.todo input{flex:1;min-width:0;height:42px;font-size:16px}
+.todo.done input{color:var(--ink-3);text-decoration:line-through}
+.todo .x{width:32px;height:32px;color:var(--ink-3);font-size:20px;flex:none}
+.todo-new{display:flex;align-items:center;gap:10px;min-height:46px;box-shadow:inset 0 1px 0 var(--line)}
+.todo-new .tick{border-style:dashed}
+.todo-new input{flex:1;height:44px;font-size:16px}
+.todo-new input::placeholder,.notes::placeholder{color:var(--ink-3)}
+.notes{width:100%;min-height:140px;resize:none;font-size:16px;line-height:1.5;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px}
+.rows{display:grid}
+.rowb{display:flex;align-items:center;gap:12px;min-height:52px;text-align:left;width:100%}
+.rowb + .rowb,.rowb + .switch,.switch + .rowb{box-shadow:inset 0 1px 0 var(--line)}
+.rowb span{flex:1;font-weight:560}
+.rowb em{font-style:normal;color:var(--ink-2);max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rowb.warn span{color:var(--danger)}
+.meta{color:var(--ink-3);font-size:13px;text-align:center;margin-top:6px}
 
 /* sheet */
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .3s;z-index:40}
 .scrim.on{opacity:1;pointer-events:auto}
-.sheet{position:fixed;left:0;right:0;bottom:0;max-width:640px;margin:0 auto;max-height:90vh;overflow:auto;z-index:41;
+.sheet{position:fixed;left:0;right:0;bottom:0;max-width:680px;margin:0 auto;max-height:90vh;overflow:auto;z-index:41;
   padding:10px 20px calc(env(safe-area-inset-bottom) + 24px);border-radius:26px 26px 0 0;
   background:var(--sheet);-webkit-backdrop-filter:blur(26px) saturate(1.4);backdrop-filter:blur(26px) saturate(1.4);
   border:1px solid var(--line);border-bottom:0;
   transform:translateY(105%);transition:transform .42s cubic-bezier(.2,.9,.2,1.02)}
+.sheet:not(.on){visibility:hidden;transition:transform .42s cubic-bezier(.2,.9,.2,1.02),visibility 0s .42s}
 .sheet.on{transform:none}
 .grab{width:40px;height:5px;border-radius:3px;background:var(--ink-3);margin:0 auto 14px;opacity:.6}
 .sheet h2{font-size:22px;font-weight:720;letter-spacing:-.01em;margin-bottom:14px}
-.sheet .lede{color:var(--ink-2);margin:-6px 0 16px}
-.field{display:grid;gap:6px;margin-bottom:14px}
+.field{display:grid;gap:6px;margin-bottom:16px}
 .field > span{font-size:13px;color:var(--ink-3);font-weight:600}
 .inp{width:100%;min-height:48px;padding:12px 14px;border-radius:var(--r-sm);background:var(--field);border:1px solid var(--line);font-size:16px}
 .inp::placeholder{color:var(--ink-3)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{height:38px;padding:0 14px;border-radius:999px;background:var(--field);border:1px solid var(--line);color:var(--ink-2);font-weight:600;font-size:15px}
+.chip{height:38px;padding:0 14px;border-radius:999px;background:var(--field);border:1px solid var(--line);color:var(--ink-2);font-weight:600;font-size:15px;display:inline-flex;align-items:center;gap:6px}
+.chip svg{width:16px;height:16px}
 .chip.on{background:var(--dawn);border-color:var(--dawn);color:var(--dawn-ink)}
-.btn{width:100%;height:52px;border-radius:var(--r-md);background:var(--dawn);color:var(--dawn-ink);font-weight:680;font-size:16px;margin-top:6px}
+.picker{display:grid;gap:4px;max-height:260px;overflow:auto;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:6px}
+.pick{display:flex;align-items:center;gap:8px;min-height:42px;padding:0 10px;border-radius:10px;text-align:left;font-weight:560;color:var(--ink-2)}
+.pick .gicon{width:26px;height:26px;border-radius:8px;font-size:14px}
+.pick.on{background:var(--dawn);color:var(--dawn-ink)}
+.pick.on .gicon{background:rgba(0,0,0,.12);color:inherit}
+.swatches{display:flex;flex-wrap:wrap;gap:10px}
+.sw{width:38px;height:38px;border-radius:50%;background:var(--c);border:3px solid transparent;box-shadow:0 0 0 1px var(--line)}
+.sw.none{background:var(--field);display:grid;place-items:center;color:var(--ink-3);font-size:18px}
+.sw.on{border-color:var(--ink)}
+.emojis{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px}
+.emo{height:44px;border-radius:12px;background:var(--field);font-size:22px;border:2px solid transparent}
+.emo.on{border-color:var(--dawn)}
+.btn{width:100%;height:52px;border-radius:var(--r-md);background:var(--dawn);color:var(--dawn-ink);font-weight:680;font-size:16px;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn.ghost{background:var(--field);color:var(--ink)}
 .btn.warn{background:var(--field);color:var(--danger)}
 .btn:disabled{opacity:.5}
 .btn + .btn{margin-top:10px}
-.paste{height:76px;font-size:19px;display:flex;align-items:center;justify-content:center;gap:10px}
+.paste{height:76px;font-size:19px}
 .paste svg{width:24px;height:24px}
 .or{text-align:center;color:var(--ink-3);font-size:13px;margin:14px 0 10px}
 .err{color:var(--danger);font-size:14px;margin:8px 2px 0;min-height:1em}
-.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:50px;font-weight:560;margin:4px 0 8px}
+.linklike{display:block;margin:16px auto 0;color:var(--ink-2);font-weight:600;font-size:15px;text-decoration:underline;text-underline-offset:3px}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;font-weight:560}
 .switch input{appearance:none;-webkit-appearance:none;width:50px;height:30px;border-radius:999px;background:var(--hi);position:relative;transition:background .2s;flex:none}
 .switch input::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .25s cubic-bezier(.34,1.3,.5,1);box-shadow:0 2px 6px rgba(0,0,0,.25)}
 .switch input:checked{background:var(--ok)}
@@ -153,8 +233,8 @@ body.dragging{user-select:none;-webkit-user-select:none}
 .set .muted{margin-bottom:12px}
 .theme-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .th{padding:12px 10px;border-radius:var(--r-md);border:1px solid var(--line);display:grid;gap:8px;justify-items:center;font-size:12px;color:var(--ink-2)}
-.th .sw{width:100%;height:34px;border-radius:10px;position:relative;overflow:hidden}
-.th .sw i{position:absolute;right:7px;top:7px;width:14px;height:14px;border-radius:50%}
+.th .swt{width:100%;height:34px;border-radius:10px;position:relative;overflow:hidden}
+.th .swt i{position:absolute;right:7px;top:7px;width:14px;height:14px;border-radius:50%}
 .th.on{border-color:var(--dawn);color:var(--ink)}
 .seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);background:var(--field);border-radius:var(--r-sm);padding:4px;gap:4px}
 .seg button{height:40px;border-radius:9px;font-size:14px;font-weight:600;color:var(--ink-2)}
@@ -174,6 +254,15 @@ body.dragging{user-select:none;-webkit-user-select:none}
 .login h1{font-size:32px;font-weight:760;letter-spacing:-.02em}
 .login p{color:var(--ink-2);margin-bottom:6px}
 
+/* colors (last so they win) */
+.pick{--c:var(--ink-3)}
+.pin{--c:var(--dawn)}
+.rowb svg{width:20px;height:20px;color:var(--ink-3);flex:none}
+.emo svg{width:20px;height:20px}
+.pick > svg{width:18px;height:18px;flex:none}
+.c-gold{--c:#f2c46d}.c-coral{--c:#ff8a65}.c-rose{--c:#f48fb1}.c-violet{--c:#b39ddb}
+.c-blue{--c:#64b5f6}.c-teal{--c:#4dd0e1}.c-green{--c:#81c784}.c-slate{--c:#90a4ae}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -182,7 +271,7 @@ body.dragging{user-select:none;-webkit-user-select:none}
 <div class="scrim" id="scrim"></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
 <div class="toast" id="toast" role="status"></div>
-
+<div class="drop-hint" id="drop" hidden>Drop to add</div>
 <script>
 // ---------- icons ----------
 const ICON = {
@@ -195,7 +284,20 @@ const ICON = {
   grip: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>',
   chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
   clip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg>',
+  go: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>',
+  folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+  // item types
+  k_chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>',
+  k_cowork: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></svg>',
+  k_code: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>',
+  k_project: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+  k_other: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
 };
+const KIND = { chat: 'Chat', cowork: 'Cowork', code: 'Code', project: 'Project', other: 'Link' };
+const kindIcon = (k) => ICON['k_' + (KIND[k] ? k : 'chat')];
+const COLORS = ['gold', 'coral', 'rose', 'violet', 'blue', 'teal', 'green', 'slate'];
+const EMOJIS = ['📁', '🎮', '🎬', '🚀', '💪', '🧠', '💼', '🛠️', '🏠', '📱', '🎨', '✍️', '💰', '🏓', '🧪', '📚', '⭐', '🔥', '🤖', '🗓️'];
 
 // ---------- themes (same set as Launch) ----------
 const THEMES = {
@@ -254,30 +356,51 @@ function toast(msg, bad) {
   clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), bad ? 4200 : 2200);
 }
 
-// ---------- chat links ----------
+// ---------- links ----------
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-function parseChat(text) {
-  const t = String(text || '').trim();
-  if (!t) return { error: 'Nothing to paste. Copy a chat link first.' };
+const U = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
+// Turns anything pasted into { kind, chat_uuid, url } or { error }.
+function parseLink(text) {
+  const t = String(text || '').trim().split(/\s+/)[0] || '';
+  if (!t) return { error: 'Nothing to paste. Copy a link first.' };
   if (/claude\.ai\/share\//i.test(t)) return { error: "That's a share link, which is a public snapshot. Copy the chat's own link (claude.ai/chat/…) instead." };
-  if (/claude\.ai\/project\//i.test(t)) return { error: "That's a project link. Threads holds chats, so copy a chat link instead." };
-  const m = t.match(/claude\.ai\/chat\/([0-9a-f-]{36})/i);
-  if (m && UUID_RE.test(m[1])) return { uuid: m[1].toLowerCase() };
-  if (UUID_RE.test(t)) return { uuid: t.toLowerCase() };
-  return { error: "That isn't a Claude chat link. It should look like claude.ai/chat/…" };
+  let m = t.match(new RegExp(`claude\\.ai/chat/(${U})`, 'i'));
+  if (m) return { kind: 'chat', chat_uuid: m[1].toLowerCase(), url: null };
+  if (UUID_RE.test(t)) return { kind: 'chat', chat_uuid: t.toLowerCase(), url: null };
+  m = t.match(new RegExp(`claude\\.ai/project/(${U})`, 'i'));
+  if (m) return { kind: 'project', chat_uuid: null, url: `https://claude.ai/project/${m[1].toLowerCase()}` };
+  m = t.match(/^(?:https:\/\/claude\.ai|claude:\/\/(?:claude\.ai)?)\/?code\/([A-Za-z0-9_-]{6,})/i);
+  if (m && m[1].toLowerCase() !== 'new') return { kind: 'code', chat_uuid: null, url: `https://claude.ai/code/${m[1]}` };
+  if (/^(https:\/\/claude\.ai\/|claude:\/\/)/i.test(t)) {
+    const url = t.replace(/^claude:\/\/claude\.ai\//i, 'https://claude.ai/').slice(0, 500);
+    return { kind: /cowork/i.test(t) ? 'cowork' : 'other', chat_uuid: null, url };
+  }
+  return { error: "That isn't a Claude link. It should start with claude.ai/ or claude://" };
 }
+const projectIdFrom = (text) => (String(text || '').match(new RegExp(`claude\\.ai/project/(${U})`, 'i')) || [])[1]?.toLowerCase() || null;
+
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const linkPref = () => localStorage.getItem('threads.link') || 'auto';
 const linkMode = () => (linkPref() === 'auto' ? (isIOS ? 'web' : 'app') : linkPref());
-const chatURL = (uuid, mode = linkMode()) => (mode === 'app' ? `claude://claude.ai/chat/${uuid}` : `https://claude.ai/chat/${uuid}`);
+// The link to open for an item on this device, or null if it has none.
+function linkFor(c, mode = linkMode()) {
+  if (c.chat_uuid && (c.kind || 'chat') === 'chat') return mode === 'app' ? `claude://claude.ai/chat/${c.chat_uuid}` : `https://claude.ai/chat/${c.chat_uuid}`;
+  if (!c.url) return null;
+  if (c.kind === 'code') { const id = c.url.split('/code/')[1]; return mode === 'app' ? `claude://code/${id}` : c.url; }
+  if (mode === 'app' && c.url.startsWith('https://claude.ai/')) return 'claude://claude.ai/' + c.url.slice(18);
+  return c.url;
+}
+const webLink = (c) => linkFor(c, 'web');
+const projectLink = (id, mode = linkMode()) => (mode === 'app' ? `claude://claude.ai/project/${id}` : `https://claude.ai/project/${id}`);
 const linkTarget = () => (linkMode() === 'web' && !isIOS ? ' target="_blank" rel="noopener"' : '');
+const sameItem = (a, b) => (a.chat_uuid && a.chat_uuid === b.chat_uuid) || (a.url && a.url === b.url);
 
 // ---------- state ----------
 const S = {
   token: localStorage.getItem('threads.token') || '',
   theme: localStorage.getItem('threads.theme') || 'midnight',
   sections: [], chats: [], settings: {},
-  view: 'main', filter: '', dragging: false, loaded: false,
+  view: 'main', detailId: null, filter: '', dragging: false, loaded: false,
 };
 const collapsed = new Set(JSON.parse(localStorage.getItem('threads.collapsed') || '[]'));
 const dismissed = new Set();
@@ -291,15 +414,25 @@ function loadCache() {
 const saveCache = () => localStorage.setItem('threads.cache', JSON.stringify({ sections: S.sections, chats: S.chats, settings: S.settings }));
 
 const bySort = (k) => (a, b) => (a[k] ?? 0) - (b[k] ?? 0) || String(a.created_at || '').localeCompare(String(b.created_at || ''));
-const sections = () => [...S.sections].sort(bySort('position'));
-const inbox = () => S.sections.find((s) => s.is_inbox) || sections()[0];
-const secOf = (c) => S.sections.find((s) => s.id === c.section_id) || inbox();
+const secById = (id) => S.sections.find((s) => s.id === id);
+const chatById = (id) => S.chats.find((c) => c.id === id);
+const inbox = () => S.sections.find((s) => s.is_inbox) || S.sections[0];
+const parentOf = (s) => (s?.parent_id ? secById(s.parent_id) : null);
+const children = (pid) => S.sections.filter((s) => (s.parent_id && secById(s.parent_id) ? s.parent_id : null) === (pid || null)).sort(bySort('position'));
+function descendants(id) { const out = []; for (const c of children(id)) out.push(c.id, ...descendants(c.id)); return out; }
+function tree(pid = null, depth = 0, skip = new Set()) {
+  return children(pid).filter((s) => !skip.has(s.id)).flatMap((s) => [{ s, depth }, ...tree(s.id, depth + 1, skip)]);
+}
+const pathOf = (s) => { const p = []; for (let x = s; x; x = parentOf(x)) p.unshift(x.name); return p.join(' › '); };
+const colorOf = (s) => { for (let x = s; x; x = parentOf(x)) if (x.color) return x.color; return null; };
+const secOf = (c) => secById(c.section_id) || inbox();
 const active = () => S.chats.filter((c) => !c.archived_at);
 const archived = () => S.chats.filter((c) => c.archived_at).sort((a, b) => String(b.archived_at).localeCompare(String(a.archived_at)));
 const chatsIn = (sid) => active().filter((c) => secOf(c)?.id === sid).sort(bySort('position'));
+const totalIn = (sid) => chatsIn(sid).length + children(sid).reduce((n, s) => n + totalIn(s.id), 0);
 const pins = () => active().filter((c) => c.pinned).sort(bySort('pin_position'));
-const chatById = (id) => S.chats.find((c) => c.id === id);
-const secById = (id) => S.sections.find((s) => s.id === id);
+const colorCls = (c) => (c ? ` c-${c}` : '');
+const gIcon = (s) => `<span class="gicon">${s.icon ? esc(s.icon) : ICON.folder}</span>`;
 
 // ---------- server ----------
 async function api(path, opts = {}) {
@@ -318,17 +451,17 @@ async function api(path, opts = {}) {
 async function load() {
   try {
     const j = await api('/api/data');
-    S.sections = j.sections || []; S.chats = j.chats || [];
+    S.sections = j.sections || []; S.chats = (j.chats || []).map((c) => ({ kind: 'chat', notes: '', todos: [], ...c }));
     S.settings = Object.fromEntries((j.settings || []).map((r) => [r.id, r.value]));
     S.loaded = true; saveCache();
     const t = S.settings.theme?.preset;
     if (t && THEMES[t] && t !== S.theme) applyTheme(t);
+    if (S.view === 'detail') { renderTop(); return; } // don't clobber what you're typing
     renderContent(); renderTop();
   } catch (err) {
     if (S.token) toast(S.loaded ? 'Offline. Showing your saved list.' : err.message, true);
   }
 }
-// Writes go out in order. If one fails, reload the truth from the server.
 let chain = Promise.resolve();
 function push(ops) {
   saveCache();
@@ -336,7 +469,6 @@ function push(ops) {
     .catch((err) => { toast(`Couldn't save. ${err.message}`, true); return load(); });
   return chain;
 }
-// Renumber a list and return only the rows that actually changed.
 function renumber(list, key, extra = {}) {
   const changed = [];
   list.forEach((c, i) => {
@@ -352,7 +484,7 @@ function render() {
   if (!$('#top')) {
     $('#app').innerHTML = `<header class="top" id="top"></header>
       <div id="banner"></div>
-      <label class="filter glass">${ICON.search}<input id="filter" type="search" placeholder="Filter chats" autocomplete="off" enterkeyhint="search"><button class="clear" data-act="filter-clear" aria-label="Clear filter" hidden>×</button></label>
+      <label class="filter glass">${ICON.search}<input id="filter" type="search" placeholder="Filter" autocomplete="off" enterkeyhint="search"><button class="clear" data-act="filter-clear" aria-label="Clear filter" hidden>×</button></label>
       <main id="content"></main>`;
   }
   renderTop(); renderContent();
@@ -360,61 +492,86 @@ function render() {
 function renderTop() {
   const top = $('#top');
   if (!top) return;
+  document.body.classList.toggle('v-detail', S.view === 'detail');
   const n = archived().length;
-  top.innerHTML = S.view === 'archive'
-    ? `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1>Archive</h1>`
-    : `<h1>Threads</h1>
+  if (S.view === 'archive') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1>Archive</h1>`;
+  else if (S.view === 'detail') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1></h1>`;
+  else top.innerHTML = `<h1>Threads</h1>
       <button class="icon-btn" data-act="archive" aria-label="Archive">${ICON.archive}${n ? `<span class="badge">${n}</span>` : ''}</button>
       <button class="icon-btn" data-act="settings" aria-label="Settings">${ICON.gear}</button>
       <button class="add-btn" data-act="add">${ICON.plus}Add</button>`;
-  $('#filter').placeholder = S.view === 'archive' ? 'Filter archive' : 'Filter chats';
+  $('#filter').placeholder = S.view === 'archive' ? 'Filter archive' : 'Filter';
 }
 
-function chatRow(c, sub) {
-  return `<div class="chat" data-id="${c.id}"><a href="${esc(chatURL(c.chat_uuid))}"${linkTarget()} draggable="false" data-act="open" data-id="${c.id}">${c.pinned ? '<i class="pinmark" aria-label="Pinned"></i>' : ''}<span>${esc(c.name)}${sub ? `<small>${esc(sub)}</small>` : ''}</span></a><button class="more" data-act="chat-menu" data-id="${c.id}" aria-label="Edit ${esc(c.name)}">${ICON.more}</button></div>`;
+function subline(c, showPath) {
+  const next = (c.todos || []).find((t) => !t.done && t.text.trim());
+  const note = (c.notes || '').trim().split('\n')[0];
+  const bits = [];
+  if (showPath) bits.push(esc(pathOf(secOf(c))));
+  if (next) bits.push(`<em>Next:</em> ${esc(next.text)}`);
+  else if (note) bits.push(esc(note));
+  else bits.push(esc(KIND[c.kind] || 'Chat') + (c.last_opened_at ? ` · opened ${ago(c.last_opened_at)}` : ''));
+  return bits.join(' · ');
 }
-const match = (c) => !S.filter || c.name.toLowerCase().includes(S.filter.toLowerCase());
+function chatRow(c, showPath) {
+  const href = linkFor(c);
+  const color = colorOf(secOf(c));
+  return `<div class="chat${colorCls(color)}" data-id="${c.id}">
+    <button class="chat-main" data-act="detail" data-id="${c.id}"><span class="kic">${kindIcon(c.kind)}</span><span class="txt"><b>${esc(c.name)}${c.pinned ? '<i class="pinmark" aria-label="Pinned"></i>' : ''}</b><small>${subline(c, showPath)}</small></span></button>
+    ${href ? `<a class="go" href="${esc(href)}"${linkTarget()} draggable="false" data-act="open" data-id="${c.id}" aria-label="Open ${esc(c.name)} in Claude"><span>${ICON.go}</span></a>`
+    : `<button class="go none" data-act="detail" data-id="${c.id}" aria-label="No link yet"><span>${ICON.more}</span></button>`}</div>`;
+}
+const match = (c) => !S.filter || `${c.name} ${c.notes || ''} ${(c.todos || []).map((t) => t.text).join(' ')}`.toLowerCase().includes(S.filter.toLowerCase());
+
+function groupHTML(s, depth) {
+  const kids = children(s.id);
+  const list = chatsIn(s.id);
+  const proj = s.project_uuid ? `<a class="proj-btn" href="${esc(projectLink(s.project_uuid))}"${linkTarget()} aria-label="Open ${esc(s.name)} project in Claude">${ICON.go}</a>` : '';
+  return `<section class="sec${depth ? ' sub' : ' glass'}${colorCls(colorOf(s))}${collapsed.has(s.id) ? ' closed' : ''}" data-sid="${s.id}">
+    <div class="sec-h"><span class="grip" aria-label="Drag to reorder ${esc(s.name)}">${ICON.grip}</span>${gIcon(s)}
+      <button class="sec-name" data-act="sec-toggle" data-id="${s.id}"><span>${esc(s.name)}</span><small>${totalIn(s.id)}</small>${ICON.chev}</button>
+      ${proj}<button class="more" data-act="sec-menu" data-id="${s.id}" aria-label="Edit ${esc(s.name)}">${ICON.more}</button></div>
+    <div class="chat-list${kids.length ? '' : ' bare'}" data-sid="${s.id}">${list.map((c) => chatRow(c)).join('')}</div>
+    <div class="subs" data-parent="${s.id}">${kids.map((k) => groupHTML(k, depth + 1)).join('')}</div></section>`;
+}
 
 let sortables = [];
 function renderContent() {
   const el = $('#content');
   if (!el) return;
   sortables.forEach((s) => s.destroy()); sortables = [];
-  $('.filter .clear') && ($('.filter .clear').hidden = !S.filter);
+  const clr = $('.filter .clear'); if (clr) clr.hidden = !S.filter;
 
   if (!S.loaded) { el.innerHTML = '<p class="muted" style="text-align:center;margin-top:40px">Loading…</p>'; return; }
+  if (S.view === 'detail') return renderDetail();
 
   if (S.view === 'archive') {
     const list = archived().filter(match);
     el.innerHTML = list.length
-      ? `<div class="flat glass">${list.map((c) => `<div class="arch-row"><div><b>${esc(c.name)}</b><span class="muted">${esc(secOf(c)?.name || 'Inbox')}, archived ${ago(c.archived_at)}</span></div>
+      ? `<div class="flat glass" style="gap:0">${list.map((c) => `<div class="arch-row"><button data-act="detail" data-id="${c.id}"><b>${esc(c.name)}</b><span class="muted">${esc(pathOf(secOf(c)))}, archived ${ago(c.archived_at)}</span></button>
           <button class="pill-btn" data-act="unarchive" data-id="${c.id}">Unarchive</button><button class="pill-btn warn" data-act="delete-chat" data-id="${c.id}">Delete</button></div>`).join('')}</div>`
-      : `<div class="empty glass"><h2>${S.filter ? 'No matches' : 'Archive is empty'}</h2><p>${S.filter ? 'Nothing archived matches that name.' : 'Archive a chat from its menu to tuck it away here.'}</p></div>`;
+      : `<div class="empty glass"><h2>${S.filter ? 'No matches' : 'Archive is empty'}</h2><p>${S.filter ? 'Nothing archived matches that.' : 'Archive an item from its page to tuck it away here.'}</p></div>`;
     return;
   }
 
   if (S.filter) {
     const list = active().filter(match).sort((a, b) => String(b.last_opened_at || b.created_at).localeCompare(String(a.last_opened_at || a.created_at)));
     el.innerHTML = list.length
-      ? `<div class="flat glass">${list.map((c) => chatRow(c, secOf(c)?.name)).join('')}</div>`
-      : `<div class="empty glass"><h2>No matches</h2><p>No active chat has that in its name. Archived chats live in the archive.</p></div>`;
+      ? `<div class="flat glass">${list.map((c) => chatRow(c, true)).join('')}</div>`
+      : `<div class="empty glass"><h2>No matches</h2><p>Nothing active has that in its name, notes, or checklist. Archived items live in the archive.</p></div>`;
     return;
   }
 
   const p = pins();
-  const secs = sections();
-  const anyChats = active().length > 0;
-  el.innerHTML = `${p.length ? `<div class="pins" id="pins">${p.map((c) => `<a class="pin glass" href="${esc(chatURL(c.chat_uuid))}"${linkTarget()} draggable="false" data-act="open" data-id="${c.id}"><i></i><span>${esc(c.name)}</span></a>`).join('')}</div>` : ''}
-    ${!anyChats ? `<div class="empty glass" style="margin-bottom:14px"><h2>Add your first chat</h2><p>Copy a chat's link in Claude, then come back and paste it here.</p><button class="add-btn" data-act="add">${ICON.plus}Add a chat</button></div>` : ''}
-    <div class="secs" id="secs">${secs.map((s) => {
-      const list = chatsIn(s.id);
-      return `<section class="sec glass${collapsed.has(s.id) ? ' closed' : ''}" data-sid="${s.id}">
-        <div class="sec-h"><span class="grip" aria-label="Drag to reorder ${esc(s.name)}">${ICON.grip}</span>
-          <button class="sec-name" data-act="sec-toggle" data-id="${s.id}"><span>${esc(s.name)}</span><small>${list.length}</small>${ICON.chev}</button>
-          <button class="more" data-act="sec-menu" data-id="${s.id}" aria-label="Edit ${esc(s.name)}">${ICON.more}</button></div>
-        <div class="chat-list" data-sid="${s.id}">${list.map((c) => chatRow(c)).join('')}</div></section>`;
-    }).join('')}</div>
-    <button class="new-sec" data-act="sec-new">New section</button>`;
+  el.innerHTML = `${p.length ? `<div class="pins" id="pins">${p.map((c) => {
+      const href = linkFor(c);
+      const inner = `<span class="kic">${kindIcon(c.kind)}</span><span>${esc(c.name)}</span>`;
+      return href ? `<a class="pin glass${colorCls(colorOf(secOf(c)))}" href="${esc(href)}"${linkTarget()} draggable="false" data-act="open" data-id="${c.id}">${inner}</a>`
+        : `<button class="pin glass${colorCls(colorOf(secOf(c)))}" data-act="detail" data-id="${c.id}">${inner}</button>`;
+    }).join('')}</div>` : ''}
+    ${!active().length ? `<div class="empty glass" style="margin-bottom:14px"><h2>Add your first chat</h2><p>Copy a link from Claude (a chat, Cowork session, Code session, or project), then paste it here.</p><button class="add-btn" data-act="add">${ICON.plus}Add</button></div>` : ''}
+    <div class="secs" id="secs" data-parent="">${children(null).map((s) => groupHTML(s, 0)).join('')}</div>
+    <button class="new-sec" data-act="sec-new">New group</button>`;
   initSortables();
 }
 
@@ -422,8 +579,7 @@ function renderContent() {
 function dragOpts(extra) {
   return {
     animation: 180, delay: 280, delayOnTouchOnly: true, touchStartThreshold: 8,
-    forceFallback: true, fallbackOnBody: true, fallbackTolerance: 4,
-    ghostClass: 's-ghost', chosenClass: 's-chosen',
+    forceFallback: true, fallbackOnBody: true, fallbackTolerance: 4, ghostClass: 's-ghost',
     onStart: () => { S.dragging = true; document.body.classList.add('dragging'); navigator.vibrate?.(10); },
     ...extra,
   };
@@ -435,11 +591,11 @@ function initSortables() {
     group: 'chats', draggable: '.chat',
     onEnd: (e) => { endDrag(); if (e.from !== e.to || e.oldIndex !== e.newIndex) onChatDrop(e.from, e.to); },
   }))));
-  const secs = $('#secs');
-  if (secs) sortables.push(Sortable.create(secs, dragOpts({
+  // Groups reorder within their own level; use "Put inside" to nest.
+  $$('#secs, .subs').forEach((box) => sortables.push(Sortable.create(box, dragOpts({
     handle: '.grip', draggable: '.sec', delay: 120,
-    onEnd: (e) => { endDrag(); if (e.oldIndex !== e.newIndex) onSecDrop(); },
-  })));
+    onEnd: (e) => { endDrag(); if (e.oldIndex !== e.newIndex) onSecDrop(box); },
+  }))));
   const p = $('#pins');
   if (p) sortables.push(Sortable.create(p, dragOpts({
     draggable: '.pin', direction: 'horizontal',
@@ -449,15 +605,14 @@ function initSortables() {
 function onChatDrop(from, to) {
   const rows = [];
   for (const list of new Set([from, to])) {
-    const sid = list.dataset.sid;
-    const ordered = $$('.chat', list).map((r) => chatById(r.dataset.id)).filter(Boolean);
-    rows.push(...renumber(ordered, 'position', { section_id: sid }));
+    const ordered = [...list.children].filter((r) => r.classList.contains('chat')).map((r) => chatById(r.dataset.id)).filter(Boolean);
+    rows.push(...renumber(ordered, 'position', { section_id: list.dataset.sid }));
   }
   renderContent();
   if (rows.length) push([{ op: 'patch', table: 'chats', rows }]);
 }
-function onSecDrop() {
-  const ordered = $$('#secs .sec').map((el) => secById(el.dataset.sid)).filter(Boolean);
+function onSecDrop(box) {
+  const ordered = [...box.children].filter((e) => e.classList.contains('sec')).map((e) => secById(e.dataset.sid)).filter(Boolean);
   const rows = renumber(ordered, 'position');
   renderContent();
   if (rows.length) push([{ op: 'patch', table: 'sections', rows }]);
@@ -469,109 +624,178 @@ function onPinDrop() {
   if (rows.length) push([{ op: 'patch', table: 'chats', rows }]);
 }
 
+// ---------- item page ----------
+const todoHTML = (t) => `<div class="todo${t.done ? ' done' : ''}" data-tid="${t.id}"><button class="tick" data-act="todo-toggle" data-tid="${t.id}" aria-label="Done">${ICON.check}</button><input class="todo-text" data-tid="${t.id}" value="${esc(t.text)}" maxlength="300" autocomplete="off"><button class="x" data-act="todo-del" data-tid="${t.id}" aria-label="Remove">×</button></div>`;
+function renderDetail() {
+  const c = chatById(S.detailId);
+  if (!c) { S.view = 'main'; renderTop(); return renderContent(); }
+  const s = secOf(c), href = linkFor(c), todos = c.todos || [];
+  $('#content').innerHTML = `
+    <div class="hero glass${colorCls(colorOf(s))}">
+      <div class="crumbs"><span class="tag">${kindIcon(c.kind)}${KIND[c.kind] || 'Chat'}</span><span>${esc(pathOf(s))}</span>${c.archived_at ? '<span class="tag">Archived</span>' : ''}</div>
+      <input class="title-inp" id="d-name" value="${esc(c.name)}" maxlength="80" autocomplete="off" aria-label="Name" enterkeyhint="done">
+      ${href ? `<a class="open-big" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open in Claude</a>`
+        : `<button class="open-big none" data-act="edit-link" data-id="${c.id}">${ICON.plus}Add a link</button>`}
+      ${href ? `<div class="hero-actions"><button class="pill-btn" data-act="copy-link" data-id="${c.id}">Copy link</button><button class="pill-btn" data-act="edit-link" data-id="${c.id}">Change link</button></div>` : ''}
+    </div>
+    <section class="card glass">
+      <div class="card-h"><h3>Next up</h3><span class="muted" id="todo-count">${todos.filter((t) => t.done).length}/${todos.length}</span></div>
+      <div id="todos">${todos.map(todoHTML).join('')}</div>
+      <div class="todo-new"><span class="tick"></span><input id="todo-new" placeholder="Add a step" maxlength="300" enterkeyhint="done" autocomplete="off"></div>
+    </section>
+    <section class="card glass">
+      <div class="card-h"><h3>Notes</h3><span class="saved" id="saved">Saved</span></div>
+      <textarea class="notes" id="d-notes" placeholder="Where you left off, decisions made, links, anything">${esc(c.notes || '')}</textarea>
+    </section>
+    <section class="card glass rows">
+      ${c.archived_at ? `<button class="rowb" data-act="unarchive" data-id="${c.id}">${ICON.archive}<span>Unarchive</span></button>
+        <button class="rowb warn" data-act="delete-chat" data-id="${c.id}"><span>Delete forever</span></button>`
+      : `<button class="rowb" data-act="d-move" data-id="${c.id}">${ICON.folder}<span>Group</span><em>${esc(pathOf(s))}</em></button>
+        <label class="switch">Pin to the top row<input type="checkbox" id="d-pin" data-id="${c.id}" ${c.pinned ? 'checked' : ''}></label>
+        <button class="rowb" data-act="archive-chat" data-id="${c.id}">${ICON.archive}<span>Archive</span></button>`}
+    </section>
+    <p class="meta">Added ${ago(c.created_at) || 'a while ago'}${c.last_opened_at ? ` · last opened ${ago(c.last_opened_at)}` : ''}</p>`;
+  autosize();
+}
+function autosize() { const t = $('#d-notes'); if (t) { t.style.height = 'auto'; t.style.height = Math.max(140, t.scrollHeight + 2) + 'px'; } }
+function renderTodos(focusNew) {
+  const c = chatById(S.detailId);
+  if (!c || !$('#todos')) return;
+  $('#todos').innerHTML = (c.todos || []).map(todoHTML).join('');
+  $('#todo-count').textContent = `${c.todos.filter((t) => t.done).length}/${c.todos.length}`;
+  if (focusNew) $('#todo-new')?.focus();
+}
+// Autosave: typing waits a beat, taps save right away.
+const timers = {};
+function queueSave(id, fields, wait = 700) {
+  const key = id + ':' + Object.keys(fields).join(',');
+  clearTimeout(timers[key]?.t);
+  const run = () => { delete timers[key]; push([{ op: 'patch', table: 'chats', rows: [{ id, ...fields }] }]); const s = $('#saved'); if (s) { s.classList.add('on'); setTimeout(() => s.classList.remove('on'), 1200); } };
+  timers[key] = { run, t: setTimeout(run, wait) };
+  saveCache();
+}
+function flushSaves() { for (const k of Object.keys(timers)) { clearTimeout(timers[k].t); timers[k].run(); } }
+function openDetail(id) {
+  if (!chatById(id)) return;
+  S.view = 'detail'; S.detailId = id; hideBanner(); closeSheet();
+  renderTop(); renderContent(); scrollTo(0, 0);
+}
+function backToMain() {
+  flushSaves();
+  S.view = S.fromArchive ? 'archive' : 'main'; S.detailId = null; S.fromArchive = false;
+  renderTop(); renderContent();
+}
+
 // ---------- sheets ----------
 function openSheet(html) {
   $('#sheet').innerHTML = `<div class="grab"></div>${html}`;
   $('#sheet').classList.add('on'); $('#scrim').classList.add('on');
 }
 function closeSheet() { $('#sheet').classList.remove('on'); $('#scrim').classList.remove('on'); }
-const secChips = (id, on) => `<div class="chips" id="${id}">${sections().map((s) => `<button class="chip${s.id === on ? ' on' : ''}" data-act="chip" data-v="${s.id}">${esc(s.name)}</button>`).join('')}</div>`;
-const chipVal = (id) => $(`#${id} .chip.on`)?.dataset.v;
+const val = (id) => $(`#${id} .on`)?.dataset.v;
+function pickerHTML(id, selected, { top = false, skip = new Set() } = {}) {
+  return `<div class="picker" id="${id}">${top ? `<button class="pick${!selected ? ' on' : ''}" data-act="pick" data-v="">${ICON.folder}Top level</button>` : ''}
+    ${tree(null, 0, skip).map(({ s, depth }) => `<button class="pick${colorCls(colorOf(s))}${s.id === selected ? ' on' : ''}" data-act="pick" data-v="${s.id}" style="padding-left:${10 + depth * 20}px">${gIcon(s)}${esc(s.name)}</button>`).join('')}</div>`;
+}
 
-// Add a chat
+// Add
 function openAdd(prefill) {
-  openSheet(`<h2>Add a chat</h2>
-    <button class="btn paste" data-act="paste">${ICON.clip}Paste chat</button>
-    <div class="or">or paste the link into the box</div>
-    <input class="inp" id="add-text" placeholder="claude.ai/chat/…" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url">
-    <p class="err" id="add-err"></p>`);
+  S.pending = null;
+  openSheet(`<h2>Add</h2>
+    <button class="btn paste" data-act="paste">${ICON.clip}Paste link</button>
+    <div class="or">or paste it into the box</div>
+    <input class="inp" id="add-text" placeholder="claude.ai/chat/…  or any Claude link" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url">
+    <p class="err" id="add-err"></p>
+    <button class="linklike" data-act="add-nolink">No link? Add it as a notes card</button>`);
   if (prefill) handleAddText(prefill);
 }
 function handleAddText(text) {
-  const r = parseChat(text);
+  const r = parseLink(text);
   if (r.error) { const e = $('#add-err'); if (e) e.textContent = r.error; else toast(r.error, true); return; }
-  showAddForm(r.uuid);
+  showAddForm(r);
 }
-function showAddForm(uuid) {
+function showAddForm(p) {
   hideBanner();
-  const ex = S.chats.find((c) => c.chat_uuid === uuid);
+  const ex = !p.none && S.chats.find((c) => sameItem(c, p));
   if (ex) {
     return openSheet(`<h2>Already saved</h2>
-      <div class="dup glass">This chat is saved as <b>${esc(ex.name)}</b> in ${esc(secOf(ex)?.name || 'Inbox')}${ex.archived_at ? ', in the archive' : ''}.</div>
-      ${ex.archived_at ? `<button class="btn" data-act="unarchive" data-id="${ex.id}">Unarchive it</button>` : `<a class="btn" style="display:grid;place-items:center" href="${esc(chatURL(uuid))}"${linkTarget()} data-act="open" data-id="${ex.id}">Open it</a>`}
-      <button class="btn ghost" data-act="chat-menu" data-id="${ex.id}">Edit it</button>`);
+      <div class="dup glass">This is saved as <b>${esc(ex.name)}</b> in ${esc(pathOf(secOf(ex)))}${ex.archived_at ? ', in the archive' : ''}.</div>
+      ${ex.archived_at ? `<button class="btn" data-act="unarchive" data-id="${ex.id}">Unarchive it</button>` : `<a class="btn" href="${esc(linkFor(ex))}"${linkTarget()} data-act="open" data-id="${ex.id}">${ICON.go}Open it</a>`}
+      <button class="btn ghost" data-act="detail" data-id="${ex.id}">Go to its page</button>`);
   }
+  S.pending = p;
   const last = localStorage.getItem('threads.lastSection');
   const sid = secById(last) ? last : inbox()?.id;
-  openSheet(`<h2>Add this chat?</h2>
-    <label class="field"><span>Name</span><input class="inp" id="ac-name" placeholder="What's this chat about?" maxlength="80" autocomplete="off" enterkeyhint="done"></label>
-    <div class="field"><span>Section</span>${secChips('ac-sec', sid)}</div>
+  openSheet(`<h2>${p.none ? 'Add a notes card' : `Add this ${(KIND[p.kind] || 'chat').toLowerCase()}?`}</h2>
+    ${p.none ? `<div class="field"><span>Type</span><div class="chips" id="ac-kind">${['cowork', 'chat', 'code', 'other'].map((k, i) => `<button class="chip${i ? '' : ' on'}" data-act="chip" data-v="${k}">${kindIcon(k)}${KIND[k]}</button>`).join('')}</div></div>` : ''}
+    <label class="field"><span>Name</span><input class="inp" id="ac-name" placeholder="What's this about?" maxlength="80" autocomplete="off" enterkeyhint="done"></label>
+    <div class="field"><span>Group</span>${pickerHTML('ac-sec', sid)}</div>
     <label class="switch">Pin to the top row<input type="checkbox" id="ac-pin"></label>
-    <button class="btn" data-act="add-save" data-uuid="${uuid}">Save chat</button>`);
+    <button class="btn" data-act="add-save">Save</button>`);
   setTimeout(() => $('#ac-name')?.focus(), 350);
 }
-function saveNewChat(uuid) {
-  if (S.chats.some((c) => c.chat_uuid === uuid)) return showAddForm(uuid);
-  const name = ($('#ac-name').value.trim() || 'Untitled chat').slice(0, 80);
-  const sid = chipVal('ac-sec') || inbox()?.id;
+function saveNew() {
+  const p = S.pending;
+  if (!p) return;
+  if (!p.none && S.chats.some((c) => sameItem(c, p))) return showAddForm(p);
+  const sid = val('ac-sec') || inbox()?.id;
   const pin = $('#ac-pin').checked;
-  const c = { id: uid(), section_id: sid, name, chat_uuid: uuid, position: 0, pinned: pin, pin_position: pin ? pins().length : null, archived_at: null, last_opened_at: null, created_at: nowISO() };
+  const c = {
+    id: uid(), section_id: sid, name: ($('#ac-name').value.trim() || 'Untitled').slice(0, 80),
+    chat_uuid: p.chat_uuid || null, kind: p.none ? (val('ac-kind') || 'cowork') : p.kind, url: p.url || null,
+    notes: '', todos: [], position: 0, pinned: pin, pin_position: pin ? pins().length : null,
+    archived_at: null, last_opened_at: null, created_at: nowISO(),
+  };
   S.chats.push(c);
-  // New chats go to the top of their section.
-  const ordered = [c, ...chatsIn(sid).filter((x) => x.id !== c.id)];
-  const moved = renumber(ordered, 'position').filter((r) => r.id !== c.id);
+  const moved = renumber([c, ...chatsIn(sid).filter((x) => x.id !== c.id)], 'position').filter((r) => r.id !== c.id);
   localStorage.setItem('threads.lastSection', sid);
-  closeSheet(); renderContent();
+  S.pending = null; closeSheet(); renderContent();
   toast(`Saved to ${secById(sid)?.name || 'Inbox'}`);
   push([{ op: 'upsert', table: 'chats', row: c }, ...(moved.length ? [{ op: 'patch', table: 'chats', rows: moved }] : [])]);
 }
 
-// Edit a chat
-function openChatMenu(id) {
+// Change an item's link
+function openLinkSheet(id) {
   const c = chatById(id);
-  if (!c) return;
-  openSheet(`<h2>Edit chat</h2>
-    <label class="field"><span>Name</span><input class="inp" id="cm-name" value="${esc(c.name)}" maxlength="80" autocomplete="off"></label>
-    ${c.archived_at ? '' : `<div class="field"><span>Section</span>${secChips('cm-sec', secOf(c)?.id)}</div>
-    <label class="switch">Pin to the top row<input type="checkbox" id="cm-pin" ${c.pinned ? 'checked' : ''}></label>`}
-    <button class="btn" data-act="cm-save" data-id="${c.id}">Save changes</button>
-    <button class="btn ghost" data-act="copy-link" data-id="${c.id}">Copy chat link</button>
-    ${c.archived_at ? `<button class="btn ghost" data-act="unarchive" data-id="${c.id}">Unarchive</button>` : `<button class="btn ghost" data-act="archive-chat" data-id="${c.id}">Archive</button>`}`);
+  openSheet(`<h2>${linkFor(c) ? 'Change link' : 'Add a link'}</h2>
+    <button class="btn paste" data-act="link-paste" data-id="${id}">${ICON.clip}Paste link</button>
+    <div class="or">or paste it into the box</div>
+    <input class="inp" id="link-text" data-id="${id}" placeholder="Any Claude link" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url">
+    <p class="err" id="link-err"></p>
+    ${linkFor(c) ? `<button class="linklike" data-act="link-remove" data-id="${id}">Remove the link</button>` : ''}`);
 }
-function saveChat(id) {
+function applyLink(id, text) {
+  const c = chatById(id), r = parseLink(text);
+  if (r.error) { $('#link-err').textContent = r.error; return; }
+  const other = S.chats.find((x) => x.id !== id && sameItem(x, r));
+  if (other) { $('#link-err').textContent = `That link is already saved as "${other.name}".`; return; }
+  Object.assign(c, { kind: r.kind, chat_uuid: r.chat_uuid || null, url: r.url || null });
+  closeSheet(); renderContent(); toast('Link saved');
+  push([{ op: 'patch', table: 'chats', rows: [{ id, kind: c.kind, chat_uuid: c.chat_uuid, url: c.url }] }]);
+}
+
+// Move an item to another group
+function openMove(id) {
+  openSheet(`<h2>Move to</h2>${pickerHTML('mv-sec', secOf(chatById(id))?.id)}<button class="btn" data-act="d-move-save" data-id="${id}" style="margin-top:14px">Move here</button>`);
+}
+function moveItem(id, sid) {
   const c = chatById(id);
-  if (!c) return;
-  const name = $('#cm-name').value.trim();
-  if (!name) { $('#cm-name').focus(); return toast('Give it a name first.', true); }
-  const rows = [];
-  const patch = { id: c.id };
-  if (name !== c.name) { c.name = name.slice(0, 80); patch.name = c.name; }
-  if (!c.archived_at) {
-    const sid = chipVal('cm-sec');
-    if (sid && sid !== secOf(c)?.id) {
-      const oldSid = secOf(c)?.id;
-      c.section_id = sid; patch.section_id = sid;
-      c.position = chatsIn(sid).length; patch.position = c.position; // lands at the bottom
-      rows.push(...renumber(chatsIn(oldSid), 'position'));
-    }
-    const pin = $('#cm-pin').checked;
-    if (pin !== !!c.pinned) {
-      c.pinned = pin; patch.pinned = pin;
-      c.pin_position = pin ? pins().length : null; patch.pin_position = c.pin_position;
-      if (!pin) rows.push(...renumber(pins(), 'pin_position'));
-    }
-  }
-  closeSheet(); renderContent();
-  if (Object.keys(patch).length > 1) rows.unshift(patch);
-  if (rows.length) { push([{ op: 'patch', table: 'chats', rows }]); toast('Saved'); }
+  if (!c || !sid || sid === secOf(c)?.id) return closeSheet();
+  const old = secOf(c)?.id;
+  c.section_id = sid; c.position = chatsIn(sid).filter((x) => x.id !== id).length;
+  const rows = [{ id, section_id: sid, position: c.position }, ...renumber(chatsIn(old), 'position')];
+  closeSheet(); renderContent(); toast(`Moved to ${secById(sid).name}`);
+  push([{ op: 'patch', table: 'chats', rows }]);
 }
+
 function archiveChat(id) {
   const c = chatById(id);
   if (!c) return;
   const sid = secOf(c)?.id;
   Object.assign(c, { archived_at: nowISO(), pinned: false, pin_position: null });
   const rows = [{ id: c.id, archived_at: c.archived_at, pinned: false, pin_position: null }, ...renumber(chatsIn(sid), 'position'), ...renumber(pins(), 'pin_position')];
-  closeSheet(); renderTop(); renderContent(); toast('Archived');
+  flushSaves(); closeSheet();
+  S.view = 'main'; S.detailId = null; renderTop(); renderContent(); toast('Archived');
   push([{ op: 'patch', table: 'chats', rows }]);
 }
 function unarchiveChat(id) {
@@ -583,50 +807,77 @@ function unarchiveChat(id) {
   push([{ op: 'patch', table: 'chats', rows: [{ id: c.id, archived_at: null, section_id: sid, position: c.position }] }]);
 }
 
-// Sections
-function openSecNew() {
-  openSheet(`<h2>New section</h2>
-    <label class="field"><span>Name</span><input class="inp" id="sn-name" placeholder="Project name" maxlength="80" autocomplete="off" enterkeyhint="done"></label>
-    <button class="btn" data-act="sec-create">Create section</button>`);
-  setTimeout(() => $('#sn-name')?.focus(), 350);
+// Groups
+function openGroupForm(id, parentId) {
+  const s = id ? secById(id) : null;
+  const skip = s ? new Set([s.id, ...descendants(s.id)]) : new Set();
+  const parent = s ? (parentOf(s)?.id || '') : (parentId || '');
+  const icon = s?.icon || '', color = s?.color || '';
+  const custom = icon && !EMOJIS.includes(icon) ? icon : '';
+  let del = '';
+  if (s?.is_inbox) del = `<p class="muted" style="margin-top:14px">Inbox is where new items land by default, so it can't be deleted.</p>`;
+  else if (s) {
+    const par = parentOf(s);
+    const n = S.chats.filter((c) => secOf(c)?.id === s.id).length, k = children(s.id).length;
+    const what = [n && `${n} item${n > 1 ? 's' : ''}`, k && `${k} subgroup${k > 1 ? 's' : ''}`].filter(Boolean).join(' and ');
+    del = `<button class="btn warn" data-act="sec-delete" data-id="${s.id}">${what ? `Delete group, move ${what} to ${esc(par ? par.name : n ? 'Inbox' : 'top level')}` : 'Delete group'}</button>`;
+  }
+  openSheet(`<h2>${s ? 'Edit group' : parentId ? `New group inside ${esc(secById(parentId)?.name || '')}` : 'New group'}</h2>
+    <label class="field"><span>Name</span><input class="inp" id="g-name" value="${esc(s?.name || '')}" placeholder="Project or folder name" maxlength="80" autocomplete="off"></label>
+    <div class="field"><span>Icon</span><div class="emojis" id="g-icon"><button class="emo${!icon ? ' on' : ''}" data-act="g-pick" data-v="" aria-label="No icon"><span style="display:grid;place-items:center;color:var(--ink-3)">${ICON.folder}</span></button>${EMOJIS.map((e) => `<button class="emo${icon === e ? ' on' : ''}" data-act="g-pick" data-v="${e}">${e}</button>`).join('')}</div>
+      <input class="inp" id="g-icon-custom" value="${esc(custom)}" placeholder="Or type any emoji" maxlength="8" style="margin-top:8px"></div>
+    <div class="field"><span>Color</span><div class="swatches" id="g-color"><button class="sw none${!color ? ' on' : ''}" data-act="g-pick" data-v="" aria-label="No color">×</button>${COLORS.map((k) => `<button class="sw c-${k}${color === k ? ' on' : ''}" data-act="g-pick" data-v="${k}" aria-label="${k}"></button>`).join('')}</div></div>
+    ${s?.is_inbox ? '' : `<div class="field"><span>Put inside</span>${pickerHTML('g-parent', parent, { top: true, skip })}</div>`}
+    <label class="field"><span>Claude project link (optional, adds an open-project button)</span><input class="inp" id="g-proj" value="${s?.project_uuid ? `https://claude.ai/project/${s.project_uuid}` : ''}" placeholder="claude.ai/project/…" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+    <p class="err" id="g-err"></p>
+    <button class="btn" data-act="g-save" data-id="${s?.id || ''}">${s ? 'Save group' : 'Create group'}</button>
+    ${s ? `<button class="btn ghost" data-act="sec-new-sub" data-id="${s.id}">${ICON.plus}Add a group inside this one</button>` : ''}${del}`);
+  if (!s) setTimeout(() => $('#g-name')?.focus(), 350);
 }
-function createSection() {
-  const name = $('#sn-name').value.trim();
-  if (!name) return $('#sn-name').focus();
-  const s = { id: uid(), name: name.slice(0, 80), position: S.sections.length ? Math.max(...S.sections.map((x) => x.position || 0)) + 1 : 0, is_inbox: false, created_at: nowISO() };
-  S.sections.push(s);
-  closeSheet(); renderContent(); toast(`Created ${s.name}`);
-  push([{ op: 'upsert', table: 'sections', row: s }]);
+function saveGroup(id) {
+  const s = id ? secById(id) : null;
+  const name = $('#g-name').value.trim();
+  if (!name) { $('#g-err').textContent = 'Give it a name.'; return $('#g-name').focus(); }
+  const icon = $('#g-icon-custom').value.trim() || val('g-icon') || null;
+  const color = val('g-color') || null;
+  const projText = $('#g-proj').value.trim();
+  const project_uuid = projText ? (projectIdFrom(projText) || (UUID_RE.test(projText) ? projText.toLowerCase() : null)) : null;
+  if (projText && !project_uuid) { $('#g-err').textContent = 'That project link should look like claude.ai/project/…'; return; }
+  const parent_id = s?.is_inbox ? null : (val('g-parent') || null);
+  if (!s) {
+    const row = { id: uid(), name: name.slice(0, 80), icon, color, project_uuid, parent_id, position: children(parent_id).length, is_inbox: false, created_at: nowISO() };
+    S.sections.push(row);
+    if (parent_id) collapsed.delete(parent_id);
+    closeSheet(); renderContent(); toast(`Created ${row.name}`);
+    return push([{ op: 'upsert', table: 'sections', row }]);
+  }
+  const patch = { id: s.id, name: name.slice(0, 80), icon, color, project_uuid };
+  const rows = [];
+  if ((s.parent_id || null) !== parent_id && !s.is_inbox) {
+    const oldParent = parentOf(s)?.id || null;
+    s.parent_id = parent_id; patch.parent_id = parent_id;
+    s.position = children(parent_id).filter((x) => x.id !== s.id).length; patch.position = s.position;
+    rows.push(...renumber(children(oldParent), 'position'));
+  }
+  Object.assign(s, patch);
+  closeSheet(); renderContent(); toast('Saved');
+  push([{ op: 'patch', table: 'sections', rows: [patch, ...rows] }]);
 }
-function openSecMenu(id) {
+function deleteGroup(id, btn) {
   const s = secById(id);
-  if (!s) return;
-  const all = S.chats.filter((c) => secOf(c)?.id === s.id);
-  const del = s.is_inbox
-    ? `<p class="muted" style="margin-top:14px">Inbox is where new chats land by default, so it can't be deleted.</p>`
-    : `<button class="btn warn" data-act="sec-delete" data-id="${s.id}">${all.length ? `Move ${all.length} chat${all.length > 1 ? 's' : ''} to Inbox and delete` : 'Delete section'}</button>`;
-  openSheet(`<h2>Edit section</h2>
-    <label class="field"><span>Name</span><input class="inp" id="sm-name" value="${esc(s.name)}" maxlength="80" autocomplete="off"></label>
-    <button class="btn" data-act="sec-rename" data-id="${s.id}">Save name</button>${del}`);
-}
-function renameSection(id) {
-  const s = secById(id), name = $('#sm-name').value.trim();
-  if (!s || !name) return;
-  s.name = name.slice(0, 80);
-  closeSheet(); renderContent();
-  push([{ op: 'patch', table: 'sections', rows: [{ id: s.id, name: s.name }] }]);
-}
-function deleteSection(id, btn) {
-  const s = secById(id), ib = inbox();
-  if (!s || s.is_inbox || !ib) return;
+  if (!s || s.is_inbox) return;
   if (!btn.dataset.sure) { btn.dataset.sure = '1'; btn.textContent = 'Tap again to delete'; return; }
+  const par = parentOf(s);
+  const target = par?.id || inbox().id;
   const moving = S.chats.filter((c) => c.section_id === s.id);
-  const base = chatsIn(ib.id).length;
-  const rows = moving.map((c, i) => { c.section_id = ib.id; c.position = base + i; return { id: c.id, section_id: ib.id, position: c.position }; });
+  let base = chatsIn(target).length;
+  const chatRows = moving.map((c) => { c.section_id = target; c.position = base++; return { id: c.id, section_id: target, position: c.position }; });
+  let sbase = children(par?.id || null).length;
+  const secRows = children(s.id).map((k) => { k.parent_id = par?.id || null; k.position = sbase++; return { id: k.id, parent_id: k.parent_id, position: k.position }; });
   S.sections = S.sections.filter((x) => x.id !== s.id);
   collapsed.delete(s.id);
   closeSheet(); renderContent(); toast(`Deleted ${s.name}`);
-  push([...(rows.length ? [{ op: 'patch', table: 'chats', rows }] : []), { op: 'delete', table: 'sections', id: s.id }]);
+  push([...(chatRows.length ? [{ op: 'patch', table: 'chats', rows: chatRows }] : []), ...(secRows.length ? [{ op: 'patch', table: 'sections', rows: secRows }] : []), { op: 'delete', table: 'sections', id: s.id }]);
 }
 
 // Settings
@@ -634,33 +885,47 @@ function openSettings() {
   const pref = linkPref();
   openSheet(`<h2>Settings</h2>
     <section class="set"><h3>Theme</h3><p class="muted">Same themes as Launch. Follows you to every device.</p>
-      <div class="theme-grid">${Object.entries(THEMES).map(([id, t]) => `<button class="th${id === S.theme ? ' on' : ''}" data-act="theme-set" data-v="${id}"><span class="sw" style="background:linear-gradient(135deg,${t.v.night},${t.v['night-2']})"><i style="background:${t.v.dawn}"></i></span>${t.name}</button>`).join('')}</div>
+      <div class="theme-grid">${Object.entries(THEMES).map(([id, t]) => `<button class="th${id === S.theme ? ' on' : ''}" data-act="theme-set" data-v="${id}"><span class="swt" style="background:linear-gradient(135deg,${t.v.night},${t.v['night-2']})"><i style="background:${t.v.dawn}"></i></span>${t.name}</button>`).join('')}</div>
     </section>
-    <section class="set"><h3>Open chats with</h3>
-      <p class="muted">This device only. Auto uses the web link on iPhone (it hands off to the Claude app) and the app link on Mac and PC. Right now: <b>${linkMode() === 'app' ? 'claude://' : 'https://'}</b></p>
-      <div class="seg" id="link-seg">${[['auto', 'Auto'], ['app', 'App link'], ['web', 'Web link']].map(([v, l]) => `<button class="${pref === v ? 'on' : ''}" data-act="link-set" data-v="${v}">${l}</button>`).join('')}</div>
+    <section class="set"><h3>Open items with</h3>
+      <p class="muted">This device only. Auto uses the web link on iPhone and the app link on Mac and PC. Right now: <b>${linkMode() === 'app' ? 'claude://' : 'https://'}</b></p>
+      <div class="seg">${[['auto', 'Auto'], ['app', 'App link'], ['web', 'Web link']].map(([v, l]) => `<button class="${pref === v ? 'on' : ''}" data-act="link-set" data-v="${v}">${l}</button>`).join('')}</div>
     </section>
     <button class="btn warn" data-act="signout">Sign out on this device</button>`);
 }
 
-// Clipboard banner (Mac/PC, after you've allowed clipboard access once)
-function showBanner(uuid) {
+// Clipboard banner + drag-and-drop from other apps
+function showBanner(text) {
   const b = $('#banner');
   if (!b) return;
-  b.innerHTML = `<div class="banner glass"><b>Add the chat you just copied?</b><button class="add-btn" data-act="banner-add" data-uuid="${uuid}">Add</button><button class="x" data-act="banner-x" data-uuid="${uuid}" aria-label="Dismiss">×</button></div>`;
+  b.innerHTML = `<div class="banner glass"><b>Add the link you just copied?</b><button class="add-btn" data-act="banner-add">Add</button><button class="x" data-act="banner-x" aria-label="Dismiss">×</button></div>`;
+  S.bannerText = text;
 }
 function hideBanner() { const b = $('#banner'); if (b) b.innerHTML = ''; }
 async function checkClipboard() {
   if (isIOS || !S.token || S.view !== 'main' || !navigator.clipboard?.readText || !navigator.permissions) return;
   try { const p = await navigator.permissions.query({ name: 'clipboard-read' }); if (p.state !== 'granted') return; } catch { return; }
   try {
-    const r = parseChat(await navigator.clipboard.readText());
-    if (!r.uuid || dismissed.has(r.uuid) || S.chats.some((c) => c.chat_uuid === r.uuid)) return hideBanner();
-    showBanner(r.uuid);
+    const text = (await navigator.clipboard.readText()).trim();
+    const r = parseLink(text);
+    if (r.error || dismissed.has(text) || S.chats.some((c) => sameItem(c, r))) return hideBanner();
+    showBanner(text);
   } catch {}
 }
+let dropDepth = 0;
+const hasText = (e) => Array.from(e.dataTransfer?.types || []).some((t) => /^text\//.test(t));
+window.addEventListener('dragenter', (e) => { if (!S.token || S.dragging || !hasText(e)) return; dropDepth++; $('#drop').hidden = false; });
+window.addEventListener('dragleave', () => { if (--dropDepth <= 0) { dropDepth = 0; $('#drop').hidden = true; } });
+window.addEventListener('dragover', (e) => { if (!$('#drop').hidden) e.preventDefault(); });
+window.addEventListener('drop', (e) => {
+  if ($('#drop').hidden) return;
+  e.preventDefault(); dropDepth = 0; $('#drop').hidden = true;
+  const text = e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain');
+  const r = parseLink(text);
+  if (r.error) return toast(r.error, true);
+  openAdd(); showAddForm(r);
+});
 
-// Opening a chat
 function markOpened(id) {
   const c = chatById(id);
   if (!c) return;
@@ -687,34 +952,62 @@ async function login(e) {
 }
 function signOut(msg) {
   S.token = ''; localStorage.removeItem('threads.token'); localStorage.removeItem('threads.cache');
-  S.sections = []; S.chats = []; S.loaded = false;
+  S.sections = []; S.chats = []; S.loaded = false; S.view = 'main';
   closeSheet(); $('#app').innerHTML = ''; render();
   if (msg) toast(msg, true);
 }
 
 // ---------- actions ----------
+const siblingsOn = (el, sel) => el.parentElement.querySelectorAll(sel).forEach((b) => b.classList.toggle('on', b === el));
 const A = {
   open: (el, ev) => { if (S.dragging) { ev.preventDefault(); return; } markOpened(el.dataset.id); },
+  detail: (el) => { if (S.dragging) return; S.fromArchive = S.view === 'archive'; openDetail(el.dataset.id); },
+  main: () => backToMain(),
   add: () => openAdd(),
   paste: async () => {
     try { handleAddText(await navigator.clipboard.readText()); }
     catch { $('#add-err').textContent = "Couldn't read the clipboard. Paste into the box instead."; $('#add-text')?.focus(); }
   },
-  'add-save': (el) => saveNewChat(el.dataset.uuid),
-  chip: (el) => { el.parentElement.querySelectorAll('.chip').forEach((b) => b.classList.toggle('on', b === el)); },
-  'chat-menu': (el) => openChatMenu(el.dataset.id),
-  'cm-save': (el) => saveChat(el.dataset.id),
+  'add-nolink': () => showAddForm({ none: true }),
+  'add-save': () => saveNew(),
+  chip: (el) => siblingsOn(el, '.chip'),
+  pick: (el) => siblingsOn(el, '.pick'),
+  'g-pick': (el) => { siblingsOn(el, el.classList.contains('sw') ? '.sw' : '.emo'); if (el.classList.contains('emo')) $('#g-icon-custom').value = ''; },
   'copy-link': async (el) => {
     const c = chatById(el.dataset.id);
-    try { await navigator.clipboard.writeText(chatURL(c.chat_uuid, 'web')); dismissed.add(c.chat_uuid); toast('Link copied'); } catch { toast("Couldn't copy.", true); }
+    try { await navigator.clipboard.writeText(webLink(c)); dismissed.add(webLink(c)); toast('Link copied'); } catch { toast("Couldn't copy.", true); }
   },
+  'edit-link': (el) => openLinkSheet(el.dataset.id),
+  'link-paste': async (el) => {
+    try { applyLink(el.dataset.id, await navigator.clipboard.readText()); }
+    catch { $('#link-err').textContent = "Couldn't read the clipboard. Paste into the box instead."; }
+  },
+  'link-remove': (el) => {
+    const c = chatById(el.dataset.id);
+    Object.assign(c, { chat_uuid: null, url: null });
+    closeSheet(); renderContent(); toast('Link removed');
+    push([{ op: 'patch', table: 'chats', rows: [{ id: c.id, chat_uuid: null, url: null }] }]);
+  },
+  'd-move': (el) => openMove(el.dataset.id),
+  'd-move-save': (el) => moveItem(el.dataset.id, val('mv-sec')),
   'archive-chat': (el) => archiveChat(el.dataset.id),
   unarchive: (el) => unarchiveChat(el.dataset.id),
   'delete-chat': (el) => {
-    if (!el.dataset.sure) { el.dataset.sure = '1'; el.textContent = 'Sure?'; return; }
-    S.chats = S.chats.filter((c) => c.id !== el.dataset.id);
-    renderTop(); renderContent(); toast('Deleted');
-    push([{ op: 'delete', table: 'chats', id: el.dataset.id }]);
+    if (!el.dataset.sure) { el.dataset.sure = '1'; el.textContent = 'Tap again to delete'; return; }
+    const id = el.dataset.id;
+    S.chats = S.chats.filter((c) => c.id !== id);
+    if (S.detailId === id) { S.view = 'archive'; S.detailId = null; }
+    closeSheet(); renderTop(); renderContent(); toast('Deleted');
+    push([{ op: 'delete', table: 'chats', id }]);
+  },
+  'todo-toggle': (el) => {
+    const c = chatById(S.detailId), t = c.todos.find((x) => x.id === el.dataset.tid);
+    if (!t) return;
+    t.done = !t.done; renderTodos(); queueSave(c.id, { todos: c.todos }, 0);
+  },
+  'todo-del': (el) => {
+    const c = chatById(S.detailId);
+    c.todos = c.todos.filter((x) => x.id !== el.dataset.tid); renderTodos(); queueSave(c.id, { todos: c.todos }, 0);
   },
   'sec-toggle': (el) => {
     const id = el.dataset.id;
@@ -722,13 +1015,12 @@ const A = {
     localStorage.setItem('threads.collapsed', JSON.stringify([...collapsed]));
     el.closest('.sec').classList.toggle('closed', collapsed.has(id));
   },
-  'sec-menu': (el) => openSecMenu(el.dataset.id),
-  'sec-new': () => openSecNew(),
-  'sec-create': () => createSection(),
-  'sec-rename': (el) => renameSection(el.dataset.id),
-  'sec-delete': (el) => deleteSection(el.dataset.id, el),
+  'sec-menu': (el) => openGroupForm(el.dataset.id),
+  'sec-new': () => openGroupForm(null),
+  'sec-new-sub': (el) => openGroupForm(null, el.dataset.id),
+  'g-save': (el) => saveGroup(el.dataset.id),
+  'sec-delete': (el) => deleteGroup(el.dataset.id, el),
   archive: () => { S.view = 'archive'; hideBanner(); renderTop(); renderContent(); scrollTo(0, 0); },
-  main: () => { S.view = 'main'; renderTop(); renderContent(); },
   settings: () => openSettings(),
   'theme-set': (el) => {
     applyTheme(el.dataset.v);
@@ -739,8 +1031,8 @@ const A = {
   'link-set': (el) => { localStorage.setItem('threads.link', el.dataset.v); openSettings(); renderContent(); },
   signout: () => signOut(),
   'filter-clear': (el, ev) => { ev.preventDefault(); $('#filter').value = ''; S.filter = ''; renderContent(); },
-  'banner-add': (el) => { openAdd(); showAddForm(el.dataset.uuid); },
-  'banner-x': (el) => { dismissed.add(el.dataset.uuid); hideBanner(); },
+  'banner-add': () => { const t = S.bannerText; openAdd(); handleAddText(t); },
+  'banner-x': () => { dismissed.add(S.bannerText); hideBanner(); },
 };
 document.addEventListener('click', (ev) => {
   if (ev.target.id === 'scrim') return closeSheet();
@@ -749,29 +1041,58 @@ document.addEventListener('click', (ev) => {
 });
 document.addEventListener('submit', (ev) => { if (ev.target.id === 'login-form') login(ev); });
 document.addEventListener('input', (ev) => {
-  if (ev.target.id === 'filter') { S.filter = ev.target.value.trim(); renderContent(); }
-  if (ev.target.id === 'add-text') {
-    const v = ev.target.value.trim();
-    if (!v) { $('#add-err').textContent = ''; return; }
-    const r = parseChat(v);
-    if (r.uuid) showAddForm(r.uuid); else $('#add-err').textContent = r.error;
+  const t = ev.target;
+  if (t.id === 'filter') { S.filter = t.value.trim(); renderContent(); return; }
+  if (t.id === 'add-text' || t.id === 'link-text') {
+    const v = t.value.trim(), err = $(t.id === 'add-text' ? '#add-err' : '#link-err');
+    if (!v) { err.textContent = ''; return; }
+    const r = parseLink(v);
+    if (r.error) { err.textContent = r.error; return; }
+    return t.id === 'add-text' ? showAddForm(r) : applyLink(t.dataset.id, v);
+  }
+  if (t.id === 'g-icon-custom' && t.value.trim()) $$('#g-icon .emo').forEach((b) => b.classList.remove('on'));
+  const c = S.view === 'detail' && chatById(S.detailId);
+  if (!c) return;
+  if (t.id === 'd-name' && t.value.trim()) { c.name = t.value.trim().slice(0, 80); queueSave(c.id, { name: c.name }); }
+  if (t.id === 'd-notes') { c.notes = t.value; autosize(); queueSave(c.id, { notes: c.notes }); }
+  if (t.classList.contains('todo-text')) {
+    const td = c.todos.find((x) => x.id === t.dataset.tid);
+    if (td) { td.text = t.value; queueSave(c.id, { todos: c.todos }); }
   }
 });
-document.addEventListener('keydown', (ev) => {
-  if (ev.key === 'Escape') closeSheet();
-  if (ev.key !== 'Enter') return;
-  if (ev.target.id === 'ac-name') { ev.preventDefault(); $('[data-act="add-save"]')?.click(); }
-  if (ev.target.id === 'sn-name') { ev.preventDefault(); createSection(); }
-  if (ev.target.id === 'cm-name') { ev.preventDefault(); $('[data-act="cm-save"]')?.click(); }
-  if (ev.target.id === 'sm-name') { ev.preventDefault(); $('[data-act="sec-rename"]')?.click(); }
+document.addEventListener('change', (ev) => {
+  if (ev.target.id !== 'd-pin') return;
+  const c = chatById(ev.target.dataset.id), on = ev.target.checked;
+  c.pinned = on; c.pin_position = on ? pins().filter((x) => x.id !== c.id).length : null;
+  const rows = [{ id: c.id, pinned: on, pin_position: c.pin_position }, ...(on ? [] : renumber(pins(), 'pin_position'))];
+  toast(on ? 'Pinned' : 'Unpinned');
+  push([{ op: 'patch', table: 'chats', rows }]);
 });
-// iOS shows the link preview on long-press; drag needs that press instead.
+document.addEventListener('focusout', (ev) => {
+  if (ev.target.id === 'd-name' && !ev.target.value.trim()) ev.target.value = chatById(S.detailId)?.name || '';
+});
+document.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Escape') { if ($('#sheet').classList.contains('on')) closeSheet(); else if (S.view !== 'main') backToMain(); }
+  if (ev.key !== 'Enter') return;
+  const id = ev.target.id;
+  if (id === 'todo-new') {
+    ev.preventDefault();
+    const text = ev.target.value.trim(), c = chatById(S.detailId);
+    if (!text || !c) return;
+    c.todos = [...(c.todos || []), { id: uid().slice(0, 8), text: text.slice(0, 300), done: false }];
+    ev.target.value = ''; renderTodos(true); queueSave(c.id, { todos: c.todos }, 0);
+  }
+  if (id === 'd-name' || ev.target.classList.contains('todo-text')) { ev.preventDefault(); ev.target.blur(); }
+  if (id === 'ac-name') { ev.preventDefault(); saveNew(); }
+  if (id === 'g-name') { ev.preventDefault(); $('[data-act="g-save"]')?.click(); }
+});
+// Long-press is for dragging, so stop iOS link previews on cards.
 document.addEventListener('contextmenu', (ev) => { if (ev.target.closest('.chat, .pin')) ev.preventDefault(); });
+window.addEventListener('pagehide', flushSaves);
 
-// ?add=<link> opens the add card (handy for a share-sheet Shortcut later)
+// ?add=<link> opens the add card (for a share-sheet Shortcut later)
 function handleQuery() {
-  const u = new URL(location.href);
-  const add = u.searchParams.get('add');
+  const add = new URL(location.href).searchParams.get('add');
   if (!add || !S.token) return;
   history.replaceState(null, '', location.pathname);
   openAdd(add);
@@ -779,7 +1100,8 @@ function handleQuery() {
 
 let lastLoad = Date.now();
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden || !S.token) return;
+  if (document.hidden) return flushSaves();
+  if (!S.token) return;
   setSky();
   if (Date.now() - lastLoad > 60e3) { lastLoad = Date.now(); load(); }
   checkClipboard();

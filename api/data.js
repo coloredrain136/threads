@@ -3,12 +3,19 @@ import { db, q } from './_lib/db.js';
 
 const T = { sections: 'threads_sections', chats: 'threads_chats', settings: 'threads_settings' };
 const COLS = {
-  sections: ['id', 'name', 'position', 'is_inbox', 'created_at'],
-  chats: ['id', 'section_id', 'name', 'chat_uuid', 'position', 'pinned', 'pin_position', 'archived_at', 'last_opened_at', 'created_at'],
+  sections: ['id', 'name', 'position', 'is_inbox', 'created_at', 'parent_id', 'color', 'icon', 'project_uuid'],
+  chats: ['id', 'section_id', 'name', 'chat_uuid', 'kind', 'url', 'notes', 'todos', 'position', 'pinned', 'pin_position', 'archived_at', 'last_opened_at', 'created_at'],
   settings: ['id', 'value'],
 };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const KINDS = new Set(['chat', 'cowork', 'code', 'project', 'other']);
+const COLORS = new Set(['gold', 'coral', 'rose', 'violet', 'blue', 'teal', 'green', 'slate']);
 const bad = (m) => Object.assign(new Error(m), { status: 400 });
+const uuidOrNull = (v, label) => {
+  if (v === null || v === '' || v === undefined) return null;
+  if (!UUID.test(String(v))) throw bad(`Bad ${label}.`);
+  return String(v).toLowerCase();
+};
 
 function pick(table, row) {
   const o = {};
@@ -18,11 +25,30 @@ function pick(table, row) {
     o.name = String(o.name || '').trim().slice(0, 80);
     if (!o.name) throw bad('Name is required.');
   }
-  if ('chat_uuid' in o) {
-    o.chat_uuid = String(o.chat_uuid || '').toLowerCase();
-    if (!UUID.test(o.chat_uuid)) throw bad('That is not a valid chat link.');
+  if (table === 'sections') {
+    delete o.is_inbox; // set once by the schema
+    if ('parent_id' in o) {
+      o.parent_id = uuidOrNull(o.parent_id, 'group');
+      if (o.parent_id && o.parent_id === o.id) throw bad("A group can't go inside itself.");
+    }
+    if ('color' in o) o.color = COLORS.has(o.color) ? o.color : null;
+    if ('icon' in o) o.icon = o.icon ? String(o.icon).slice(0, 16) : null;
+    if ('project_uuid' in o) o.project_uuid = uuidOrNull(o.project_uuid, 'project link');
   }
-  if (table === 'sections') delete o.is_inbox; // the Inbox is set once by the schema
+  if (table === 'chats') {
+    if ('chat_uuid' in o) o.chat_uuid = uuidOrNull(o.chat_uuid, 'chat link');
+    if ('section_id' in o) o.section_id = uuidOrNull(o.section_id, 'group');
+    if ('kind' in o && !KINDS.has(o.kind)) throw bad('Bad type.');
+    if ('url' in o) {
+      o.url = o.url ? String(o.url).trim() : null;
+      if (o.url && (!/^(https:\/\/claude\.ai\/|claude:\/\/)/i.test(o.url) || o.url.length > 500)) throw bad('Links must be claude.ai or claude:// links.');
+    }
+    if ('notes' in o) o.notes = String(o.notes || '').slice(0, 20000);
+    if ('todos' in o) {
+      if (!Array.isArray(o.todos)) throw bad('Bad checklist.');
+      o.todos = o.todos.slice(0, 100).map((t) => ({ id: String(t?.id || '').slice(0, 40), text: String(t?.text || '').slice(0, 300), done: !!t?.done }));
+    }
+  }
   if (table === 'settings' && 'value' in o && (typeof o.value !== 'object' || o.value === null)) throw bad('Bad setting.');
   return o;
 }
@@ -65,6 +91,6 @@ export default route(async (req, res) => {
   if (req.method !== 'POST') return send(res, 405, { error: 'Use GET or POST.' });
   const { ops } = body(req);
   if (!Array.isArray(ops) || !ops.length || ops.length > 50) throw bad('Bad request.');
-  for (const op of ops) await apply(op); // in order: moves land before a section delete
+  for (const op of ops) await apply(op); // in order: moves land before a delete
   send(res, 200, { ok: true });
 });
