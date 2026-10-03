@@ -74,6 +74,10 @@ async function apply(op) {
       if (s?.is_inbox) throw bad("Inbox can't be deleted.");
     }
     await q(db().from(table).delete().eq('id', op.id));
+  } else if (op.op === 'upsert_many') {
+    const rows = (Array.isArray(op.rows) ? op.rows.slice(0, 300) : []).map((r) => pick(op.table, r));
+    if (!rows.length || rows.some((r) => !r.id) || op.table === 'settings') throw bad('Bad import.');
+    await q(db().from(table).upsert(rows));
   } else if (op.op === 'delete_many') {
     const ids = Array.isArray(op.ids) ? op.ids.map(String).slice(0, 500) : [];
     if (!ids.length || op.table === 'settings') throw bad('Bad delete.');

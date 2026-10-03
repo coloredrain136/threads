@@ -245,6 +245,11 @@ body.dragging{user-select:none;-webkit-user-select:none}
 .btn:disabled{opacity:.5}
 .btn + .btn{margin-top:10px}
 .btn svg{width:20px;height:20px;flex:none}
+.imp-list{max-height:300px;overflow:auto;background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;margin:12px 0 4px}
+.imp-list h4{font-size:13px;color:var(--ink-2);margin:8px 0 4px}
+.imp-list h4:first-child{margin-top:0}
+.imp-list div{font-size:15px;padding:3px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.imp-list .arch{color:var(--ink-3)}
 .paste{height:76px;font-size:19px}
 .paste svg{width:24px;height:24px}
 .or{text-align:center;color:var(--ink-3);font-size:13px;margin:14px 0 10px}
@@ -986,7 +991,104 @@ function openSettings() {
       <p class="muted">This device only. Auto uses the web link on iPhone and the app link on Mac and PC. Right now: <b>${linkMode() === 'app' ? 'claude://' : 'https://'}</b></p>
       <div class="seg">${[['auto', 'Auto'], ['app', 'App link'], ['web', 'Web link']].map(([v, l]) => `<button class="${pref === v ? 'on' : ''}" data-act="link-set" data-v="${v}">${l}</button>`).join('')}</div>
     </section>
+    <section class="set"><h3>Import chats</h3><p class="muted">Bring in a list Claude sorted for you. Safe to import the same list twice: anything already saved gets skipped.</p>
+      <button class="btn ghost" data-act="import-open">${ICON.clip}Import a list</button></section>
     <button class="btn warn" data-act="signout">Sign out on this device</button>`);
+}
+
+// ---------- import ----------
+const splitPath = (g) => String(g || '').split(/\s*[›>]\s*/).map((x) => x.trim().slice(0, 80)).filter(Boolean);
+function openImport() {
+  S.importPlan = null;
+  openSheet(`<h2>Import</h2>
+    <button class="btn paste" data-act="imp-paste">${ICON.clip}Paste from clipboard</button>
+    <label class="btn ghost" style="cursor:pointer">Choose a file<input type="file" id="imp-file" accept=".json,.txt,application/json,text/plain" hidden></label>
+    <div class="or">or paste it into the box</div>
+    <textarea class="notes" id="imp-text" placeholder='{"threads_import":1, ...}' style="min-height:110px"></textarea>
+    <p class="err" id="imp-err"></p>
+    <button class="btn" data-act="imp-preview">Preview</button>`);
+}
+function parseImport(text) {
+  const t = String(text || '').trim();
+  if (!t) return { error: 'Nothing to import yet.' };
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  if (a < 0 || b < a) return { error: "That doesn't look like a Threads import. It should start with {" };
+  let j;
+  try { j = JSON.parse(t.slice(a, b + 1)); } catch { return { error: "Couldn't read that. Make sure you copied all of it, from the first { to the last }." }; }
+  const raw = Array.isArray(j.items) ? j.items : [];
+  if (!raw.length) return { error: 'No items found in that list.' };
+  const meta = {};
+  (Array.isArray(j.groups) ? j.groups : []).forEach((g) => { if (g?.path) meta[splitPath(g.path).join(' › ').toLowerCase()] = { icon: g.icon ? String(g.icon).slice(0, 16) : null, color: COLORS.includes(g.color) ? g.color : null }; });
+  const seen = new Set(), items = [], skipped = [], bad = [];
+  for (const it of raw) {
+    const name = String(it?.name || '').trim().slice(0, 80) || 'Untitled';
+    const p = it?.link ? parseLink(it.link) : { kind: KIND[it?.kind] ? it.kind : 'cowork', chat_uuid: null, url: null, none: true };
+    if (p.error) { bad.push(name); continue; }
+    const key = p.chat_uuid || p.url;
+    if (key && seen.has(key)) continue;
+    if (key) seen.add(key);
+    if (!p.none && S.chats.some((c) => sameItem(c, p))) { skipped.push(name); continue; }
+    items.push({ name, p, path: splitPath(it.group), notes: String(it.notes || '').slice(0, 20000),
+      todos: (Array.isArray(it.todos) ? it.todos : []).map((x) => String(x).trim().slice(0, 300)).filter(Boolean).slice(0, 50),
+      archived: !!it.archived, pinned: !!it.pinned });
+  }
+  return { items, skipped, bad, meta };
+}
+// Finds each group by name (case doesn't matter), or plans a new one.
+function resolvePath(parts, plan) {
+  if (!parts.length) return inbox().id;
+  let parent = null, key = '';
+  for (const name of parts) {
+    key = key ? `${key} › ${name.toLowerCase()}` : name.toLowerCase();
+    if (plan.map[key]) { parent = plan.map[key]; continue; }
+    const hit = children(parent, true).find((s) => s.name.toLowerCase() === name.toLowerCase());
+    if (hit) { plan.map[key] = hit.id; parent = hit.id; continue; }
+    const m = plan.meta[key] || {};
+    const row = { id: uid(), name, parent_id: parent, position: children(parent, true).length + plan.rows.filter((r) => r.parent_id === parent).length,
+      color: m.color || (parent ? null : COLORS[plan.colorIdx++ % COLORS.length]), icon: m.icon || null, project_uuid: null, archived_at: null, created_at: nowISO() };
+    plan.rows.push(row); plan.map[key] = row.id; parent = row.id;
+  }
+  return parent;
+}
+function previewImport(text) {
+  const r = parseImport(text);
+  if (r.error) { $('#imp-err').textContent = r.error; return; }
+  const plan = { rows: [], map: {}, meta: r.meta, colorIdx: S.sections.filter((s) => !s.parent_id).length };
+  r.items.forEach((it) => { it.sid = resolvePath(it.path, plan); });
+  S.importPlan = { items: r.items, plan };
+  const byGroup = {};
+  r.items.forEach((it) => { const k = it.path.length ? it.path.join(' › ') : 'Inbox'; (byGroup[k] = byGroup[k] || []).push(it); });
+  const live = r.items.filter((i) => !i.archived).length, arch = r.items.length - live;
+  openSheet(`<h2>${r.items.length ? 'Ready to import' : 'Nothing new'}</h2>
+    <div class="dup glass"><b>${r.items.length} new item${r.items.length === 1 ? '' : 's'}</b>${arch ? ` (${live} active, ${arch} straight to the archive)` : ''}${plan.rows.length ? `, plus <b>${plan.rows.length} new group${plan.rows.length === 1 ? '' : 's'}</b>` : ''}.
+      ${r.skipped.length ? `<br><span class="muted">${r.skipped.length} already saved, skipped.</span>` : ''}${r.bad.length ? `<br><span class="muted" style="color:var(--danger)">${r.bad.length} had a bad link, skipped: ${esc(r.bad.join(', '))}</span>` : ''}</div>
+    ${r.items.length ? `<div class="imp-list">${Object.entries(byGroup).map(([g, list]) => `<h4>${esc(g)}</h4>${list.map((i) => `<div class="${i.archived ? 'arch' : ''}">${i.archived ? '🗄 ' : ''}${esc(i.name)}</div>`).join('')}`).join('')}</div>
+    <button class="btn" data-act="imp-go">Import ${r.items.length} item${r.items.length === 1 ? '' : 's'}</button>` : ''}
+    <button class="btn ghost" data-act="import-open">Back</button>`);
+}
+function runImport() {
+  const ip = S.importPlan;
+  if (!ip?.items.length) return;
+  const { items, plan } = ip;
+  S.sections.push(...plan.rows.map((r) => ({ ...r, is_inbox: false })));
+  const next = {};
+  let pinBase = pins().length;
+  const rows = items.map((it) => {
+    next[it.sid] ??= chatsIn(it.sid).length;
+    const pinned = it.pinned && !it.archived;
+    return { id: uid(), section_id: it.sid, name: it.name, chat_uuid: it.p.chat_uuid || null, kind: it.p.kind || 'chat', url: it.p.url || null,
+      notes: it.notes, todos: it.todos.map((text) => ({ id: uid().slice(0, 8), text, done: false })),
+      position: next[it.sid]++, pinned, pin_position: pinned ? pinBase++ : null,
+      archived_at: it.archived ? nowISO() : null, last_opened_at: null, created_at: nowISO() };
+  });
+  S.chats.push(...rows);
+  S.importPlan = null;
+  const ops = [];
+  if (plan.rows.length) ops.push({ op: 'upsert_many', table: 'sections', rows: plan.rows });
+  for (let i = 0; i < rows.length; i += 150) ops.push({ op: 'upsert_many', table: 'chats', rows: rows.slice(i, i + 150) });
+  closeSheet(); renderTop(); renderContent();
+  toast(`Imported ${rows.length} item${rows.length === 1 ? '' : 's'}`);
+  push(ops);
 }
 
 // Clipboard banner + drag-and-drop from other apps
@@ -1117,6 +1219,13 @@ const A = {
   'sec-delete': (el) => deleteGroup(el.dataset.id, el),
   'sec-archive': (el) => archiveGroup(el.dataset.id),
   'unarchive-group': (el) => unarchiveGroup(el.dataset.id),
+  'import-open': () => openImport(),
+  'imp-paste': async () => {
+    try { const t = await navigator.clipboard.readText(); $('#imp-text').value = t; previewImport(t); }
+    catch { $('#imp-err').textContent = "Couldn't read the clipboard. Paste into the box instead."; }
+  },
+  'imp-preview': () => previewImport($('#imp-text').value),
+  'imp-go': () => runImport(),
   'delete-group-forever': (el) => deleteGroupForever(el.dataset.id, el),
   archive: () => { S.view = 'archive'; hideBanner(); renderTop(); renderContent(); scrollTo(0, 0); },
   settings: () => openSettings(),
@@ -1159,6 +1268,14 @@ document.addEventListener('input', (ev) => {
   }
 });
 document.addEventListener('change', (ev) => {
+  if (ev.target.id === 'imp-file') {
+    const f = ev.target.files?.[0];
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => { $('#imp-text').value = rd.result; previewImport(rd.result); };
+    rd.readAsText(f);
+    return;
+  }
   if (ev.target.id !== 'd-pin') return;
   const c = chatById(ev.target.dataset.id), on = ev.target.checked;
   c.pinned = on; c.pin_position = on ? pins().filter((x) => x.id !== c.id).length : null;
