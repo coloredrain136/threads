@@ -67,10 +67,11 @@ body.v-detail .filter{display:none}
 /* pinned row */
 .pins{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 14px;margin:0 -2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .pins::-webkit-scrollbar{display:none}
-.pin{flex:none;max-width:200px;display:flex;align-items:center;gap:8px;height:46px;padding:0 16px 0 8px;border-radius:999px;font-weight:600;font-size:15px;
+.pin{flex:none;max-width:280px;display:flex;align-items:center;gap:8px;height:46px;padding:0 16px 0 8px;border-radius:999px;font-weight:600;font-size:15px;
   -webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
 .pin span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pin .kic{width:30px;height:30px}
+.pin-g{font-style:normal;color:var(--ink-3);font-weight:600}
 
 
 /* groups */
@@ -295,6 +296,39 @@ body.dragging{user-select:none;-webkit-user-select:none}
 .c-gold{--c:#f2c46d}.c-coral{--c:#ff8a65}.c-rose{--c:#f48fb1}.c-violet{--c:#b39ddb}
 .c-blue{--c:#64b5f6}.c-teal{--c:#4dd0e1}.c-green{--c:#81c784}.c-slate{--c:#90a4ae}
 
+/* ---------- Mac / wide screens ---------- */
+.panel{display:none}
+@media (min-width: 900px){
+  .app{max-width:none;padding:22px 32px 48px}
+  .bar{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+  .bar .top{display:contents}
+  .bar .top > *{order:2}
+  .bar .top [data-act="main"]{order:-1}
+  .bar .top h1{order:0;flex:none;margin-right:10px}
+  .bar .filter{order:1;flex:1;max-width:560px;margin:0 auto 0 0}
+  .pins{flex-wrap:wrap;overflow:visible;padding-bottom:16px}
+  #secs{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));grid-auto-rows:4px;gap:0 16px;align-items:start}
+  #secs > .sec{align-self:start}
+  .new-sec{max-width:320px}
+  body.has-panel .app{padding-right:calc(min(440px,40vw) + 48px)}
+  .panel{display:block;position:fixed;top:16px;right:16px;bottom:16px;width:min(440px,40vw);overflow:auto;z-index:30;
+    border-radius:26px;padding:10px 16px 24px;background:var(--sheet);border:1px solid var(--line);
+    -webkit-backdrop-filter:blur(26px) saturate(1.4);backdrop-filter:blur(26px) saturate(1.4);box-shadow:0 20px 50px var(--shadow);
+    animation:panelIn .32s cubic-bezier(.2,.9,.2,1)}
+  .panel[hidden]{display:none}
+  .panel .hero,.panel .card{box-shadow:none}
+  .panel-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+  .panel-h span{font-size:13px;color:var(--ink-3);font-weight:600}
+  .chat-main,.go,.sec-name,.pin{cursor:pointer}
+}
+@keyframes panelIn{from{transform:translateX(28px);opacity:0}}
+@media (hover:hover){
+  .chat{transition:transform .15s,border-color .2s,box-shadow .2s}
+  .chat:hover{border-color:color-mix(in srgb,var(--c) 60%,var(--line));box-shadow:inset 3px 0 0 var(--c),0 8px 22px var(--shadow)}
+  .go:hover span{background:color-mix(in srgb,var(--c) 34%,transparent)}
+}
+.chat.sel{border-color:var(--c);box-shadow:inset 3px 0 0 var(--c),0 0 0 2px color-mix(in srgb,var(--c) 45%,transparent)}
+
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -304,6 +338,7 @@ body.dragging{user-select:none;-webkit-user-select:none}
 <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
 <div class="toast" id="toast" role="status"></div>
 <div class="drop-hint" id="drop" hidden>Drop to add</div>
+<aside class="panel" id="panel" hidden></aside>
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- icons ----------
@@ -517,9 +552,9 @@ function renumber(list, key, extra = {}) {
 function render() {
   if (!S.token) return renderLogin();
   if (!$('#top')) {
-    $('#app').innerHTML = `<header class="top" id="top"></header>
+    $('#app').innerHTML = `<div class="bar"><header class="top" id="top"></header>
+      <label class="filter glass">${ICON.search}<input id="filter" type="search" placeholder="Filter" autocomplete="off" enterkeyhint="search"><button class="clear" data-act="filter-clear" aria-label="Clear filter" hidden>×</button></label></div>
       <div id="banner"></div>
-      <label class="filter glass">${ICON.search}<input id="filter" type="search" placeholder="Filter" autocomplete="off" enterkeyhint="search"><button class="clear" data-act="filter-clear" aria-label="Clear filter" hidden>×</button></label>
       <main id="content"></main>`;
   }
   renderTop(); renderContent();
@@ -570,15 +605,51 @@ function groupHTML(s, depth) {
     <div class="subs" data-parent="${s.id}">${kids.map((k) => groupHTML(k, depth + 1)).join('')}</div></section>`;
 }
 
-let sortables = [];
+// Mac: groups pack into columns (masonry), item page opens as a side panel.
+const WIDE = window.matchMedia ? matchMedia('(min-width: 900px)') : { matches: false, addEventListener() {} };
+const wide = () => WIDE.matches;
+const ro = 'ResizeObserver' in window ? new ResizeObserver((es) => es.forEach((e) => sizeSec(e.target))) : null;
+function sizeSec(el) {
+  if (!wide()) { el.style.gridRowEnd = ''; return; }
+  el.style.gridRowEnd = `span ${Math.ceil(el.getBoundingClientRect().height / 4) + 4}`;
+}
+function packGroups() {
+  ro?.disconnect();
+  $$('#secs > .sec').forEach((el) => { sizeSec(el); ro?.observe(el); });
+}
+function markSel() {
+  $$('.chat.sel').forEach((e) => e.classList.remove('sel'));
+  if (S.panel) $(`.chat[data-id="${S.detailId}"]`)?.classList.add('sel');
+}
+function renderPanel() {
+  const p = $('#panel');
+  p.hidden = false; document.body.classList.add('has-panel');
+  renderDetail(p, true);
+}
+function closePanel() {
+  flushSaves();
+  S.panel = false; S.detailId = null;
+  $('#panel').hidden = true; $('#panel').innerHTML = '';
+  document.body.classList.remove('has-panel');
+  markSel(); packGroups();
+}
 function renderContent() {
+  renderMain();
+  if (S.panel) {
+    const a = document.activeElement;
+    if (!($('#panel').contains(a) && /INPUT|TEXTAREA/.test(a.tagName))) renderPanel();
+    markSel();
+  }
+}
+let sortables = [];
+function renderMain() {
   const el = $('#content');
   if (!el) return;
   sortables.forEach((s) => s.destroy()); sortables = [];
   const clr = $('.filter .clear'); if (clr) clr.hidden = !S.filter;
 
   if (!S.loaded) { el.innerHTML = '<p class="muted" style="text-align:center;margin-top:40px">Loading…</p>'; return; }
-  if (S.view === 'detail') return renderDetail();
+  if (S.view === 'detail') return renderDetail($('#content'));
 
   if (S.view === 'archive') {
     const list = archived().filter(match);
@@ -605,7 +676,7 @@ function renderContent() {
   const p = pins();
   el.innerHTML = `${p.length ? `<div class="pins" id="pins">${p.map((c) => {
       const href = linkFor(c);
-      const inner = `<span class="kic">${kindIcon(c.kind)}</span><span>${esc(c.name)}</span>`;
+      const inner = `<span class="kic">${kindIcon(c.kind)}</span><span><em class="pin-g">${esc(secOf(c)?.name || '')}</em> ${esc(c.name)}</span>`;
       return href ? `<a class="pin glass${colorCls(colorOf(secOf(c)))}" href="${esc(href)}"${linkTarget()} draggable="false" data-act="open" data-id="${c.id}">${inner}</a>`
         : `<button class="pin glass${colorCls(colorOf(secOf(c)))}" data-act="detail" data-id="${c.id}">${inner}</button>`;
     }).join('')}</div>` : ''}
@@ -613,6 +684,7 @@ function renderContent() {
     <div class="secs" id="secs" data-parent="">${children(null).map((s) => groupHTML(s, 0)).join('')}</div>
     <button class="new-sec" data-act="sec-new">New group</button>`;
   initSortables();
+  packGroups();
 }
 
 // ---------- drag and drop ----------
@@ -695,11 +767,11 @@ function onPinDrop() {
 
 // ---------- item page ----------
 const todoHTML = (t) => `<div class="todo${t.done ? ' done' : ''}" data-tid="${t.id}"><button class="tick" data-act="todo-toggle" data-tid="${t.id}" aria-label="Done">${ICON.check}</button><input class="todo-text" data-tid="${t.id}" value="${esc(t.text)}" maxlength="300" autocomplete="off"><button class="x" data-act="todo-del" data-tid="${t.id}" aria-label="Remove">×</button></div>`;
-function renderDetail() {
+function renderDetail(target, inPanel) {
   const c = chatById(S.detailId);
-  if (!c) { S.view = 'main'; renderTop(); return renderContent(); }
+  if (!c) { if (inPanel) return closePanel(); S.view = 'main'; renderTop(); return renderContent(); }
   const s = secOf(c), href = linkFor(c), todos = c.todos || [];
-  $('#content').innerHTML = `
+  (target || $('#content')).innerHTML = `${inPanel ? `<div class="panel-h" style="justify-content:flex-end"><button class="icon-btn" data-act="panel-close" aria-label="Close" style="font-size:24px">×</button></div>` : ''}
     <div class="hero glass${colorCls(colorOf(s))}">
       <div class="crumbs"><span class="tag">${kindIcon(c.kind)}${KIND[c.kind] || 'Chat'}</span><span>${esc(pathOf(s))}</span>${c.archived_at ? '<span class="tag">Archived</span>' : ''}</div>
       <input class="title-inp" id="d-name" value="${esc(c.name)}" maxlength="80" autocomplete="off" aria-label="Name" enterkeyhint="done">
@@ -746,6 +818,12 @@ function queueSave(id, fields, wait = 700) {
 function flushSaves() { for (const k of Object.keys(timers)) { clearTimeout(timers[k].t); timers[k].run(); } }
 function openDetail(id) {
   if (!chatById(id)) return;
+  if (wide()) {
+    if (S.panel && S.detailId !== id) flushSaves();
+    S.panel = true; S.detailId = id; hideBanner(); closeSheet();
+    renderPanel(); markSel();
+    return;
+  }
   S.view = 'detail'; S.detailId = id; hideBanner(); closeSheet();
   renderTop(); renderContent(); scrollTo(0, 0);
 }
@@ -864,6 +942,7 @@ function archiveChat(id) {
   Object.assign(c, { archived_at: nowISO(), pinned: false, pin_position: null });
   const rows = [{ id: c.id, archived_at: c.archived_at, pinned: false, pin_position: null }, ...renumber(chatsIn(sid), 'position'), ...renumber(pins(), 'pin_position')];
   flushSaves(); closeSheet();
+  if (S.panel && S.detailId === id) closePanel();
   if (S.view === 'detail') { S.view = 'main'; S.detailId = null; }
   renderTop(); renderContent(); archiveFx(); toast(`Archived ${c.name}`);
   push([{ op: 'patch', table: 'chats', rows }]);
@@ -1160,6 +1239,7 @@ const A = {
   open: (el, ev) => { if (S.dragging) { ev.preventDefault(); return; } markOpened(el.dataset.id); },
   detail: (el) => { if (S.dragging) return; S.fromArchive = S.view === 'archive'; openDetail(el.dataset.id); },
   main: () => backToMain(),
+  'panel-close': () => closePanel(),
   add: () => openAdd(),
   paste: async () => {
     try { handleAddText(await navigator.clipboard.readText()); }
@@ -1193,7 +1273,8 @@ const A = {
     if (!el.dataset.sure) { el.dataset.sure = '1'; el.textContent = 'Tap again to delete'; return; }
     const id = el.dataset.id;
     S.chats = S.chats.filter((c) => c.id !== id);
-    if (S.detailId === id) { S.view = 'archive'; S.detailId = null; }
+    if (S.panel && S.detailId === id) closePanel();
+    else if (S.detailId === id) { S.view = 'archive'; S.detailId = null; }
     closeSheet(); renderTop(); renderContent(); toast('Deleted');
     push([{ op: 'delete', table: 'chats', id }]);
   },
@@ -1258,7 +1339,7 @@ document.addEventListener('input', (ev) => {
     return t.id === 'add-text' ? showAddForm(r) : applyLink(t.dataset.id, v);
   }
   if (t.id === 'g-icon-custom' && t.value.trim()) $$('#g-icon .emo').forEach((b) => b.classList.remove('on'));
-  const c = S.view === 'detail' && chatById(S.detailId);
+  const c = (S.view === 'detail' || S.panel) && chatById(S.detailId);
   if (!c) return;
   if (t.id === 'd-name' && t.value.trim()) { c.name = t.value.trim().slice(0, 80); queueSave(c.id, { name: c.name }); }
   if (t.id === 'd-notes') { c.notes = t.value; autosize(); queueSave(c.id, { notes: c.notes }); }
@@ -1287,7 +1368,22 @@ document.addEventListener('focusout', (ev) => {
   if (ev.target.id === 'd-name' && !ev.target.value.trim()) ev.target.value = chatById(S.detailId)?.name || '';
 });
 document.addEventListener('keydown', (ev) => {
-  if (ev.key === 'Escape') { if ($('#sheet').classList.contains('on')) closeSheet(); else if (S.view !== 'main') backToMain(); }
+  const mod = ev.metaKey || ev.ctrlKey;
+  const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '');
+  if (S.token && mod && ev.key.toLowerCase() === 'k') {
+    ev.preventDefault();
+    if (S.view === 'detail') backToMain();
+    closeSheet(); $('#filter')?.focus(); $('#filter')?.select(); return;
+  }
+  if (S.token && ((mod && ev.key.toLowerCase() === 'n') || (!mod && !typing && ev.key === 'n' && !$('#sheet').classList.contains('on')))) {
+    ev.preventDefault(); openAdd(); return;
+  }
+  if (ev.key === 'Escape') {
+    if ($('#sheet').classList.contains('on')) closeSheet();
+    else if (S.panel) closePanel();
+    else if (document.activeElement?.id === 'filter' && S.filter) { $('#filter').value = ''; S.filter = ''; renderContent(); }
+    else if (S.view !== 'main') backToMain();
+  }
   if (ev.key !== 'Enter') return;
   const id = ev.target.id;
   if (id === 'todo-new') {
@@ -1304,6 +1400,18 @@ document.addEventListener('keydown', (ev) => {
 // Long-press is for dragging, so stop iOS link previews on cards.
 document.addEventListener('contextmenu', (ev) => { if (ev.target.closest('.chat, .pin')) ev.preventDefault(); });
 window.addEventListener('pagehide', flushSaves);
+
+// Switching between phone and Mac layouts (resizing the window)
+WIDE.addEventListener('change', () => {
+  if (!S.token) return;
+  if (wide() && S.view === 'detail') {
+    const id = S.detailId; flushSaves();
+    S.view = 'main'; S.detailId = null;
+    renderTop(); renderContent(); openDetail(id);
+  } else if (!wide() && S.panel) {
+    const id = S.detailId; closePanel(); openDetail(id);
+  } else packGroups();
+});
 
 // ?add=<link> opens the add card (for a share-sheet Shortcut later)
 function handleQuery() {
