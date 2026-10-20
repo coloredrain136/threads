@@ -48,7 +48,7 @@ svg{display:block}
 .top h1{font-size:30px;font-weight:750;letter-spacing:-.02em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .icon-btn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--ink-2);position:relative;flex:none}
 .icon-btn svg{width:22px;height:22px}
-.icon-btn .badge{position:absolute;top:4px;right:2px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--hi);color:var(--ink-2);font-size:11px;font-weight:650;display:grid;place-items:center}
+.icon-btn .badge{position:absolute;top:-2px;right:-4px;z-index:1;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--hi);color:var(--ink-2);font-size:11px;font-weight:650;display:grid;place-items:center}
 .add-btn{height:42px;padding:0 16px 0 12px;border-radius:999px;background:var(--dawn);color:var(--dawn-ink);font-weight:650;display:flex;align-items:center;gap:6px;box-shadow:0 8px 22px var(--shadow);flex:none}
 .add-btn svg{width:20px;height:20px}
 
@@ -75,19 +75,19 @@ body.v-detail .filter{display:none}
 
 
 /* groups */
-.secs,.subs{display:grid;gap:14px}
+.secs,.subs{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
 .subs{gap:10px;padding:4px 10px 6px 14px}
 .subs:empty{display:none}
 .sec{--c:var(--ink-3);border-radius:var(--r-lg);padding:4px 0 8px}
 .sec.sub{background:var(--field);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:none;padding:2px 0 6px}
-.sec-h{display:flex;align-items:center;gap:4px;padding:6px 6px 4px 2px}
-.grip{width:32px;height:40px;display:grid;place-items:center;color:var(--ink-3);touch-action:none;cursor:grab;flex:none}
+.sec-h{display:flex;align-items:center;gap:10px;padding:6px 6px 4px 4px}
+.grip{width:24px;margin-right:-4px;height:40px;display:grid;place-items:center;color:var(--ink-3);touch-action:none;cursor:grab;flex:none}
 .grip svg{width:18px;height:18px}
-.gicon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:18px;flex:none;
+.gicon{width:34px;height:34px;min-width:34px;border-radius:11px;display:grid;place-items:center;font-size:18px;line-height:1;overflow:hidden;flex:none;
   background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c)}
 .gicon svg{width:18px;height:18px}
 .sub .gicon{width:28px;height:28px;border-radius:9px;font-size:15px}
-.sec-name{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:40px;text-align:left;font-size:18px;font-weight:700;padding-left:4px}
+.sec-name{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:40px;text-align:left;font-size:18px;font-weight:700;padding-left:0}
 .sub .sec-name{font-size:16px;font-weight:650}
 .sec-name span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sec-name small{font-size:12px;font-weight:700;color:var(--ink-2);background:var(--hi);border-radius:999px;padding:2px 8px;flex:none}
@@ -147,7 +147,7 @@ body.dragging .dock,body.archiving .dock{transform:translate(-50%,0);opacity:1}
 .dock.hot .t1{display:none}.dock.hot .t2{display:inline}
 .dock.gulp .bin{animation:gulp .6s cubic-bezier(.34,1.6,.5,1)}
 @keyframes gulp{0%{transform:scale(1)}25%{transform:scale(.72) rotate(-6deg)}60%{transform:scale(1.18) rotate(4deg)}100%{transform:scale(1)}}
-.icon-btn.bump svg{animation:bump .6s cubic-bezier(.34,1.6,.5,1)}
+.tab.bump svg,.icon-btn.bump svg{animation:bump .6s cubic-bezier(.34,1.6,.5,1)}
 .icon-btn.bump .badge{animation:pop .5s .15s both}
 @keyframes bump{0%{transform:none}30%{transform:translateY(3px) scale(.85)}65%{transform:translateY(-3px) scale(1.12)}100%{transform:none}}
 @keyframes pop{0%{transform:scale(.4)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
@@ -298,23 +298,80 @@ body.dragging{user-select:none;-webkit-user-select:none}
 
 /* ---------- pages + project dashboard ---------- */
 .tabs{display:flex;gap:6px;padding:4px;border-radius:999px;margin-bottom:14px;width:max-content;max-width:100%}
-.tab{height:38px;padding:0 16px 0 12px;border-radius:999px;display:flex;align-items:center;gap:8px;font-weight:650;font-size:15px;color:var(--ink-2)}
+.tab{height:38px;padding:0 14px 0 11px;white-space:nowrap;border-radius:999px;display:flex;align-items:center;gap:8px;font-weight:650;font-size:15px;color:var(--ink-2)}
 .tab svg{width:18px;height:18px}
 .tab small{font-size:12px;font-weight:700;background:var(--hi);border-radius:999px;padding:1px 7px}
 .tab.on{background:var(--hi);color:var(--ink)}
 .tab.on svg{color:var(--dawn)}
-.dash{display:grid;gap:14px}
-.dash-cols{display:grid;gap:14px}
-.dash-cols > div{display:grid;gap:14px;align-content:start}
+.dash{display:grid;gap:12px;max-width:880px}
+.dash .sec{padding-bottom:8px}
+.dash .sec > .sec-h{padding-left:12px}
 .dash .sec > .sec-h > .grip{display:none}
-.phero{--c:var(--dawn);border-radius:var(--r-lg);padding:16px;position:relative;overflow:hidden}
-.phero::before{content:'';position:absolute;inset:0;background:radial-gradient(90% 90% at 0% 0%,color-mix(in srgb,var(--c) 24%,transparent),transparent 70%);pointer-events:none}
+.phero{--c:var(--dawn);border-radius:var(--r-lg);padding:12px 12px 12px 14px;position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.phero::before{content:'';position:absolute;inset:0;background:radial-gradient(90% 120% at 0% 0%,color-mix(in srgb,var(--c) 20%,transparent),transparent 70%);pointer-events:none}
 .phero > *{position:relative}
-.phero-h{display:flex;align-items:center;gap:12px}
-.phero-h .gicon{width:46px;height:46px;border-radius:14px;font-size:24px}
-.phero-h h2{font-size:24px;font-weight:750;letter-spacing:-.02em;line-height:1.15}
-.phero-h .muted{font-size:13px}
-.phero-h > div{flex:1;min-width:0}
+.phero > .gicon{width:42px;height:42px;border-radius:13px;font-size:22px}
+.phero-t{flex:1;min-width:150px}
+.phero-n{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.phero-n h2{font-size:21px;font-weight:750;letter-spacing:-.02em;line-height:1.2}
+.phero-t small{display:block;color:var(--ink-3);font-size:12px;margin-top:2px}
+.phero-a{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pill-btn{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.pill-btn svg{width:15px;height:15px;flex:none}
+.pill-btn.accent{background:color-mix(in srgb,var(--c,var(--dawn)) 22%,transparent);color:var(--c,var(--dawn))}
+.st{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.01em}
+.st-go{background:color-mix(in srgb,#64b5f6 22%,transparent);color:#8cc8f8}
+.st-ok{background:color-mix(in srgb,#3ecf8e 22%,transparent);color:#5fe0a5}
+.st-warn{background:color-mix(in srgb,#f2c46d 24%,transparent);color:#f2c46d}
+.st-bad{background:color-mix(in srgb,#ff6b61 22%,transparent);color:#ff8a82}
+.st-mute{background:var(--hi);color:var(--ink-2)}
+.nn .nl{display:flex;gap:10px;align-items:baseline;font-size:15px;line-height:1.45;padding:3px 0}
+.nn .nl b{flex:none;width:38px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3)}
+.nn .nx{margin-top:6px;padding:8px 10px;border-radius:var(--r-sm);background:color-mix(in srgb,var(--dawn) 9%,transparent)}
+.nn .nx b{color:var(--dawn)}
+.clip{cursor:pointer}
+.clip .full{display:none}
+.clip.open .short{display:none}
+.clip.open .full{display:inline}
+.det{margin-top:8px;font-size:14px;color:var(--ink-2)}
+.det summary{cursor:pointer;color:var(--ink-3);font-weight:600;font-size:13px;list-style:none;display:inline-flex;align-items:center;gap:6px}
+.det summary::before{content:'▸';transition:transform .2s}
+.det[open] summary::before{transform:rotate(90deg)}
+.det summary::-webkit-details-marker{display:none}
+.det ul{margin:6px 0 0 18px;display:grid;gap:3px}
+.lchips{display:flex;flex-wrap:wrap;gap:8px}
+.lchip{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 13px 0 11px;border-radius:999px;background:var(--glass);border:1px solid var(--line);font-size:14px;font-weight:600;max-width:100%}
+.lchip svg{width:15px;height:15px;flex:none;color:var(--ink-2)}
+.lchip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fill{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 12px 12px 14px;border-radius:var(--r-md);border-style:dashed}
+.fill-t{flex:1;min-width:180px}
+.fill-t b{display:block;font-weight:680;font-size:15px}
+.fill-t span{color:var(--ink-3);font-size:13px}
+.fill-b{display:flex;gap:8px;flex-wrap:wrap}
+.cfg .dcard .row{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 0}
+.cfg .dcard .row + .row{box-shadow:inset 0 1px 0 var(--line)}
+.row-t{flex:1;min-width:0}
+.row-t b{display:block;font-weight:620;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-t span{display:flex;align-items:center;gap:5px;color:var(--ink-3);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-t span svg{width:13px;height:13px;flex:none;color:var(--dawn)}
+.cfg .row > svg{width:16px;height:16px;color:var(--ink-3);flex:none}
+.cfg .row .li{width:30px;height:30px;border-radius:9px;background:var(--field);display:grid;place-items:center;flex:none}
+.cfg .row .li svg{width:15px;height:15px}
+.cfg code{font:600 14px ui-monospace,SFMono-Regular,Menlo,monospace;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.cfg .where{color:var(--ink-2);font-size:13px;flex:none}
+.notes-ul{margin-left:18px;display:grid;gap:5px;line-height:1.45}
+.hint-s{display:flex;align-items:center;gap:6px;color:var(--ink-3);font-size:12px;margin-top:8px}
+.hint-s svg{width:12px;height:12px}
+.cfg-foot{display:flex;justify-content:center;padding:4px 0 12px}
+.step-tag{font-style:normal;display:inline-flex;align-items:center;gap:3px;margin-left:7px;padding:0 6px;height:18px;border-radius:999px;background:var(--hi);color:var(--ink-2);font-size:11px;font-weight:700;vertical-align:2px}
+.step-tag svg{width:10px;height:10px}
+.tools-all{display:grid;gap:10px}
+.ta{padding:10px 12px;border-radius:var(--r-md);background:var(--field);border:1px solid var(--line)}
+.ta-h{display:flex;align-items:center;gap:8px}
+.ta-h b{flex:1;font-weight:650}
+.ta-h small{font-size:12px;font-weight:700;background:var(--hi);border-radius:999px;padding:1px 8px;color:var(--ink-2)}
+.ta-u{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.uchip{--c:var(--ink-3);height:28px;padding:0 10px;border-radius:999px;font-size:13px;font-weight:600;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--ink)}
 .dcard{border-radius:var(--r-lg);padding:14px 16px}
 .dcard-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .dcard-h h3{flex:1;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
@@ -342,7 +399,8 @@ body.dragging{user-select:none;-webkit-user-select:none}
 .allbar{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 14px;border-radius:var(--r-md)}
 .pill-btn svg{width:16px;height:16px;flex:none}
 .park-btn,.allbar .pill-btn{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
-@media (max-width:430px){.top .add-btn{width:42px;padding:0;justify-content:center}.top .add-btn span{display:none}.top .icon-btn{width:38px}.top{gap:4px}}
+@media (max-width:360px){.top .add-btn{width:42px;padding:0;justify-content:center}.top .add-btn span{display:none}.top .icon-btn{width:38px}.top{gap:4px}}
+@media (max-width:430px){.tab{padding:0 11px 0 9px;gap:6px;font-size:14px}.phero-a{width:100%}.phero-a .more{margin-left:auto}}
 .allbar span{flex:1;font-weight:600;color:var(--ink-2)}
 .sec-sum{padding:0 14px 8px 46px;color:var(--ink-3);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:-4px}
 .mk-act{height:32px;padding:0 12px;border-radius:999px;background:color-mix(in srgb,var(--dawn) 20%,transparent);color:var(--dawn);font-size:13px;font-weight:700;flex:none;display:inline-flex;align-items:center;gap:5px}
@@ -373,7 +431,7 @@ body.dragging{user-select:none;-webkit-user-select:none}
   #secs{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));grid-auto-rows:4px;gap:0 16px;align-items:start}
   #secs > .sec{align-self:start}
   .new-sec{max-width:320px}
-  .dash-cols{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start}
+
   body.has-panel .app{padding-right:calc(min(440px,40vw) + 48px)}
   .panel{display:block;position:fixed;top:16px;right:16px;bottom:16px;width:min(440px,40vw);overflow:auto;z-index:30;
     border-radius:26px;padding:10px 16px 24px;background:var(--sheet);border:1px solid var(--line);
@@ -649,33 +707,43 @@ function render() {
 function renderTop() {
   const top = $('#top');
   if (!top) return;
-  document.body.classList.toggle('v-detail', S.view === 'detail');
-  const n = archived().length + archivedGroups().length;
-  if (S.view === 'archive') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1>Archive</h1>`;
-  else if (S.view === 'detail') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1></h1>`;
+  document.body.classList.toggle('v-detail', S.view === 'detail' || S.view === 'config');
+  if (S.view === 'detail') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1></h1>`;
+  else if (S.view === 'config') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1>Setup</h1>`;
   else top.innerHTML = `<h1>Threads</h1>
       <button class="icon-btn" data-act="sync" aria-label="Sync chats from Claude">${ICON.sync}</button>
-      <button class="icon-btn" data-act="archive" aria-label="Archive">${ICON.archive}${n ? `<span class="badge">${n}</span>` : ''}</button>
       <button class="icon-btn" data-act="settings" aria-label="Settings">${ICON.gear}</button>
       <button class="add-btn" data-act="add" aria-label="Add">${ICON.plus}<span>Add</span></button>`;
   $('#filter').placeholder = S.view === 'archive' ? 'Filter archive' : 'Filter';
 }
+// Active · Parked · Archive. Archive lives here now instead of a loose header icon.
+function tabsHTML() {
+  const na = archived().length + archivedGroups().length;
+  const on = (k) => (k === 'archive' ? S.view === 'archive' : S.view !== 'archive' && S.page === k);
+  return `<nav class="tabs glass"><button class="tab${on('active') ? ' on' : ''}" data-act="page" data-v="active">${ICON.star}Active</button>
+    <button class="tab${on('parked') ? ' on' : ''}" data-act="page" data-v="parked">${ICON.car}Parked<small>${parkedProjects().length}</small></button>
+    <button class="tab${on('archive') ? ' on' : ''}" data-act="archive">${ICON.archive}Archive${na ? `<small>${na}</small>` : ''}</button></nav>`;
+}
 
+// Same rule for every card: path (in lists), then the note's first line, else type and last opened.
+// Open checklist steps show as a small count next to the name instead of replacing the note.
 function subline(c, showPath) {
-  const next = (c.todos || []).find((t) => !t.done && t.text.trim());
   const note = (c.notes || '').trim().split('\n')[0];
   const bits = [];
   if (showPath) bits.push(esc(pathOf(secOf(c))));
-  if (next) bits.push(`<em>Next:</em> ${esc(next.text)}`);
-  else if (note) bits.push(esc(note));
-  else bits.push(esc(KIND[c.kind] || 'Chat') + (c.last_opened_at ? ` · opened ${ago(c.last_opened_at)}` : ''));
+  bits.push(note ? esc(note) : esc(KIND[c.kind] || 'Chat') + (c.last_opened_at ? ` · opened ${ago(c.last_opened_at)}` : ''));
   return bits.join(' · ');
+}
+function stepTag(c) {
+  const t = (c.todos || []).filter((x) => x.text.trim());
+  const open = t.filter((x) => !x.done).length;
+  return open ? `<i class="step-tag" title="${open} open step${open > 1 ? 's' : ''}">${ICON.check}${open}</i>` : '';
 }
 function chatRow(c, showPath) {
   const href = linkFor(c);
   const color = colorOf(secOf(c));
   return `<div class="chat${colorCls(color)}" data-id="${c.id}">${showPath ? '' : `<span class="grip cgrip" aria-label="Drag to move ${esc(c.name)}">${ICON.grip}</span>`}
-    <button class="chat-main" data-act="detail" data-id="${c.id}"><span class="kic">${kindIcon(c.kind)}</span><span class="txt"><b>${esc(c.name)}${c.pinned ? '<i class="pinmark" aria-label="Pinned"></i>' : ''}${S.homeIds?.has(c.id) ? '<i class="home-tag">home</i>' : ''}</b><small>${subline(c, showPath)}</small></span></button>
+    <button class="chat-main" data-act="detail" data-id="${c.id}"><span class="kic">${kindIcon(c.kind)}</span><span class="txt"><b>${esc(c.name)}${c.pinned ? '<i class="pinmark" aria-label="Pinned"></i>' : ''}${S.homeIds?.has(c.id) ? '<i class="home-tag">home</i>' : ''}${stepTag(c)}</b><small>${subline(c, showPath)}</small></span></button>
     ${href ? `<a class="go" href="${esc(href)}"${linkTarget()} draggable="false" data-act="open" data-id="${c.id}" aria-label="Open ${esc(c.name)} in Claude"><span>${ICON.go}</span></a>`
     : `<button class="go none" data-act="detail" data-id="${c.id}" aria-label="No link yet"><span>${ICON.more}</span></button>`}</div>`;
 }
@@ -741,6 +809,7 @@ function renderMain() {
 
   if (!S.loaded) { el.innerHTML = '<p class="muted" style="text-align:center;margin-top:40px">Loading…</p>'; return; }
   if (S.view === 'detail') return renderDetail($('#content'));
+  if (S.view === 'config') return renderConfig(el);
 
   if (S.view === 'archive') {
     const list = archived().filter(match);
@@ -748,8 +817,8 @@ function renderMain() {
     const inside = (g) => { const ids = [g.id, ...descendants(g.id)]; return S.chats.filter((c) => ids.includes(c.section_id)).length; };
     const groupsHTML = gs.length ? `<h3 class="arch-h">Groups</h3><div class="flat glass" style="gap:0;margin-bottom:16px">${gs.map((g) => `<div class="arch-row${colorCls(g.color)}">${gIcon(g)}<div style="flex:1;min-width:0"><b>${esc(g.name)}</b><span class="muted">${inside(g)} item${inside(g) === 1 ? '' : 's'} inside, archived ${ago(g.archived_at)}</span></div>
           <button class="pill-btn" data-act="unarchive-group" data-id="${g.id}">Unarchive</button><button class="pill-btn warn" data-act="delete-group-forever" data-id="${g.id}">Delete</button></div>`).join('')}</div>` : '';
-    if (!list.length && gs.length) { el.innerHTML = groupsHTML; return; }
-    el.innerHTML = groupsHTML + (list.length && gs.length ? '<h3 class="arch-h">Items</h3>' : '') + (list.length
+    if (!list.length && gs.length) { el.innerHTML = tabsHTML() + groupsHTML; return; }
+    el.innerHTML = tabsHTML() + groupsHTML + (list.length && gs.length ? '<h3 class="arch-h">Items</h3>' : '') + (list.length
       ? `<div class="flat glass" style="gap:0">${list.map((c) => `<div class="arch-row"><button data-act="detail" data-id="${c.id}"><b>${esc(c.name)}</b><span class="muted">${esc(pathOf(secOf(c)))}, archived ${ago(c.archived_at)}</span></button>
           <button class="pill-btn" data-act="unarchive" data-id="${c.id}">Unarchive</button><button class="pill-btn warn" data-act="delete-chat" data-id="${c.id}">Delete</button></div>`).join('')}</div>`
       : `<div class="empty glass"><h2>${S.filter ? 'No matches' : 'Archive is empty'}</h2><p>${S.filter ? 'Nothing archived matches that.' : 'Drag an item or a group onto the archive box that pops up while dragging.'}</p></div>`);
@@ -767,7 +836,7 @@ function renderMain() {
   const p = pins();
   const ap = activeProject();
   S.homeIds = new Set(S.page === 'active' && ap ? [homeChat(ap)?.id].filter(Boolean) : []);
-  el.innerHTML = `<nav class="tabs glass"><button class="tab${S.page === 'active' ? ' on' : ''}" data-act="page" data-v="active">${ICON.star}${ap ? esc(ap.name) : 'Active'}</button><button class="tab${S.page === 'parked' ? ' on' : ''}" data-act="page" data-v="parked">${ICON.car}Parked<small>${parkedProjects().length}</small></button></nav>
+  el.innerHTML = `${tabsHTML()}
     ${p.length ? `<div class="pins" id="pins">${p.map((c) => {
       const href = linkFor(c);
       const inner = `<span class="kic">${kindIcon(c.kind)}</span><span><em class="pin-g">${esc(secOf(c)?.name || '')}</em> ${esc(c.name)}</span>`;
@@ -782,23 +851,82 @@ function renderMain() {
 }
 
 // ---------- active project dashboard ----------
-const DOC_KEYS = ['summary', 'tools', 'accounts', 'links'];
-const DOC_TITLE = { summary: 'Summary and next step', tools: 'Tools and stack', accounts: 'Accounts and passwords', links: 'Links' };
-const docEmpty = (d, k) => (k === 'summary' ? !(d.summary || d.next) : !(Array.isArray(d[k]) && d[k].length));
-function unknownHTML(s, keys) {
-  const h = homeChat(s);
-  return `<p class="unk">Unknown</p><div class="unk-btns"><button class="pill-btn" data-act="copy-prompt" data-id="${s.id}" data-k="${keys.join(',')}">${ICON.copy}Copy prompt</button>
-    ${h ? `<a class="pill-btn" href="${esc(linkFor(h))}"${linkTarget()} data-act="open" data-await="1" data-id="${h.id}">${ICON.go}Open ${esc(h.name)}</a>` : `<span class="muted">Add a chat to this project first</span>`}</div>`;
-}
-function docCard(s, k) {
+// Doc v2 (v1 docs read through normDoc): status, now, next, details, tools{name,role,url},
+// accounts{name,item,vault,link}, env{name,where}, links{label,url}, notes.
+const STATUSES = ['Idea', 'Scoping', 'Building', 'Testing', 'Live', 'Paused', 'Blocked'];
+const statusCls = (t) => {
+  const x = String(t || '').toLowerCase();
+  if (/live|done|shipped/.test(x)) return 'st-ok';
+  if (/block|stuck|broken/.test(x)) return 'st-bad';
+  if (/pause|wait|hold/.test(x)) return 'st-mute';
+  if (/test|review|deploy/.test(x)) return 'st-warn';
+  return 'st-go';
+};
+function normDoc(s) {
   const d = docOf(s);
-  let body;
-  if (docEmpty(d, k)) body = unknownHTML(s, [k]);
-  else if (k === 'summary') body = `${d.summary ? `<p>${esc(d.summary)}</p>` : ''}${d.next ? `<div class="next"><b>Next</b><span>${esc(d.next)}</span></div>` : ''}`;
-  else if (k === 'tools') body = `<div class="tags">${d.tools.map((t) => `<span>${esc(t)}</span>`).join('')}</div>`;
-  else if (k === 'accounts') body = d.accounts.map((a) => `<div class="acct"><b>${esc(a.name)}</b><span>${ICON.lock}${esc([a.item, a.vault].filter(Boolean).join(' · ') || 'Not saved yet')}</span></div>`).join('');
-  else body = d.links.map((l) => `<a class="lnk" href="${esc(l.url)}" target="_blank" rel="noopener"><b>${esc(l.label || 'Link')}</b><span>${esc(l.url.replace(/^https?:\/\//, ''))}</span>${ICON.go}</a>`).join('');
-  return `<section class="dcard glass"><div class="dcard-h"><h3>${DOC_TITLE[k]}</h3><button class="more" data-act="doc-edit" data-id="${s.id}" data-k="${k}" aria-label="Edit ${DOC_TITLE[k]}">${ICON.edit}</button></div>${body}</section>`;
+  return {
+    status: d.status || '', now: d.now || d.summary || '', next: d.next || '',
+    details: Array.isArray(d.details) ? d.details : [],
+    tools: (Array.isArray(d.tools) ? d.tools : []).map((t) => (typeof t === 'string' ? { name: t, role: '', url: '' } : { name: t.name || '', role: t.role || '', url: t.url || '' })).filter((t) => t.name),
+    accounts: (Array.isArray(d.accounts) ? d.accounts : []).map((a) => ({ name: a.name || '', item: a.item || '', vault: a.vault || '', link: a.link || '' })).filter((a) => a.name),
+    env: Array.isArray(d.env) ? d.env : [], links: Array.isArray(d.links) ? d.links : [], notes: Array.isArray(d.notes) ? d.notes : [],
+    updated_at: d.updated_at,
+  };
+}
+// Sections the "Fill in with Claude" prompt can ask for.
+const FILL = {
+  overview: { title: 'Status, now and next', empty: (d) => !(d.now || d.next) },
+  tools: { title: 'Stack', empty: (d) => !d.tools.length },
+  accounts: { title: 'Accounts', empty: (d) => !d.accounts.length },
+  env: { title: 'Env vars', empty: (d) => !d.env.length },
+  links: { title: 'Links', empty: (d) => !d.links.length },
+  notes: { title: 'Deploy notes', empty: (d) => !d.notes.length },
+};
+const missingOf = (d) => Object.keys(FILL).filter((k) => FILL[k].empty(d));
+const appLink = (d) => d.links.find((l) => /^(live|app|site|website|prod)/i.test(l.label)) || d.links.find((l) => /\.vercel\.app|netlify\.app|pages\.dev/i.test(l.url) && !/vercel\.com/i.test(l.url));
+const LINK_ICON = {
+  github: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-4 1.3-4-2-6-2.5m12 4.5v-3.4a3 3 0 0 0-.8-2.3c2.7-.3 5.5-1.3 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.7 11.7 0 0 0-6 0C6.5 2.6 5.5 2.9 5.5 2.9a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.3c0 4.6 2.8 5.7 5.5 6a3 3 0 0 0-.8 2.3V21"/></svg>',
+  vercel: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4 22 20H2z"/></svg>',
+  supabase: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg>',
+  live: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
+  doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>',
+  link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
+};
+function linkIcon(l) {
+  const u = l.url.toLowerCase(), t = (l.label || '').toLowerCase();
+  if (u.includes('github.com')) return LINK_ICON.github;
+  if (u.includes('vercel.com')) return LINK_ICON.vercel;
+  if (u.includes('supabase.')) return LINK_ICON.supabase;
+  if (/docs\.|notion\.|\/doc/.test(u) || /doc/.test(t)) return LINK_ICON.doc;
+  if (/^(live|app|site|website|prod)/.test(t) || /\.vercel\.app|netlify\.app|pages\.dev/.test(u)) return LINK_ICON.live;
+  return LINK_ICON.link;
+}
+const linkChip = (l) => `<a class="lchip" href="${esc(l.url)}" target="_blank" rel="noopener">${linkIcon(l)}<span>${esc(l.label || l.url.replace(/^https?:\/\//, ''))}</span></a>`;
+const clip = (t, n = 90) => (t.length > n ? `<span class="clip" data-act="expand" title="Tap to show all"><span class="short">${esc(t.slice(0, n - 1).trimEnd())}…</span><span class="full">${esc(t)}</span></span>` : esc(t));
+// One project-level "Fill in with Claude" bar instead of buttons inside each card.
+function fillBar(s, keys, label) {
+  if (!keys.length) return '';
+  const h = homeChat(s);
+  return `<div class="fill glass"><div class="fill-t"><b>${label || 'Fill in with Claude'}</b><span>Missing: ${keys.map((k) => FILL[k].title).join(', ')}</span></div>
+    <div class="fill-b"><button class="pill-btn" data-act="copy-prompt" data-id="${s.id}" data-k="${keys.join(',')}">${ICON.copy}Copy prompt</button>
+    ${h ? `<a class="pill-btn accent" href="${esc(linkFor(h))}"${linkTarget()} data-act="open" data-await="1" data-id="${h.id}">${ICON.go}Open ${esc(h.name)}</a>` : '<span class="muted">Add a chat to this project first</span>'}</div></div>`;
+}
+function heroHTML(s, d, config) {
+  const app = appLink(d);
+  const since = s.activated_at ? `Active since ${new Date(s.activated_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : (s.status === 'active' ? 'Active' : 'Parked');
+  return `<section class="phero glass${colorCls(colorOf(s))}">${gIcon(s)}
+    <div class="phero-t"><div class="phero-n"><h2>${esc(s.name)}</h2>${d.status ? `<span class="st ${statusCls(d.status)}">${esc(d.status)}</span>` : ''}</div>
+      <small>${since}${d.updated_at ? ` · updated ${ago(d.updated_at)}` : ''}</small></div>
+    <div class="phero-a">${app ? `<a class="pill-btn accent" href="${esc(app.url)}" target="_blank" rel="noopener">${LINK_ICON.live}Open app</a>` : ''}
+      ${config ? '' : `<button class="pill-btn" data-act="config" data-id="${s.id}">${ICON.gear}Setup</button>`}
+      ${s.status === 'active' ? `<button class="pill-btn" data-act="park" data-id="${s.id}">${ICON.car}Park</button>` : `<button class="pill-btn" data-act="make-active" data-id="${s.id}">${ICON.star}Make active</button>`}
+      <button class="more" data-act="sec-menu" data-id="${s.id}" aria-label="Edit ${esc(s.name)}">${ICON.more}</button></div></section>`;
+}
+function nowNextHTML(s, d) {
+  const empty = !(d.now || d.next);
+  return `<section class="dcard glass nn"><div class="dcard-h"><h3>Now and next</h3><button class="more" data-act="doc-edit" data-id="${s.id}" data-k="overview" aria-label="Edit now and next">${ICON.edit}</button></div>
+    ${empty ? '<p class="muted">Not filled in yet.</p>' : `${d.now ? `<div class="nl"><b>Now</b><span>${clip(d.now)}</span></div>` : ''}${d.next ? `<div class="nl nx"><b>Next</b><span>${clip(d.next)}</span></div>` : ''}`}
+    ${d.details.length ? `<details class="det"><summary>${d.details.length} detail${d.details.length > 1 ? 's' : ''}</summary><ul>${d.details.slice(0, 3).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></details>` : ''}</section>`;
 }
 function activeHTML() {
   const s = activeProject();
@@ -810,43 +938,96 @@ function activeHTML() {
       ${list.length ? `<div class="pick-list" style="width:100%;text-align:left">${list.map((g) => `<div class="pick-row${colorCls(colorOf(g))}">${gIcon(g)}<b>${esc(g.name)}</b><button class="mk-act" data-act="make-active" data-id="${g.id}">${ICON.star}Make active</button></div>`).join('')}</div>`
         : `<button class="add-btn" data-act="sec-new">${ICON.plus}New group</button>`}</div>${tray}</div>`;
   }
-  const d = docOf(s);
-  const missing = DOC_KEYS.filter((k) => docEmpty(d, k));
-  const since = s.activated_at ? `Active since ${new Date(s.activated_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : 'Active';
-  const proj = s.project_uuid ? `<a class="pill-btn" href="${esc(projectLink(s.project_uuid))}"${linkTarget()}>Open project</a>` : '';
-  return `<div class="dash">
-    <section class="phero glass${colorCls(colorOf(s))}"><div class="phero-h">${gIcon(s)}<div><h2>${esc(s.name)}</h2><span class="muted">${since}${d.updated_at ? ` · doc updated ${ago(d.updated_at)}` : ''}</span></div>
-      ${proj}<button class="pill-btn park-btn" data-act="park" data-id="${s.id}">${ICON.car}Park</button><button class="more" data-act="sec-menu" data-id="${s.id}" aria-label="Edit ${esc(s.name)}">${ICON.more}</button></div></section>
-    ${missing.length > 1 ? `<div class="allbar glass"><span>${missing.length} sections unknown</span><button class="pill-btn" data-act="copy-prompt" data-id="${s.id}" data-k="${missing.join(',')}">${ICON.copy}Copy prompt for all</button></div>` : ''}
-    <div class="dash-cols"><div>${docCard(s, 'summary')}${groupHTML(s, 0)}${tray}</div><div>${docCard(s, 'tools')}${docCard(s, 'accounts')}${docCard(s, 'links')}</div></div>
-  </div>`;
+  const d = normDoc(s);
+  const miss = missingOf(d);
+  return `<div class="dash">${heroHTML(s, d)}${nowNextHTML(s, d)}
+    ${groupHTML(s, 0)}
+    ${d.links.length ? `<div class="lchips">${d.links.map(linkChip).join('')}</div>` : ''}
+    ${fillBar(s, miss)}${tray}</div>`;
 }
+// ---------- project setup page ----------
+function cfgCard(s, k, title, body, emptyText) {
+  return `<section class="dcard glass"><div class="dcard-h"><h3>${title}</h3><button class="more" data-act="doc-edit" data-id="${s.id}" data-k="${k}" aria-label="Edit ${title}">${ICON.edit}</button></div>${body || `<p class="muted">${emptyText || 'Not filled in yet.'}</p>`}</section>`;
+}
+function renderConfig(el) {
+  const s = secById(S.configId);
+  if (!s) { S.view = 'main'; renderTop(); return renderContent(); }
+  const d = normDoc(s);
+  const tools = d.tools.map((t) => `<div class="row"><div class="row-t"><b>${esc(t.name)}</b>${t.role ? `<span>${esc(t.role)}</span>` : ''}</div>${t.url ? `<a class="pill-btn" href="${esc(t.url)}" target="_blank" rel="noopener">Dashboard${ICON.go}</a>` : ''}</div>`).join('');
+  const accts = d.accounts.map((a) => {
+    const inner = `<div class="row-t"><b>${esc(a.name)}</b><span>${ICON.lock}${esc([a.item, a.vault].filter(Boolean).join(' · ') || 'No 1Password item yet')}</span></div>${a.link ? `<span class="pill-btn accent">Open in 1Password</span>` : ''}`;
+    return a.link ? `<a class="row" href="${esc(a.link)}">${inner}</a>` : `<div class="row">${inner}</div>`;
+  }).join('');
+  const env = d.env.map((e) => `<div class="row"><code>${esc(e.name)}</code><span class="where">${esc(e.where || 'Not set yet')}</span></div>`).join('');
+  const links = d.links.map((l) => `<a class="row" href="${esc(l.url)}" target="_blank" rel="noopener"><span class="li">${linkIcon(l)}</span><div class="row-t"><b>${esc(l.label || 'Link')}</b><span>${esc(l.url.replace(/^https?:\/\//, ''))}</span></div>${ICON.go}</a>`).join('');
+  const notes = d.notes.length ? `<ul class="notes-ul">${d.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>` : '';
+  el.innerHTML = `<div class="dash cfg">${heroHTML(s, d, true)}
+    ${fillBar(s, missingOf(d))}
+    ${cfgCard(s, 'tools', 'Stack', tools)}
+    ${cfgCard(s, 'accounts', 'Accounts', accts && `${accts}<p class="hint-s">${ICON.lock}Only the 1Password item and vault are stored here. Never the password.</p>`)}
+    ${cfgCard(s, 'env', 'Env vars', env && `${env}<p class="hint-s">Names and where they're set. Values stay in Vercel.</p>`)}
+    ${cfgCard(s, 'links', 'Links', links)}
+    ${cfgCard(s, 'notes', 'Deploy notes', notes)}
+    <div class="cfg-foot"><button class="pill-btn" data-act="copy-prompt" data-id="${s.id}" data-k="${Object.keys(FILL).join(',')}">${ICON.copy}Copy prompt to refresh everything</button></div></div>`;
+}
+function openConfig(id) {
+  flushSaves(); closeSheet(); hideBanner();
+  if (S.panel) closePanel();
+  S.view = 'config'; S.configId = id;
+  renderTop(); renderContent(); scrollTo(0, 0);
+}
+// Settings → All tools: every tool across projects and who uses it.
+function openAllTools() {
+  const map = new Map();
+  for (const s of projects()) for (const t of normDoc(s).tools) {
+    const k = t.name.trim().toLowerCase();
+    if (!map.has(k)) map.set(k, { name: t.name.trim(), url: t.url, uses: [] });
+    const e = map.get(k); if (!e.url && t.url) e.url = t.url;
+    if (!e.uses.some((u) => u.id === s.id)) e.uses.push(s);
+  }
+  const rows = [...map.values()].sort((a, b) => b.uses.length - a.uses.length || a.name.localeCompare(b.name));
+  openSheet(`<h2>All tools</h2><p class="hint" style="margin-top:0">Built from every project's Stack. ${rows.length} tool${rows.length === 1 ? '' : 's'} across ${projects().length} projects.</p>
+    ${rows.length ? `<div class="tools-all">${rows.map((t) => `<div class="ta"><div class="ta-h"><b>${esc(t.name)}</b><small>${t.uses.length}</small>${t.url ? `<a class="pill-btn" href="${esc(t.url)}" target="_blank" rel="noopener">Dashboard</a>` : ''}</div>
+      <div class="ta-u">${t.uses.map((u) => `<button class="uchip${colorCls(colorOf(u))}" data-act="config" data-id="${u.id}">${esc(u.name)}</button>`).join('')}</div></div>`).join('')}</div>`
+      : '<p class="muted">No tools yet. Fill in a project\'s Stack on its Setup page.</p>'}`);
+}
+// ---------- prompt + editing ----------
 const PROMPT_GUIDE = {
-  summary: '- summary: 1 to 2 sentences on what the project is and where it stands right now. next: the single next step.',
-  tools: '- tools: the services, APIs, and tools this project uses (for example Vercel, Supabase, GitHub).',
-  accounts: '- accounts: each account this project needs, with the 1Password item name and vault where its login is saved.',
-  links: '- links: the live app URL, GitHub repo, Vercel project, Supabase project, and any other key links.',
+  overview: '- status: one word from Idea, Scoping, Building, Testing, Live, Paused, Blocked.\n- now: one short line (under 90 characters) on where the project stands right now.\n- next: one short line (under 90 characters) with the single next step.\n- details: up to 3 short bullets with anything important about the current state.',
+  tools: '- tools: each service, API, or tool the project uses, with what it is for (role) and its dashboard link (url) if you know it.',
+  accounts: '- accounts: each account the project needs, with the 1Password item title (item), the vault, and the 1Password private link (link, starts with https://start.1password.com/open/i?) if I give it to you.',
+  env: '- env: each environment variable NAME and where it is set (for example Vercel). Never the value.',
+  links: '- links: the live app URL (label it "Live app"), GitHub repo, Vercel project, Supabase project, and other key links.',
+  notes: '- notes: short deploy notes, one per line (for example "Env var changes need a manual Vercel redeploy").',
 };
 const PROMPT_SHAPE = {
-  summary: '"summary":"...","next":"..."', tools: '"tools":["..."]',
-  accounts: '"accounts":[{"name":"...","item":"...","vault":"..."}]', links: '"links":[{"label":"...","url":"https://..."}]',
+  overview: '"status":"Building","now":"...","next":"...","details":["..."]',
+  tools: '"tools":[{"name":"...","role":"...","url":"https://..."}]',
+  accounts: '"accounts":[{"name":"...","item":"...","vault":"...","link":"https://start.1password.com/open/i?..."}]',
+  env: '"env":[{"name":"...","where":"Vercel"}]',
+  links: '"links":[{"label":"...","url":"https://..."}]',
+  notes: '"notes":["..."]',
 };
 function promptFor(s, keys) {
+  keys = keys.filter((k) => FILL[k]);
   return `Threads project update for "${s.name}".
 
-Fill in these sections of this project's doc in Threads: ${keys.map((k) => DOC_TITLE[k]).join(', ')}.
+Fill in these sections of this project's setup page in Threads: ${keys.map((k) => FILL[k].title).join(', ')}.
 ${keys.map((k) => PROMPT_GUIDE[k]).join('\n')}
 
 Rules:
-- Never include passwords, API keys, tokens, or any other secret value. For accounts, only give the account name and where its login is saved in 1Password (item name and vault).
+- Never include passwords, API keys, tokens, env var values, or any other secret. For accounts, only give the account name and where its login is saved in 1Password.
 - Use what you know from this chat and this project. If something is missing (like which 1Password item or vault), ask me first, then give the block.
 - Don't guess links. Only include ones you actually know.
 
 When you're done, reply with ONLY one JSON code block in exactly this shape:
-{"threads_project":1,"id":"${s.id}","project":"${s.name.replace(/"/g, '')}",${keys.map((k) => PROMPT_SHAPE[k]).join(',')}}`;
+{"threads_project":2,"id":"${s.id}","project":"${s.name.replace(/"/g, '')}",${keys.map((k) => PROMPT_SHAPE[k]).join(',')}}`;
 }
 function setDoc(s, patch, quiet) {
-  s.doc = { ...docOf(s), ...patch, updated_at: nowISO() };
+  const d = { ...docOf(s), ...patch, updated_at: nowISO() };
+  if ('now' in patch) delete d.summary; // v2 replaces the old paragraph
+  if ('tools' in patch) d.tools = patch.tools;
+  s.doc = d;
   renderContent();
   if (!quiet) toast('Saved');
   push([{ op: 'patch', table: 'sections', rows: [{ id: s.id, doc: s.doc }] }]);
@@ -861,7 +1042,8 @@ function makeActive(id) {
   rows.push({ id: s.id, status: 'active', activated_at: s.activated_at });
   collapsed.delete(s.id);
   S.page = 'active'; localStorage.setItem('threads.page', 'active');
-  closeSheet(); renderContent(); scrollTo(0, 0);
+  if (S.view !== 'config') S.view = 'main';
+  closeSheet(); renderTop(); renderContent(); scrollTo(0, 0);
   toast(cur && cur.id !== s.id ? `${s.name} is active. ${cur.name} parked.` : `${s.name} is active`);
   push([{ op: 'patch', table: 'sections', rows }]);
 }
@@ -873,29 +1055,47 @@ function parkProject(id) {
   push([{ op: 'patch', table: 'sections', rows: [{ id: s.id, status: 'parked' }] }]);
 }
 const lines = (t) => String(t || '').split('\n').map((x) => x.trim()).filter(Boolean);
+const cells = (t) => lines(t).map((l) => l.split('|').map((x) => x.trim()));
+const URL_OK = (u) => /^https?:\/\//i.test(u || '');
+const OP_OK = (u) => /^(https:\/\/(start|my)\.1password\.(com|ca|eu)\/|onepassword:\/\/)/i.test(u || '');
+const EDIT = {
+  tools: { hint: 'One per line: Name | what it\'s for | dashboard link (optional)', ph: 'Supabase | Database (Loop project) | https://supabase.com/dashboard/project/...',
+    out: (d) => d.tools.map((t) => [t.name, t.role, t.url].filter((x, i) => x || i < 2).join(' | ')) },
+  accounts: { hint: 'One per line: Account | 1Password item | Vault | 1Password private link (optional). Never type the password.', ph: 'Supabase (Loop) | Supabase | Personal | https://start.1password.com/open/i?...',
+    out: (d) => d.accounts.map((a) => [a.name, a.item, a.vault, a.link].filter((x, i) => x || i < 3).join(' | ')) },
+  env: { hint: 'One per line: NAME | where it\'s set. Names only, never values.', ph: 'SUPABASE_URL | Vercel', out: (d) => d.env.map((e) => `${e.name} | ${e.where}`) },
+  links: { hint: 'One per line: Label | https://link. Label the live app "Live app" to get the Open app button.', ph: 'Live app | https://glance.vercel.app', out: (d) => d.links.map((l) => `${l.label} | ${l.url}`) },
+  notes: { hint: 'One note per line.', ph: 'Env var changes need a manual Vercel redeploy', out: (d) => d.notes },
+};
 function openDocEdit(id, k) {
-  const s = secById(id), d = docOf(s);
+  const s = secById(id), d = normDoc(s);
   let body;
-  if (k === 'summary') body = `<label class="field"><span>Summary</span><textarea class="notes" id="de-summary" placeholder="What it is and where it stands">${esc(d.summary || '')}</textarea></label>
-    <label class="field"><span>Next step</span><input class="inp" id="de-next" value="${esc(d.next || '')}" placeholder="The one next thing to do" maxlength="400"></label>`;
-  else if (k === 'tools') body = `<label class="field"><span>One per line</span><textarea class="notes" id="de-text" placeholder="Vercel\nSupabase\nGitHub">${esc((d.tools || []).join('\n'))}</textarea></label>`;
-  else if (k === 'accounts') body = `<p class="hint">One per line: Account | 1Password item | Vault. Never type the password itself.</p>
-    <textarea class="notes" id="de-text" placeholder="Supabase (Loop project) | Supabase | Personal">${esc((d.accounts || []).map((a) => [a.name, a.item, a.vault].join(' | ')).join('\n'))}</textarea>`;
-  else body = `<p class="hint">One per line: Label | https://link</p>
-    <textarea class="notes" id="de-text" placeholder="Live app | https://cour.vercel.app">${esc((d.links || []).map((l) => `${l.label} | ${l.url}`).join('\n'))}</textarea>`;
-  openSheet(`<h2>${DOC_TITLE[k]}</h2>${body}<p class="err" id="de-err"></p><button class="btn" data-act="doc-save" data-id="${id}" data-k="${k}">Save</button>
+  if (k === 'overview') body = `<div class="field"><span>Status</span><div class="chips" id="de-status">${STATUSES.map((t) => `<button class="chip${d.status === t ? ' on' : ''}" data-act="chip" data-v="${t}">${t}</button>`).join('')}</div></div>
+    <label class="field"><span>Now <em class="cnt" data-for="de-now"></em></span><input class="inp" id="de-now" value="${esc(d.now)}" placeholder="Where it stands right now" maxlength="400"></label>
+    <label class="field"><span>Next <em class="cnt" data-for="de-next"></em></span><input class="inp" id="de-next" value="${esc(d.next)}" placeholder="The one next step" maxlength="400"></label>
+    <label class="field"><span>Details (up to 3, one per line)</span><textarea class="notes" id="de-details" style="min-height:90px">${esc(d.details.join('\n'))}</textarea></label>`;
+  else body = `<p class="hint">${EDIT[k].hint}</p><textarea class="notes" id="de-text" placeholder="${esc(EDIT[k].ph)}">${esc(EDIT[k].out(d).join('\n'))}</textarea>`;
+  openSheet(`<h2>${FILL[k].title}</h2>${body}<p class="err" id="de-err"></p><button class="btn" data-act="doc-save" data-id="${id}" data-k="${k}">Save</button>
     <button class="btn ghost" data-act="copy-prompt" data-id="${id}" data-k="${k}">${ICON.copy}Copy prompt to fill it from Claude</button>`);
+  counts();
 }
+function counts() { $$('.cnt').forEach((c) => { const n = $('#' + c.dataset.for)?.value.length || 0; c.textContent = n > 90 ? `${n}/90, will be shortened on the card` : ''; }); }
 function saveDocEdit(id, k) {
-  const s = secById(id);
-  if (k === 'summary') return closeSheet(), setDoc(s, { summary: $('#de-summary').value.trim(), next: $('#de-next').value.trim() });
-  const ls = lines($('#de-text').value);
-  if (k === 'tools') return closeSheet(), setDoc(s, { tools: ls.slice(0, 40) });
-  const parts = ls.map((l) => l.split('|').map((x) => x.trim()));
-  if (k === 'accounts') return closeSheet(), setDoc(s, { accounts: parts.map(([name, item, vault]) => ({ name: name || '', item: item || '', vault: vault || '' })).filter((a) => a.name) });
-  const bad = parts.filter((x) => !/^https?:\/\//i.test(x[1] || x[0] || ''));
-  if (bad.length) { $('#de-err').textContent = 'Each line needs a link starting with https://'; return; }
-  closeSheet(); setDoc(s, { links: parts.map((x) => (x.length > 1 ? { label: x[0], url: x[1] } : { label: 'Link', url: x[0] })) });
+  const s = secById(id), err = (m) => { $('#de-err').textContent = m; };
+  let patch;
+  if (k === 'overview') patch = { status: val('de-status') || '', now: $('#de-now').value.trim(), next: $('#de-next').value.trim(), details: lines($('#de-details').value).slice(0, 3) };
+  else {
+    const c = cells($('#de-text').value);
+    if (k === 'tools') { if (c.some((x) => x[2] && !URL_OK(x[2]))) return err('Dashboard links need to start with https://'); patch = { tools: c.map(([name, role, url]) => ({ name, role: role || '', url: url || '' })).filter((t) => t.name) }; }
+    if (k === 'accounts') { if (c.some((x) => x[3] && !OP_OK(x[3]))) return err('The 4th part should be a 1Password private link (https://start.1password.com/open/i?...).'); patch = { accounts: c.map(([name, item, vault, link]) => ({ name, item: item || '', vault: vault || '', link: link || '' })).filter((a) => a.name) }; }
+    if (k === 'env') {
+      if (lines($('#de-text').value).some((l) => /=\s*\S/.test(l.split('|')[0]))) return err('Looks like a value is in there. Only type the variable name, like SUPABASE_URL.');
+      patch = { env: c.map(([name, where]) => ({ name: name.replace(/=.*/, '').trim(), where: where || '' })).filter((e) => e.name) };
+    }
+    if (k === 'links') { const bad = c.filter((x) => !URL_OK(x.length > 1 ? x[1] : x[0])); if (bad.length) return err('Each line needs a link starting with https://'); patch = { links: c.map((x) => (x.length > 1 ? { label: x[0], url: x[1] } : { label: 'Link', url: x[0] })) }; }
+    if (k === 'notes') patch = { notes: lines($('#de-text').value).slice(0, 30) };
+  }
+  closeSheet(); setDoc(s, patch);
 }
 
 // ---------- paste-back from Claude ----------
@@ -1072,7 +1272,8 @@ function openDetail(id) {
 }
 function backToMain() {
   flushSaves();
-  S.view = S.fromArchive ? 'archive' : 'main'; S.detailId = null; S.fromArchive = false;
+  if (S.view === 'detail' && S.fromConfig) { S.view = 'config'; S.detailId = null; S.fromConfig = false; renderTop(); renderContent(); return; }
+  S.view = S.fromArchive ? 'archive' : 'main'; S.detailId = null; S.fromArchive = false; S.fromConfig = false;
   renderTop(); renderContent();
 }
 
@@ -1321,6 +1522,8 @@ function openSettings() {
     </section>
     <section class="set"><h3>Sync</h3><p class="muted">${syncChat() ? `Sync opens <b>${esc(pathOf(secOf(syncChat())))} · ${esc(syncChat().name)}</b>.` : 'Not set up yet.'}</p>
       <button class="btn ghost" data-act="sync-setup">${ICON.sync}${syncChat() ? 'Change sync chat' : 'Set up Sync'}</button></section>
+    <section class="set"><h3>All tools</h3><p class="muted">Every tool across your projects, and which projects use it.</p>
+      <button class="btn ghost" data-act="all-tools">${ICON.gear}See all tools</button></section>
     <section class="set"><h3>Import chats</h3><p class="muted">Bring in a list Claude sorted for you. Safe to import the same list twice: anything already saved gets skipped.</p>
       <button class="btn ghost" data-act="import-open">${ICON.clip}Import a list</button></section>
     <button class="btn warn" data-act="signout">Sign out on this device</button>`);
@@ -1381,20 +1584,35 @@ function resolvePath(parts, plan) {
   }
   return parent;
 }
-const SECRETISH = /pass(word|code|phrase)?|secret|token|api[_ -]?key|private[_ -]?key/i;
+const SECRETISH = /pass(word|code|phrase)?|secret|token|api[_ -]?key|private[_ -]?key|^value$|^val$/i;
 function parseProjectUpdate(j) {
   const s = (j.id && secById(j.id)) || projects().find((x) => x.name.toLowerCase() === String(j.project || '').trim().toLowerCase());
   if (!s) return { error: `There's no project called "${j.project || '?'}" in Threads. Check the name, or add the group first.` };
   const patch = {}, str = (v, n) => String(v ?? '').trim().slice(0, n);
   let dropped = 0;
-  if ('summary' in j) patch.summary = str(j.summary, 1500);
+  const scan = (o, keep) => Object.keys(o || {}).forEach((k) => { if (!keep.includes(k) && SECRETISH.test(k)) dropped++; });
+  if ('status' in j) patch.status = str(j.status, 24);
+  if ('now' in j) patch.now = str(j.now, 400);
+  else if ('summary' in j) patch.now = str(j.summary, 400); // v1
   if ('next' in j) patch.next = str(j.next, 400);
-  if (Array.isArray(j.tools)) patch.tools = j.tools.map((x) => str(x, 60)).filter(Boolean).slice(0, 40);
+  if (Array.isArray(j.details)) patch.details = j.details.map((x) => str(x, 200)).filter(Boolean).slice(0, 3);
+  if (Array.isArray(j.notes)) patch.notes = j.notes.map((x) => str(x, 300)).filter(Boolean).slice(0, 30);
+  if (Array.isArray(j.tools)) patch.tools = j.tools.slice(0, 40).map((t) => {
+    if (typeof t === 'string') return { name: str(t, 60), role: '', url: '' };
+    scan(t, ['name', 'role', 'url']);
+    return { name: str(t?.name, 60), role: str(t?.role, 120), url: URL_OK(t?.url) ? str(t.url, 500) : '' };
+  }).filter((t) => t.name);
   if (Array.isArray(j.accounts)) patch.accounts = j.accounts.slice(0, 40).map((x) => {
-    Object.keys(x || {}).forEach((k) => { if (!['name', 'item', 'vault'].includes(k) && SECRETISH.test(k)) dropped++; });
-    return { name: str(x?.name, 80), item: str(x?.item, 120), vault: str(x?.vault, 60) };
+    scan(x, ['name', 'item', 'vault', 'link']);
+    return { name: str(x?.name, 80), item: str(x?.item, 120), vault: str(x?.vault, 60), link: OP_OK(x?.link) ? str(x.link, 600) : '' };
   }).filter((x) => x.name);
-  if (Array.isArray(j.links)) patch.links = j.links.slice(0, 40).map((x) => ({ label: str(x?.label, 60), url: str(x?.url, 500) })).filter((x) => /^https?:\/\//i.test(x.url));
+  if (Array.isArray(j.env)) patch.env = j.env.slice(0, 60).map((x) => {
+    scan(x, ['name', 'where']);
+    const n = String(x?.name ?? '');
+    if (n.includes('=')) dropped++;
+    return { name: str(n.split('=')[0], 80), where: str(x?.where, 60) };
+  }).filter((x) => x.name);
+  if (Array.isArray(j.links)) patch.links = j.links.slice(0, 40).map((x) => ({ label: str(x?.label, 60), url: str(x?.url, 500) })).filter((x) => URL_OK(x.url));
   for (const k of Object.keys(patch)) if ((Array.isArray(patch[k]) && !patch[k].length) || patch[k] === '') delete patch[k];
   if (!Object.keys(patch).length) return { error: 'That update block was empty. Ask the chat to fill it in, then copy it again.' };
   return { project: s, patch, dropped };
@@ -1402,10 +1620,12 @@ function parseProjectUpdate(j) {
 function previewProject(r) {
   S.projPlan = r;
   const p = r.patch, b = [];
-  if (p.summary || p.next) b.push(`<h4>${DOC_TITLE.summary}</h4>${p.summary ? `<div>${esc(p.summary)}</div>` : ''}${p.next ? `<div><b>Next:</b> ${esc(p.next)}</div>` : ''}`);
-  if (p.tools) b.push(`<h4>${DOC_TITLE.tools}</h4><div>${esc(p.tools.join(', '))}</div>`);
-  if (p.accounts) b.push(`<h4>${DOC_TITLE.accounts}</h4>${p.accounts.map((a) => `<div>${esc(a.name)} <span class="muted">· ${esc([a.item, a.vault].filter(Boolean).join(' · ') || 'no 1Password item')}</span></div>`).join('')}`);
-  if (p.links) b.push(`<h4>${DOC_TITLE.links}</h4>${p.links.map((l) => `<div>${esc(l.label)} <span class="muted">· ${esc(l.url)}</span></div>`).join('')}`);
+  if (p.status || p.now || p.next || p.details) b.push(`<h4>${FILL.overview.title}</h4>${p.status ? `<div><span class="st ${statusCls(p.status)}">${esc(p.status)}</span></div>` : ''}${p.now ? `<div><b>Now:</b> ${esc(p.now)}</div>` : ''}${p.next ? `<div><b>Next:</b> ${esc(p.next)}</div>` : ''}${(p.details || []).map((x) => `<div>• ${esc(x)}</div>`).join('')}`);
+  if (p.tools) b.push(`<h4>${FILL.tools.title}</h4>${p.tools.map((t) => `<div>${esc(t.name)}${t.role ? ` <span class="muted">· ${esc(t.role)}</span>` : ''}</div>`).join('')}`);
+  if (p.accounts) b.push(`<h4>${FILL.accounts.title}</h4>${p.accounts.map((a) => `<div>${esc(a.name)} <span class="muted">· ${esc([a.item, a.vault].filter(Boolean).join(' · ') || 'no 1Password item')}${a.link ? ' · has link' : ''}</span></div>`).join('')}`);
+  if (p.env) b.push(`<h4>${FILL.env.title}</h4>${p.env.map((e) => `<div><code>${esc(e.name)}</code> <span class="muted">· ${esc(e.where || '?')}</span></div>`).join('')}`);
+  if (p.links) b.push(`<h4>${FILL.links.title}</h4>${p.links.map((l) => `<div>${esc(l.label)} <span class="muted">· ${esc(l.url)}</span></div>`).join('')}`);
+  if (p.notes) b.push(`<h4>${FILL.notes.title}</h4>${p.notes.map((n) => `<div>• ${esc(n)}</div>`).join('')}`);
   openSheet(`<h2>Update ${esc(r.project.name)}?</h2><p class="hint" style="margin-top:0">Only these sections change. Everything else stays.</p>
     <div class="upd glass">${b.join('')}</div>${r.dropped ? `<p class="err">Ignored ${r.dropped} field${r.dropped > 1 ? 's' : ''} that looked like secrets.</p>` : ''}
     <button class="btn" data-act="proj-go">Update ${esc(r.project.name)}</button><button class="btn ghost" data-act="close">Cancel</button>`);
@@ -1529,7 +1749,7 @@ function signOut(msg) {
 const siblingsOn = (el, sel) => el.parentElement.querySelectorAll(sel).forEach((b) => b.classList.toggle('on', b === el));
 const A = {
   open: (el, ev) => { if (S.dragging) { ev.preventDefault(); return; } markOpened(el.dataset.id); if (el.dataset.await) awaitPaste('update'); },
-  detail: (el) => { if (S.dragging) return; S.fromArchive = S.view === 'archive'; openDetail(el.dataset.id); },
+  detail: (el) => { if (S.dragging) return; S.fromArchive = S.view === 'archive'; S.fromConfig = S.view === 'config'; openDetail(el.dataset.id); },
   main: () => backToMain(),
   'panel-close': () => closePanel(),
   add: () => openAdd(),
@@ -1593,7 +1813,10 @@ const A = {
   'sec-archive': (el) => archiveGroup(el.dataset.id),
   'unarchive-group': (el) => unarchiveGroup(el.dataset.id),
   'import-open': () => openImport(),
-  page: (el) => { S.page = el.dataset.v; localStorage.setItem('threads.page', S.page); renderContent(); scrollTo(0, 0); },
+  page: (el) => { S.page = el.dataset.v; localStorage.setItem('threads.page', S.page); S.view = 'main'; renderTop(); renderContent(); scrollTo(0, 0); },
+  config: (el) => openConfig(el.dataset.id),
+  'all-tools': () => openAllTools(),
+  expand: (el) => el.classList.toggle('open'),
   'make-active': (el) => makeActive(el.dataset.id),
   park: (el) => { closeSheet(); parkProject(el.dataset.id); },
   'doc-edit': (el) => openDocEdit(el.dataset.id, el.dataset.k),
@@ -1665,6 +1888,7 @@ document.addEventListener('input', (ev) => {
     if (r.error) { err.textContent = r.error; return; }
     return t.id === 'add-text' ? showAddForm(r) : applyLink(t.dataset.id, v);
   }
+  if (t.id === 'de-now' || t.id === 'de-next') counts();
   if (t.id === 'g-icon-custom' && t.value.trim()) $$('#g-icon .emo').forEach((b) => b.classList.remove('on'));
   const c = (S.view === 'detail' || S.panel) && chatById(S.detailId);
   if (!c) return;
@@ -1699,7 +1923,7 @@ document.addEventListener('keydown', (ev) => {
   const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '');
   if (S.token && mod && ev.key.toLowerCase() === 'k') {
     ev.preventDefault();
-    if (S.view === 'detail') backToMain();
+    if (S.view === 'detail' || S.view === 'config') backToMain();
     closeSheet(); $('#filter')?.focus(); $('#filter')?.select(); return;
   }
   if (S.token && ((mod && ev.key.toLowerCase() === 'n') || (!mod && !typing && ev.key === 'n' && !$('#sheet').classList.contains('on')))) {

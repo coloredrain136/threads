@@ -17,18 +17,28 @@ const uuidOrNull = (v, label) => {
   return String(v).toLowerCase();
 };
 
-// Project doc: summary, next step, tools, accounts (where logins live, never the secret), links.
+// Project doc v2: status, now, next, details, tools, accounts (where logins live in
+// 1Password, never the secret), env (names + where set, never values), links, notes.
+// Older v1 docs (summary, string tools) are still accepted.
 const str = (v, n) => String(v ?? '').trim().slice(0, n);
+const URLRE = /^https?:\/\//i;
+const OPRE = /^(https:\/\/(start|my)\.1password\.(com|ca|eu)\/|onepassword:\/\/)/i;
+const list = (v, n) => (Array.isArray(v) ? v.slice(0, n) : []);
 function cleanDoc(d) {
   if (!d || typeof d !== 'object' || Array.isArray(d)) return {};
   const o = {};
-  if ('summary' in d) o.summary = str(d.summary, 1500);
+  if ('status' in d) o.status = str(d.status, 24);
+  if ('now' in d) o.now = str(d.now, 400);
   if ('next' in d) o.next = str(d.next, 400);
-  if ('tools' in d) o.tools = (Array.isArray(d.tools) ? d.tools : []).map((t) => str(t, 60)).filter(Boolean).slice(0, 40);
-  if ('accounts' in d) o.accounts = (Array.isArray(d.accounts) ? d.accounts : []).slice(0, 40)
-    .map((a) => ({ name: str(a?.name, 80), item: str(a?.item, 120), vault: str(a?.vault, 60) })).filter((a) => a.name);
-  if ('links' in d) o.links = (Array.isArray(d.links) ? d.links : []).slice(0, 40)
-    .map((l) => ({ label: str(l?.label, 60), url: str(l?.url, 500) })).filter((l) => /^https?:\/\//i.test(l.url));
+  if ('summary' in d) o.summary = str(d.summary, 1500);
+  if ('details' in d) o.details = list(d.details, 12).map((x) => str(x, 200)).filter(Boolean);
+  if ('notes' in d) o.notes = list(d.notes, 30).map((x) => str(x, 300)).filter(Boolean);
+  if ('tools' in d) o.tools = list(d.tools, 40).map((t) => (typeof t === 'string' ? { name: str(t, 60), role: '', url: '' }
+    : { name: str(t?.name, 60), role: str(t?.role, 120), url: URLRE.test(str(t?.url, 500)) ? str(t.url, 500) : '' })).filter((t) => t.name);
+  if ('accounts' in d) o.accounts = list(d.accounts, 40).map((a) => ({ name: str(a?.name, 80), item: str(a?.item, 120), vault: str(a?.vault, 60),
+    link: OPRE.test(str(a?.link, 600)) ? str(a.link, 600) : '' })).filter((a) => a.name);
+  if ('env' in d) o.env = list(d.env, 60).map((e) => ({ name: str(String(e?.name ?? '').split('=')[0], 80), where: str(e?.where, 60) })).filter((e) => e.name);
+  if ('links' in d) o.links = list(d.links, 40).map((l) => ({ label: str(l?.label, 60), url: str(l?.url, 500) })).filter((l) => URLRE.test(l.url));
   if ('updated_at' in d) o.updated_at = str(d.updated_at, 40);
   return o;
 }
