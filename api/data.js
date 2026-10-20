@@ -3,7 +3,7 @@ import { db, q } from './_lib/db.js';
 
 const T = { sections: 'threads_sections', chats: 'threads_chats', settings: 'threads_settings' };
 const COLS = {
-  sections: ['id', 'name', 'position', 'is_inbox', 'created_at', 'parent_id', 'color', 'icon', 'project_uuid', 'archived_at'],
+  sections: ['id', 'name', 'position', 'is_inbox', 'created_at', 'parent_id', 'color', 'icon', 'project_uuid', 'archived_at', 'status', 'doc', 'home_chat_id', 'activated_at'],
   chats: ['id', 'section_id', 'name', 'chat_uuid', 'kind', 'url', 'notes', 'todos', 'position', 'pinned', 'pin_position', 'archived_at', 'last_opened_at', 'created_at'],
   settings: ['id', 'value'],
 };
@@ -16,6 +16,22 @@ const uuidOrNull = (v, label) => {
   if (!UUID.test(String(v))) throw bad(`Bad ${label}.`);
   return String(v).toLowerCase();
 };
+
+// Project doc: summary, next step, tools, accounts (where logins live, never the secret), links.
+const str = (v, n) => String(v ?? '').trim().slice(0, n);
+function cleanDoc(d) {
+  if (!d || typeof d !== 'object' || Array.isArray(d)) return {};
+  const o = {};
+  if ('summary' in d) o.summary = str(d.summary, 1500);
+  if ('next' in d) o.next = str(d.next, 400);
+  if ('tools' in d) o.tools = (Array.isArray(d.tools) ? d.tools : []).map((t) => str(t, 60)).filter(Boolean).slice(0, 40);
+  if ('accounts' in d) o.accounts = (Array.isArray(d.accounts) ? d.accounts : []).slice(0, 40)
+    .map((a) => ({ name: str(a?.name, 80), item: str(a?.item, 120), vault: str(a?.vault, 60) })).filter((a) => a.name);
+  if ('links' in d) o.links = (Array.isArray(d.links) ? d.links : []).slice(0, 40)
+    .map((l) => ({ label: str(l?.label, 60), url: str(l?.url, 500) })).filter((l) => /^https?:\/\//i.test(l.url));
+  if ('updated_at' in d) o.updated_at = str(d.updated_at, 40);
+  return o;
+}
 
 function pick(table, row) {
   const o = {};
@@ -34,6 +50,9 @@ function pick(table, row) {
     if ('color' in o) o.color = COLORS.has(o.color) ? o.color : null;
     if ('icon' in o) o.icon = o.icon ? String(o.icon).slice(0, 16) : null;
     if ('project_uuid' in o) o.project_uuid = uuidOrNull(o.project_uuid, 'project link');
+    if ('status' in o) o.status = o.status === 'active' ? 'active' : 'parked';
+    if ('home_chat_id' in o) o.home_chat_id = uuidOrNull(o.home_chat_id, 'home chat');
+    if ('doc' in o) o.doc = cleanDoc(o.doc);
   }
   if (table === 'chats') {
     if ('chat_uuid' in o) o.chat_uuid = uuidOrNull(o.chat_uuid, 'chat link');

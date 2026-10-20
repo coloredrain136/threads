@@ -296,6 +296,69 @@ body.dragging{user-select:none;-webkit-user-select:none}
 .c-gold{--c:#f2c46d}.c-coral{--c:#ff8a65}.c-rose{--c:#f48fb1}.c-violet{--c:#b39ddb}
 .c-blue{--c:#64b5f6}.c-teal{--c:#4dd0e1}.c-green{--c:#81c784}.c-slate{--c:#90a4ae}
 
+/* ---------- pages + project dashboard ---------- */
+.tabs{display:flex;gap:6px;padding:4px;border-radius:999px;margin-bottom:14px;width:max-content;max-width:100%}
+.tab{height:38px;padding:0 16px 0 12px;border-radius:999px;display:flex;align-items:center;gap:8px;font-weight:650;font-size:15px;color:var(--ink-2)}
+.tab svg{width:18px;height:18px}
+.tab small{font-size:12px;font-weight:700;background:var(--hi);border-radius:999px;padding:1px 7px}
+.tab.on{background:var(--hi);color:var(--ink)}
+.tab.on svg{color:var(--dawn)}
+.dash{display:grid;gap:14px}
+.dash-cols{display:grid;gap:14px}
+.dash-cols > div{display:grid;gap:14px;align-content:start}
+.dash .sec > .sec-h > .grip{display:none}
+.phero{--c:var(--dawn);border-radius:var(--r-lg);padding:16px;position:relative;overflow:hidden}
+.phero::before{content:'';position:absolute;inset:0;background:radial-gradient(90% 90% at 0% 0%,color-mix(in srgb,var(--c) 24%,transparent),transparent 70%);pointer-events:none}
+.phero > *{position:relative}
+.phero-h{display:flex;align-items:center;gap:12px}
+.phero-h .gicon{width:46px;height:46px;border-radius:14px;font-size:24px}
+.phero-h h2{font-size:24px;font-weight:750;letter-spacing:-.02em;line-height:1.15}
+.phero-h .muted{font-size:13px}
+.phero-h > div{flex:1;min-width:0}
+.dcard{border-radius:var(--r-lg);padding:14px 16px}
+.dcard-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.dcard-h h3{flex:1;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
+.dcard-h .more{width:34px;height:34px}
+.dcard-h .more svg{width:17px;height:17px}
+.dcard p{color:var(--ink);line-height:1.5}
+.next{margin-top:10px;display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:var(--r-sm);background:color-mix(in srgb,var(--dawn) 16%,transparent);color:var(--ink);font-weight:560}
+.next b{color:var(--dawn);font-weight:700;flex:none}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{padding:5px 11px;border-radius:999px;background:var(--field);border:1px solid var(--line);font-size:14px;font-weight:560}
+.acct{display:flex;align-items:center;gap:10px;min-height:44px}
+.acct + .acct,.lnk + .lnk{box-shadow:inset 0 1px 0 var(--line)}
+.acct b{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct span{display:flex;align-items:center;gap:5px;color:var(--ink-2);font-size:13px;text-align:right}
+.acct span svg{width:14px;height:14px;flex:none;color:var(--dawn)}
+.lnk{display:flex;align-items:center;gap:10px;min-height:44px}
+.lnk b{font-weight:600;flex:none}
+.lnk span{flex:1;min-width:0;color:var(--ink-3);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lnk svg{width:16px;height:16px;color:var(--ink-3);flex:none}
+.unk{color:var(--ink-3);font-weight:600;margin-bottom:10px}
+.unk-btns{display:flex;flex-wrap:wrap;gap:8px}
+.unk-btns .pill-btn{display:inline-flex;align-items:center;gap:6px}
+.unk-btns svg{width:15px;height:15px}
+.unk-btns a.pill-btn{color:var(--dawn)}
+.allbar{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 14px;border-radius:var(--r-md)}
+.pill-btn svg{width:16px;height:16px;flex:none}
+.park-btn,.allbar .pill-btn{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+@media (max-width:430px){.top .add-btn{width:42px;padding:0;justify-content:center}.top .add-btn span{display:none}.top .icon-btn{width:38px}.top{gap:4px}}
+.allbar span{flex:1;font-weight:600;color:var(--ink-2)}
+.sec-sum{padding:0 14px 8px 46px;color:var(--ink-3);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:-4px}
+.mk-act{height:32px;padding:0 12px;border-radius:999px;background:color-mix(in srgb,var(--dawn) 20%,transparent);color:var(--dawn);font-size:13px;font-weight:700;flex:none;display:inline-flex;align-items:center;gap:5px}
+.mk-act svg{width:14px;height:14px}
+.mk-sm{width:34px;height:34px;padding:0;justify-content:center}
+.mk-sm svg{width:17px;height:17px}
+.home-tag{font-style:normal;font-size:11px;font-weight:700;color:var(--dawn);background:color-mix(in srgb,var(--dawn) 18%,transparent);border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:2px}
+.pick-list{display:grid;gap:8px}
+.pick-row{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 10px;border-radius:var(--r-md);background:var(--field);border:1px solid var(--line)}
+.pick-row b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hint{color:var(--ink-3);font-size:13px;margin:-6px 2px 12px}
+.upd{border-radius:var(--r-md);padding:12px 14px;margin-bottom:12px}
+.upd h4{font-size:13px;color:var(--ink-2);margin:8px 0 4px}
+.upd h4:first-child{margin-top:0}
+.upd div{font-size:15px;padding:2px 0}
+
 /* ---------- Mac / wide screens ---------- */
 .panel{display:none}
 @media (min-width: 900px){
@@ -310,6 +373,7 @@ body.dragging{user-select:none;-webkit-user-select:none}
   #secs{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));grid-auto-rows:4px;gap:0 16px;align-items:start}
   #secs > .sec{align-self:start}
   .new-sec{max-width:320px}
+  .dash-cols{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start}
   body.has-panel .app{padding-right:calc(min(440px,40vw) + 48px)}
   .panel{display:block;position:fixed;top:16px;right:16px;bottom:16px;width:min(440px,40vw);overflow:auto;z-index:30;
     border-radius:26px;padding:10px 16px 24px;background:var(--sheet);border:1px solid var(--line);
@@ -352,6 +416,12 @@ const ICON = {
   grip: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>',
   chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
   clip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/></svg>',
+  car: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16V11l2-5h10l2 5v5"/><rect x="3" y="11" width="18" height="6" rx="1.5"/><circle cx="7.5" cy="14" r=".9" fill="currentColor"/><circle cx="16.5" cy="14" r=".9" fill="currentColor"/><path d="M6 17v2M18 17v2"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>',
+  sync: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16m0 4v-4h-4"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>',
+  edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
   go: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>',
   check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>',
   folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
@@ -470,6 +540,7 @@ const S = {
   sections: [], chats: [], settings: {},
   view: 'main', detailId: null, filter: '', dragging: false, loaded: false,
 };
+S.page = localStorage.getItem('threads.page') === 'parked' ? 'parked' : 'active';
 const collapsed = new Set(JSON.parse(localStorage.getItem('threads.collapsed') || '[]'));
 const dismissed = new Set();
 
@@ -502,6 +573,22 @@ const chatsIn = (sid) => active().filter((c) => secOf(c)?.id === sid).sort(bySor
 const totalIn = (sid) => chatsIn(sid).length + children(sid).reduce((n, s) => n + totalIn(s.id), 0);
 const pins = () => active().filter((c) => c.pinned).sort(bySort('pin_position'));
 const colorCls = (c) => (c ? ` c-${c}` : '');
+// Projects = top-level groups other than Inbox. One can be active; the rest are parked.
+const projects = () => children(null).filter((s) => !s.is_inbox);
+const activeProject = () => projects().find((s) => s.status === 'active') || null;
+const parkedProjects = () => projects().filter((s) => s.status !== 'active');
+const docOf = (s) => (s?.doc && typeof s.doc === 'object' ? s.doc : {});
+const allChatsIn = (s) => { const ids = new Set([s.id, ...descendants(s.id)]); return active().filter((c) => ids.has(secOf(c)?.id)); };
+// The chat that answers prompts: chosen one, else highest "Build N", else Scope, else newest.
+function homeChat(s) {
+  const list = allChatsIn(s).filter((c) => linkFor(c));
+  const set = s.home_chat_id && list.find((c) => c.id === s.home_chat_id);
+  if (set) return set;
+  const num = (c) => { const m = c.name.match(/build\s*(\d+)/i); return m ? +m[1] : -1; };
+  const builds = list.filter((c) => num(c) >= 0).sort((a, b) => num(b) - num(a));
+  if (builds.length) return builds[0];
+  return list.find((c) => /scope/i.test(c.name)) || [...list].sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))[0] || null;
+}
 const gIcon = (s) => `<span class="gicon">${s.icon ? esc(s.icon) : ICON.folder}</span>`;
 
 // ---------- server ----------
@@ -567,9 +654,10 @@ function renderTop() {
   if (S.view === 'archive') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1>Archive</h1>`;
   else if (S.view === 'detail') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1></h1>`;
   else top.innerHTML = `<h1>Threads</h1>
+      <button class="icon-btn" data-act="sync" aria-label="Sync chats from Claude">${ICON.sync}</button>
       <button class="icon-btn" data-act="archive" aria-label="Archive">${ICON.archive}${n ? `<span class="badge">${n}</span>` : ''}</button>
       <button class="icon-btn" data-act="settings" aria-label="Settings">${ICON.gear}</button>
-      <button class="add-btn" data-act="add">${ICON.plus}Add</button>`;
+      <button class="add-btn" data-act="add" aria-label="Add">${ICON.plus}<span>Add</span></button>`;
   $('#filter').placeholder = S.view === 'archive' ? 'Filter archive' : 'Filter';
 }
 
@@ -587,20 +675,23 @@ function chatRow(c, showPath) {
   const href = linkFor(c);
   const color = colorOf(secOf(c));
   return `<div class="chat${colorCls(color)}" data-id="${c.id}">${showPath ? '' : `<span class="grip cgrip" aria-label="Drag to move ${esc(c.name)}">${ICON.grip}</span>`}
-    <button class="chat-main" data-act="detail" data-id="${c.id}"><span class="kic">${kindIcon(c.kind)}</span><span class="txt"><b>${esc(c.name)}${c.pinned ? '<i class="pinmark" aria-label="Pinned"></i>' : ''}</b><small>${subline(c, showPath)}</small></span></button>
+    <button class="chat-main" data-act="detail" data-id="${c.id}"><span class="kic">${kindIcon(c.kind)}</span><span class="txt"><b>${esc(c.name)}${c.pinned ? '<i class="pinmark" aria-label="Pinned"></i>' : ''}${S.homeIds?.has(c.id) ? '<i class="home-tag">home</i>' : ''}</b><small>${subline(c, showPath)}</small></span></button>
     ${href ? `<a class="go" href="${esc(href)}"${linkTarget()} draggable="false" data-act="open" data-id="${c.id}" aria-label="Open ${esc(c.name)} in Claude"><span>${ICON.go}</span></a>`
     : `<button class="go none" data-act="detail" data-id="${c.id}" aria-label="No link yet"><span>${ICON.more}</span></button>`}</div>`;
 }
 const match = (c) => !S.filter || `${c.name} ${c.notes || ''} ${(c.todos || []).map((t) => t.text).join(' ')}`.toLowerCase().includes(S.filter.toLowerCase());
 
-function groupHTML(s, depth) {
+function groupHTML(s, depth, opt = {}) {
   const kids = children(s.id);
+  const d = docOf(s);
+  const sum = opt.parked && !depth && (d.summary || d.next) ? `<p class="sec-sum">${esc(d.next ? `Next: ${d.next}` : d.summary)}</p>` : '';
+  const mk = opt.parked && !depth && !s.is_inbox ? `<button class="mk-act mk-sm" data-act="make-active" data-id="${s.id}" title="Make active" aria-label="Make ${esc(s.name)} active">${ICON.star}</button>` : '';
   const list = chatsIn(s.id);
   const proj = s.project_uuid ? `<a class="proj-btn" href="${esc(projectLink(s.project_uuid))}"${linkTarget()} aria-label="Open ${esc(s.name)} project in Claude">${ICON.go}</a>` : '';
   return `<section class="sec${depth ? ' sub' : ' glass'}${colorCls(colorOf(s))}${collapsed.has(s.id) ? ' closed' : ''}" data-sid="${s.id}">
     <div class="sec-h"><span class="grip" aria-label="Drag to reorder ${esc(s.name)}">${ICON.grip}</span>${gIcon(s)}
       <button class="sec-name" data-act="sec-toggle" data-id="${s.id}"><span>${esc(s.name)}</span><small>${totalIn(s.id)}</small>${ICON.chev}</button>
-      ${proj}<button class="more" data-act="sec-menu" data-id="${s.id}" aria-label="Edit ${esc(s.name)}">${ICON.more}</button></div>
+      ${mk}${proj}<button class="more" data-act="sec-menu" data-id="${s.id}" aria-label="Edit ${esc(s.name)}">${ICON.more}</button></div>${sum}
     <div class="chat-list${kids.length ? '' : ' bare'}" data-sid="${s.id}">${list.map((c) => chatRow(c)).join('')}</div>
     <div class="subs" data-parent="${s.id}">${kids.map((k) => groupHTML(k, depth + 1)).join('')}</div></section>`;
 }
@@ -674,17 +765,165 @@ function renderMain() {
   }
 
   const p = pins();
-  el.innerHTML = `${p.length ? `<div class="pins" id="pins">${p.map((c) => {
+  const ap = activeProject();
+  S.homeIds = new Set(S.page === 'active' && ap ? [homeChat(ap)?.id].filter(Boolean) : []);
+  el.innerHTML = `<nav class="tabs glass"><button class="tab${S.page === 'active' ? ' on' : ''}" data-act="page" data-v="active">${ICON.star}${ap ? esc(ap.name) : 'Active'}</button><button class="tab${S.page === 'parked' ? ' on' : ''}" data-act="page" data-v="parked">${ICON.car}Parked<small>${parkedProjects().length}</small></button></nav>
+    ${p.length ? `<div class="pins" id="pins">${p.map((c) => {
       const href = linkFor(c);
       const inner = `<span class="kic">${kindIcon(c.kind)}</span><span><em class="pin-g">${esc(secOf(c)?.name || '')}</em> ${esc(c.name)}</span>`;
       return href ? `<a class="pin glass${colorCls(colorOf(secOf(c)))}" href="${esc(href)}"${linkTarget()} draggable="false" data-act="open" data-id="${c.id}">${inner}</a>`
         : `<button class="pin glass${colorCls(colorOf(secOf(c)))}" data-act="detail" data-id="${c.id}">${inner}</button>`;
     }).join('')}</div>` : ''}
     ${!active().length ? `<div class="empty glass" style="margin-bottom:14px"><h2>Add your first chat</h2><p>Copy a link from Claude (a chat, Cowork session, Code session, or project), then paste it here.</p><button class="add-btn" data-act="add">${ICON.plus}Add</button></div>` : ''}
-    <div class="secs" id="secs" data-parent="">${children(null).map((s) => groupHTML(s, 0)).join('')}</div>
-    <button class="new-sec" data-act="sec-new">New group</button>`;
+    ${S.page === 'active' ? activeHTML() : `<div class="secs" id="secs" data-parent="">${children(null).filter((s) => s.status !== 'active').map((s) => groupHTML(s, 0, { parked: true })).join('')}</div>
+    <button class="new-sec" data-act="sec-new">New group</button>`}`;
   initSortables();
   packGroups();
+}
+
+// ---------- active project dashboard ----------
+const DOC_KEYS = ['summary', 'tools', 'accounts', 'links'];
+const DOC_TITLE = { summary: 'Summary and next step', tools: 'Tools and stack', accounts: 'Accounts and passwords', links: 'Links' };
+const docEmpty = (d, k) => (k === 'summary' ? !(d.summary || d.next) : !(Array.isArray(d[k]) && d[k].length));
+function unknownHTML(s, keys) {
+  const h = homeChat(s);
+  return `<p class="unk">Unknown</p><div class="unk-btns"><button class="pill-btn" data-act="copy-prompt" data-id="${s.id}" data-k="${keys.join(',')}">${ICON.copy}Copy prompt</button>
+    ${h ? `<a class="pill-btn" href="${esc(linkFor(h))}"${linkTarget()} data-act="open" data-await="1" data-id="${h.id}">${ICON.go}Open ${esc(h.name)}</a>` : `<span class="muted">Add a chat to this project first</span>`}</div>`;
+}
+function docCard(s, k) {
+  const d = docOf(s);
+  let body;
+  if (docEmpty(d, k)) body = unknownHTML(s, [k]);
+  else if (k === 'summary') body = `${d.summary ? `<p>${esc(d.summary)}</p>` : ''}${d.next ? `<div class="next"><b>Next</b><span>${esc(d.next)}</span></div>` : ''}`;
+  else if (k === 'tools') body = `<div class="tags">${d.tools.map((t) => `<span>${esc(t)}</span>`).join('')}</div>`;
+  else if (k === 'accounts') body = d.accounts.map((a) => `<div class="acct"><b>${esc(a.name)}</b><span>${ICON.lock}${esc([a.item, a.vault].filter(Boolean).join(' · ') || 'Not saved yet')}</span></div>`).join('');
+  else body = d.links.map((l) => `<a class="lnk" href="${esc(l.url)}" target="_blank" rel="noopener"><b>${esc(l.label || 'Link')}</b><span>${esc(l.url.replace(/^https?:\/\//, ''))}</span>${ICON.go}</a>`).join('');
+  return `<section class="dcard glass"><div class="dcard-h"><h3>${DOC_TITLE[k]}</h3><button class="more" data-act="doc-edit" data-id="${s.id}" data-k="${k}" aria-label="Edit ${DOC_TITLE[k]}">${ICON.edit}</button></div>${body}</section>`;
+}
+function activeHTML() {
+  const s = activeProject();
+  const ib = inbox();
+  const tray = ib && !hiddenSec(ib) ? groupHTML(ib, 0) : '';
+  if (!s) {
+    const list = parkedProjects();
+    return `<div class="dash"><div class="empty glass"><h2>Pick your active project</h2><p>One project at a time. The rest wait in Parked.</p>
+      ${list.length ? `<div class="pick-list" style="width:100%;text-align:left">${list.map((g) => `<div class="pick-row${colorCls(colorOf(g))}">${gIcon(g)}<b>${esc(g.name)}</b><button class="mk-act" data-act="make-active" data-id="${g.id}">${ICON.star}Make active</button></div>`).join('')}</div>`
+        : `<button class="add-btn" data-act="sec-new">${ICON.plus}New group</button>`}</div>${tray}</div>`;
+  }
+  const d = docOf(s);
+  const missing = DOC_KEYS.filter((k) => docEmpty(d, k));
+  const since = s.activated_at ? `Active since ${new Date(s.activated_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : 'Active';
+  const proj = s.project_uuid ? `<a class="pill-btn" href="${esc(projectLink(s.project_uuid))}"${linkTarget()}>Open project</a>` : '';
+  return `<div class="dash">
+    <section class="phero glass${colorCls(colorOf(s))}"><div class="phero-h">${gIcon(s)}<div><h2>${esc(s.name)}</h2><span class="muted">${since}${d.updated_at ? ` · doc updated ${ago(d.updated_at)}` : ''}</span></div>
+      ${proj}<button class="pill-btn park-btn" data-act="park" data-id="${s.id}">${ICON.car}Park</button><button class="more" data-act="sec-menu" data-id="${s.id}" aria-label="Edit ${esc(s.name)}">${ICON.more}</button></div></section>
+    ${missing.length > 1 ? `<div class="allbar glass"><span>${missing.length} sections unknown</span><button class="pill-btn" data-act="copy-prompt" data-id="${s.id}" data-k="${missing.join(',')}">${ICON.copy}Copy prompt for all</button></div>` : ''}
+    <div class="dash-cols"><div>${docCard(s, 'summary')}${groupHTML(s, 0)}${tray}</div><div>${docCard(s, 'tools')}${docCard(s, 'accounts')}${docCard(s, 'links')}</div></div>
+  </div>`;
+}
+const PROMPT_GUIDE = {
+  summary: '- summary: 1 to 2 sentences on what the project is and where it stands right now. next: the single next step.',
+  tools: '- tools: the services, APIs, and tools this project uses (for example Vercel, Supabase, GitHub).',
+  accounts: '- accounts: each account this project needs, with the 1Password item name and vault where its login is saved.',
+  links: '- links: the live app URL, GitHub repo, Vercel project, Supabase project, and any other key links.',
+};
+const PROMPT_SHAPE = {
+  summary: '"summary":"...","next":"..."', tools: '"tools":["..."]',
+  accounts: '"accounts":[{"name":"...","item":"...","vault":"..."}]', links: '"links":[{"label":"...","url":"https://..."}]',
+};
+function promptFor(s, keys) {
+  return `Threads project update for "${s.name}".
+
+Fill in these sections of this project's doc in Threads: ${keys.map((k) => DOC_TITLE[k]).join(', ')}.
+${keys.map((k) => PROMPT_GUIDE[k]).join('\n')}
+
+Rules:
+- Never include passwords, API keys, tokens, or any other secret value. For accounts, only give the account name and where its login is saved in 1Password (item name and vault).
+- Use what you know from this chat and this project. If something is missing (like which 1Password item or vault), ask me first, then give the block.
+- Don't guess links. Only include ones you actually know.
+
+When you're done, reply with ONLY one JSON code block in exactly this shape:
+{"threads_project":1,"id":"${s.id}","project":"${s.name.replace(/"/g, '')}",${keys.map((k) => PROMPT_SHAPE[k]).join(',')}}`;
+}
+function setDoc(s, patch, quiet) {
+  s.doc = { ...docOf(s), ...patch, updated_at: nowISO() };
+  renderContent();
+  if (!quiet) toast('Saved');
+  push([{ op: 'patch', table: 'sections', rows: [{ id: s.id, doc: s.doc }] }]);
+}
+function makeActive(id) {
+  const s = secById(id);
+  if (!s || s.is_inbox) return;
+  const cur = activeProject();
+  const rows = [];
+  if (cur && cur.id !== s.id) { cur.status = 'parked'; rows.push({ id: cur.id, status: 'parked' }); }
+  s.status = 'active'; s.activated_at = nowISO();
+  rows.push({ id: s.id, status: 'active', activated_at: s.activated_at });
+  collapsed.delete(s.id);
+  S.page = 'active'; localStorage.setItem('threads.page', 'active');
+  closeSheet(); renderContent(); scrollTo(0, 0);
+  toast(cur && cur.id !== s.id ? `${s.name} is active. ${cur.name} parked.` : `${s.name} is active`);
+  push([{ op: 'patch', table: 'sections', rows }]);
+}
+function parkProject(id) {
+  const s = secById(id);
+  if (!s) return;
+  s.status = 'parked';
+  renderContent(); toast(`Parked ${s.name}`);
+  push([{ op: 'patch', table: 'sections', rows: [{ id: s.id, status: 'parked' }] }]);
+}
+const lines = (t) => String(t || '').split('\n').map((x) => x.trim()).filter(Boolean);
+function openDocEdit(id, k) {
+  const s = secById(id), d = docOf(s);
+  let body;
+  if (k === 'summary') body = `<label class="field"><span>Summary</span><textarea class="notes" id="de-summary" placeholder="What it is and where it stands">${esc(d.summary || '')}</textarea></label>
+    <label class="field"><span>Next step</span><input class="inp" id="de-next" value="${esc(d.next || '')}" placeholder="The one next thing to do" maxlength="400"></label>`;
+  else if (k === 'tools') body = `<label class="field"><span>One per line</span><textarea class="notes" id="de-text" placeholder="Vercel\nSupabase\nGitHub">${esc((d.tools || []).join('\n'))}</textarea></label>`;
+  else if (k === 'accounts') body = `<p class="hint">One per line: Account | 1Password item | Vault. Never type the password itself.</p>
+    <textarea class="notes" id="de-text" placeholder="Supabase (Loop project) | Supabase | Personal">${esc((d.accounts || []).map((a) => [a.name, a.item, a.vault].join(' | ')).join('\n'))}</textarea>`;
+  else body = `<p class="hint">One per line: Label | https://link</p>
+    <textarea class="notes" id="de-text" placeholder="Live app | https://cour.vercel.app">${esc((d.links || []).map((l) => `${l.label} | ${l.url}`).join('\n'))}</textarea>`;
+  openSheet(`<h2>${DOC_TITLE[k]}</h2>${body}<p class="err" id="de-err"></p><button class="btn" data-act="doc-save" data-id="${id}" data-k="${k}">Save</button>
+    <button class="btn ghost" data-act="copy-prompt" data-id="${id}" data-k="${k}">${ICON.copy}Copy prompt to fill it from Claude</button>`);
+}
+function saveDocEdit(id, k) {
+  const s = secById(id);
+  if (k === 'summary') return closeSheet(), setDoc(s, { summary: $('#de-summary').value.trim(), next: $('#de-next').value.trim() });
+  const ls = lines($('#de-text').value);
+  if (k === 'tools') return closeSheet(), setDoc(s, { tools: ls.slice(0, 40) });
+  const parts = ls.map((l) => l.split('|').map((x) => x.trim()));
+  if (k === 'accounts') return closeSheet(), setDoc(s, { accounts: parts.map(([name, item, vault]) => ({ name: name || '', item: item || '', vault: vault || '' })).filter((a) => a.name) });
+  const bad = parts.filter((x) => !/^https?:\/\//i.test(x[1] || x[0] || ''));
+  if (bad.length) { $('#de-err').textContent = 'Each line needs a link starting with https://'; return; }
+  closeSheet(); setDoc(s, { links: parts.map((x) => (x.length > 1 ? { label: x[0], url: x[1] } : { label: 'Link', url: x[0] })) });
+}
+
+// ---------- paste-back from Claude ----------
+// After you open a Claude chat from Threads, coming back offers to paste its reply.
+function awaitPaste(what) { S.awaitPaste = what; sessionStorage.setItem('threads.await', what); }
+function showPasteBanner() {
+  const b = $('#banner');
+  if (!b || S.view !== 'main') return;
+  b.innerHTML = `<div class="banner glass"><b>${S.awaitPaste === 'sync' ? 'Copied the sync reply?' : 'Copied the reply from Claude?'}</b><button class="add-btn" data-act="banner-paste">${ICON.clip}Paste</button><button class="x" data-act="banner-x" aria-label="Dismiss">×</button></div>`;
+}
+function openURL(url) {
+  if (/^https:/i.test(url) && !isIOS) window.open(url, '_blank', 'noopener');
+  else location.href = url;
+}
+function syncChat() { const id = S.settings.sync?.chat_id; return id ? chatById(id) : null; }
+function openSyncSetup() {
+  const guesses = S.chats.filter((c) => /sync/i.test(c.name) && linkFor(c));
+  openSheet(`<h2>Set up Sync</h2><p class="hint" style="margin-top:0">Pick the Claude chat where you type <b>sync threads</b>. Sync opens it for you, then you paste its reply back here.</p>
+    ${guesses.length ? `<div class="pick-list" style="margin-bottom:14px">${guesses.map((c) => `<div class="pick-row"><b>${esc(pathOf(secOf(c)))} · ${esc(c.name)}</b><button class="mk-act" data-act="sync-set" data-id="${c.id}">Use this</button></div>`).join('')}</div>` : ''}
+    <p class="hint">${guesses.length ? 'Or add it first' : 'Add your sync chat to Threads first (Add → Paste link), name it something with "Sync" in it, then come back here.'}</p>
+    <button class="btn ghost" data-act="add">${ICON.plus}Add a chat</button>`);
+}
+function runSync() {
+  const c = syncChat();
+  if (!c) return openSyncSetup();
+  markOpened(c.id); awaitPaste('sync');
+  toast('Type "sync threads", copy the reply, then come back');
+  openURL(linkFor(c));
 }
 
 // ---------- drag and drop ----------
@@ -753,7 +992,11 @@ function onChatDrop(from, to) {
   if (rows.length) push([{ op: 'patch', table: 'chats', rows }]);
 }
 function onSecDrop(box) {
-  const ordered = [...box.children].filter((e) => e.classList.contains('sec')).map((e) => secById(e.dataset.sid)).filter(Boolean);
+  let ordered = [...box.children].filter((e) => e.classList.contains('sec')).map((e) => secById(e.dataset.sid)).filter(Boolean);
+  if (box.id === 'secs') { // the active project isn't on Parked: keep its slot
+    const vis = new Set(ordered.map((x) => x.id)); let i = 0;
+    ordered = children(null).map((x) => (vis.has(x.id) ? ordered[i++] : x));
+  }
   const rows = renumber(ordered, 'position');
   renderContent();
   if (rows.length) push([{ op: 'patch', table: 'sections', rows }]);
@@ -1007,9 +1250,14 @@ function openGroupForm(id, parentId) {
     <div class="field"><span>Color</span><div class="swatches" id="g-color"><button class="sw none${!color ? ' on' : ''}" data-act="g-pick" data-v="" aria-label="No color">×</button>${COLORS.map((k) => `<button class="sw c-${k}${color === k ? ' on' : ''}" data-act="g-pick" data-v="${k}" aria-label="${k}"></button>`).join('')}</div></div>
     ${s?.is_inbox ? '' : `<div class="field"><span>Put inside</span>${pickerHTML('g-parent', parent, { top: true, skip })}</div>`}
     <label class="field"><span>Claude project link (optional, adds an open-project button)</span><input class="inp" id="g-proj" value="${s?.project_uuid ? `https://claude.ai/project/${s.project_uuid}` : ''}" placeholder="claude.ai/project/…" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+    ${s && !s.is_inbox && !s.parent_id ? (() => {
+      const list = allChatsIn(s).filter((c) => linkFor(c));
+      return list.length ? `<div class="field"><span>Home chat (where "Unknown" prompts go)</span><div class="picker" id="g-home"><button class="pick${!s.home_chat_id ? ' on' : ''}" data-act="pick" data-v="">Auto: latest Build chat</button>${list.map((c) => `<button class="pick${s.home_chat_id === c.id ? ' on' : ''}" data-act="pick" data-v="${c.id}">${esc(c.name)}</button>`).join('')}</div></div>` : '';
+    })() : ''}
     <p class="err" id="g-err"></p>
     <button class="btn" data-act="g-save" data-id="${s?.id || ''}">${s ? 'Save group' : 'Create group'}</button>
     ${s ? `<button class="btn ghost" data-act="sec-new-sub" data-id="${s.id}">${ICON.plus}Add a group inside this one</button>` : ''}
+    ${s && !s.is_inbox && !s.parent_id ? (s.status === 'active' ? `<button class="btn ghost" data-act="park" data-id="${s.id}">${ICON.car}Park this project</button>` : `<button class="btn ghost" data-act="make-active" data-id="${s.id}">${ICON.star}Make active</button>`) : ''}
     ${s && !s.is_inbox ? `<button class="btn ghost" data-act="sec-archive" data-id="${s.id}">${ICON.archive}Archive group</button>` : ''}${del}`);
   if (!s) setTimeout(() => $('#g-name')?.focus(), 350);
 }
@@ -1024,13 +1272,14 @@ function saveGroup(id) {
   if (projText && !project_uuid) { $('#g-err').textContent = 'That project link should look like claude.ai/project/…'; return; }
   const parent_id = s?.is_inbox ? null : (val('g-parent') || null);
   if (!s) {
-    const row = { id: uid(), name: name.slice(0, 80), icon, color, project_uuid, parent_id, position: children(parent_id).length, is_inbox: false, created_at: nowISO() };
+    const row = { id: uid(), name: name.slice(0, 80), icon, color, project_uuid, parent_id, position: children(parent_id).length, is_inbox: false, status: 'parked', doc: {}, created_at: nowISO() };
     S.sections.push(row);
     if (parent_id) collapsed.delete(parent_id);
     closeSheet(); renderContent(); toast(`Created ${row.name}`);
     return push([{ op: 'upsert', table: 'sections', row }]);
   }
   const patch = { id: s.id, name: name.slice(0, 80), icon, color, project_uuid };
+  if ($('#g-home')) patch.home_chat_id = val('g-home') || null;
   const rows = [];
   if ((s.parent_id || null) !== parent_id && !s.is_inbox) {
     const oldParent = parentOf(s)?.id || null;
@@ -1070,6 +1319,8 @@ function openSettings() {
       <p class="muted">This device only. Auto uses the web link on iPhone and the app link on Mac and PC. Right now: <b>${linkMode() === 'app' ? 'claude://' : 'https://'}</b></p>
       <div class="seg">${[['auto', 'Auto'], ['app', 'App link'], ['web', 'Web link']].map(([v, l]) => `<button class="${pref === v ? 'on' : ''}" data-act="link-set" data-v="${v}">${l}</button>`).join('')}</div>
     </section>
+    <section class="set"><h3>Sync</h3><p class="muted">${syncChat() ? `Sync opens <b>${esc(pathOf(secOf(syncChat())))} · ${esc(syncChat().name)}</b>.` : 'Not set up yet.'}</p>
+      <button class="btn ghost" data-act="sync-setup">${ICON.sync}${syncChat() ? 'Change sync chat' : 'Set up Sync'}</button></section>
     <section class="set"><h3>Import chats</h3><p class="muted">Bring in a list Claude sorted for you. Safe to import the same list twice: anything already saved gets skipped.</p>
       <button class="btn ghost" data-act="import-open">${ICON.clip}Import a list</button></section>
     <button class="btn warn" data-act="signout">Sign out on this device</button>`);
@@ -1094,6 +1345,7 @@ function parseImport(text) {
   if (a < 0 || b < a) return { error: "That doesn't look like a Threads import. It should start with {" };
   let j;
   try { j = JSON.parse(t.slice(a, b + 1)); } catch { return { error: "Couldn't read that. Make sure you copied all of it, from the first { to the last }." }; }
+  if (j.threads_project) return parseProjectUpdate(j);
   const raw = Array.isArray(j.items) ? j.items : [];
   if (!raw.length) return { error: 'No items found in that list.' };
   const meta = {};
@@ -1124,14 +1376,44 @@ function resolvePath(parts, plan) {
     if (hit) { plan.map[key] = hit.id; parent = hit.id; continue; }
     const m = plan.meta[key] || {};
     const row = { id: uid(), name, parent_id: parent, position: children(parent, true).length + plan.rows.filter((r) => r.parent_id === parent).length,
-      color: m.color || (parent ? null : COLORS[plan.colorIdx++ % COLORS.length]), icon: m.icon || null, project_uuid: null, archived_at: null, created_at: nowISO() };
+      color: m.color || (parent ? null : COLORS[plan.colorIdx++ % COLORS.length]), icon: m.icon || null, project_uuid: null, archived_at: null, status: 'parked', doc: {}, created_at: nowISO() };
     plan.rows.push(row); plan.map[key] = row.id; parent = row.id;
   }
   return parent;
 }
+const SECRETISH = /pass(word|code|phrase)?|secret|token|api[_ -]?key|private[_ -]?key/i;
+function parseProjectUpdate(j) {
+  const s = (j.id && secById(j.id)) || projects().find((x) => x.name.toLowerCase() === String(j.project || '').trim().toLowerCase());
+  if (!s) return { error: `There's no project called "${j.project || '?'}" in Threads. Check the name, or add the group first.` };
+  const patch = {}, str = (v, n) => String(v ?? '').trim().slice(0, n);
+  let dropped = 0;
+  if ('summary' in j) patch.summary = str(j.summary, 1500);
+  if ('next' in j) patch.next = str(j.next, 400);
+  if (Array.isArray(j.tools)) patch.tools = j.tools.map((x) => str(x, 60)).filter(Boolean).slice(0, 40);
+  if (Array.isArray(j.accounts)) patch.accounts = j.accounts.slice(0, 40).map((x) => {
+    Object.keys(x || {}).forEach((k) => { if (!['name', 'item', 'vault'].includes(k) && SECRETISH.test(k)) dropped++; });
+    return { name: str(x?.name, 80), item: str(x?.item, 120), vault: str(x?.vault, 60) };
+  }).filter((x) => x.name);
+  if (Array.isArray(j.links)) patch.links = j.links.slice(0, 40).map((x) => ({ label: str(x?.label, 60), url: str(x?.url, 500) })).filter((x) => /^https?:\/\//i.test(x.url));
+  for (const k of Object.keys(patch)) if ((Array.isArray(patch[k]) && !patch[k].length) || patch[k] === '') delete patch[k];
+  if (!Object.keys(patch).length) return { error: 'That update block was empty. Ask the chat to fill it in, then copy it again.' };
+  return { project: s, patch, dropped };
+}
+function previewProject(r) {
+  S.projPlan = r;
+  const p = r.patch, b = [];
+  if (p.summary || p.next) b.push(`<h4>${DOC_TITLE.summary}</h4>${p.summary ? `<div>${esc(p.summary)}</div>` : ''}${p.next ? `<div><b>Next:</b> ${esc(p.next)}</div>` : ''}`);
+  if (p.tools) b.push(`<h4>${DOC_TITLE.tools}</h4><div>${esc(p.tools.join(', '))}</div>`);
+  if (p.accounts) b.push(`<h4>${DOC_TITLE.accounts}</h4>${p.accounts.map((a) => `<div>${esc(a.name)} <span class="muted">· ${esc([a.item, a.vault].filter(Boolean).join(' · ') || 'no 1Password item')}</span></div>`).join('')}`);
+  if (p.links) b.push(`<h4>${DOC_TITLE.links}</h4>${p.links.map((l) => `<div>${esc(l.label)} <span class="muted">· ${esc(l.url)}</span></div>`).join('')}`);
+  openSheet(`<h2>Update ${esc(r.project.name)}?</h2><p class="hint" style="margin-top:0">Only these sections change. Everything else stays.</p>
+    <div class="upd glass">${b.join('')}</div>${r.dropped ? `<p class="err">Ignored ${r.dropped} field${r.dropped > 1 ? 's' : ''} that looked like secrets.</p>` : ''}
+    <button class="btn" data-act="proj-go">Update ${esc(r.project.name)}</button><button class="btn ghost" data-act="close">Cancel</button>`);
+}
 function previewImport(text) {
   const r = parseImport(text);
-  if (r.error) { $('#imp-err').textContent = r.error; return; }
+  if (r.error) { const e = $('#imp-err'); if (e && $('#sheet').classList.contains('on')) e.textContent = r.error; else toast(r.error, true); return; }
+  if (r.project) return previewProject(r);
   const plan = { rows: [], map: {}, meta: r.meta, colorIdx: S.sections.filter((s) => !s.parent_id).length };
   r.items.forEach((it) => { it.sid = resolvePath(it.path, plan); });
   S.importPlan = { items: r.items, plan };
@@ -1146,6 +1428,7 @@ function previewImport(text) {
     <button class="btn ghost" data-act="import-open">Back</button>`);
 }
 function runImport() {
+  S.awaitPaste = null; sessionStorage.removeItem('threads.await');
   const ip = S.importPlan;
   if (!ip?.items.length) return;
   const { items, plan } = ip;
@@ -1183,8 +1466,17 @@ async function checkClipboard() {
   try { const p = await navigator.permissions.query({ name: 'clipboard-read' }); if (p.state !== 'granted') return; } catch { return; }
   try {
     const text = (await navigator.clipboard.readText()).trim();
+    if (/"threads_(import|project)"/.test(text)) {
+      if (dismissed.has(text)) return;
+      const r = parseImport(text);
+      if (r.error || (r.items && !r.items.length)) return;
+      const b = $('#banner');
+      S.bannerText = text;
+      if (b) b.innerHTML = `<div class="banner glass"><b>${r.project ? `Update ${esc(r.project.name)} from Claude?` : `Import ${r.items.length} new chat${r.items.length === 1 ? '' : 's'}?`}</b><button class="add-btn" data-act="banner-import">Review</button><button class="x" data-act="banner-x" aria-label="Dismiss">×</button></div>`;
+      return;
+    }
     const r = parseLink(text);
-    if (r.error || dismissed.has(text) || S.chats.some((c) => sameItem(c, r))) return hideBanner();
+    if (r.error || dismissed.has(text) || S.chats.some((c) => sameItem(c, r))) return S.awaitPaste ? null : hideBanner();
     showBanner(text);
   } catch {}
 }
@@ -1236,7 +1528,7 @@ function signOut(msg) {
 // ---------- actions ----------
 const siblingsOn = (el, sel) => el.parentElement.querySelectorAll(sel).forEach((b) => b.classList.toggle('on', b === el));
 const A = {
-  open: (el, ev) => { if (S.dragging) { ev.preventDefault(); return; } markOpened(el.dataset.id); },
+  open: (el, ev) => { if (S.dragging) { ev.preventDefault(); return; } markOpened(el.dataset.id); if (el.dataset.await) awaitPaste('update'); },
   detail: (el) => { if (S.dragging) return; S.fromArchive = S.view === 'archive'; openDetail(el.dataset.id); },
   main: () => backToMain(),
   'panel-close': () => closePanel(),
@@ -1301,6 +1593,41 @@ const A = {
   'sec-archive': (el) => archiveGroup(el.dataset.id),
   'unarchive-group': (el) => unarchiveGroup(el.dataset.id),
   'import-open': () => openImport(),
+  page: (el) => { S.page = el.dataset.v; localStorage.setItem('threads.page', S.page); renderContent(); scrollTo(0, 0); },
+  'make-active': (el) => makeActive(el.dataset.id),
+  park: (el) => { closeSheet(); parkProject(el.dataset.id); },
+  'doc-edit': (el) => openDocEdit(el.dataset.id, el.dataset.k),
+  'doc-save': (el) => saveDocEdit(el.dataset.id, el.dataset.k),
+  'copy-prompt': async (el) => {
+    const s = secById(el.dataset.id), h = homeChat(s);
+    try {
+      await navigator.clipboard.writeText(promptFor(s, el.dataset.k.split(',')));
+      awaitPaste('update');
+      toast(h ? `Prompt copied. Paste it in ${s.name} · ${h.name}` : 'Prompt copied');
+    } catch { toast("Couldn't copy.", true); }
+  },
+  sync: () => runSync(),
+  'sync-setup': () => openSyncSetup(),
+  'sync-set': (el) => {
+    S.settings.sync = { chat_id: el.dataset.id };
+    closeSheet(); toast('Sync is set up');
+    push([{ op: 'upsert', table: 'settings', row: { id: 'sync', value: S.settings.sync } }]);
+  },
+  'banner-paste': async () => {
+    try {
+      const t = await navigator.clipboard.readText();
+      if (!/"threads_(import|project)"/.test(t)) return toast("Your clipboard doesn't have the reply yet. Copy the code block in Claude first.", true);
+      S.awaitPaste = null; sessionStorage.removeItem('threads.await'); hideBanner();
+      openImport(); $('#imp-text').value = t; previewImport(t);
+    } catch { openImport(); }
+  },
+  'banner-import': () => { const t = S.bannerText; dismissed.add(t); hideBanner(); openImport(); $('#imp-text').value = t; previewImport(t); },
+  'proj-go': () => {
+    const r = S.projPlan; if (!r) return;
+    S.projPlan = null; S.awaitPaste = null; sessionStorage.removeItem('threads.await');
+    closeSheet(); setDoc(r.project, r.patch, true); toast(`Updated ${r.project.name}`);
+  },
+  close: () => closeSheet(),
   'imp-paste': async () => {
     try { const t = await navigator.clipboard.readText(); $('#imp-text').value = t; previewImport(t); }
     catch { $('#imp-err').textContent = "Couldn't read the clipboard. Paste into the box instead."; }
@@ -1320,7 +1647,7 @@ const A = {
   signout: () => signOut(),
   'filter-clear': (el, ev) => { ev.preventDefault(); $('#filter').value = ''; S.filter = ''; renderContent(); },
   'banner-add': () => { const t = S.bannerText; openAdd(); handleAddText(t); },
-  'banner-x': () => { dismissed.add(S.bannerText); hideBanner(); },
+  'banner-x': () => { if (S.bannerText) dismissed.add(S.bannerText); S.awaitPaste = null; sessionStorage.removeItem('threads.await'); hideBanner(); },
 };
 document.addEventListener('click', (ev) => {
   if (ev.target.id === 'scrim') return closeSheet();
@@ -1427,6 +1754,8 @@ document.addEventListener('visibilitychange', () => {
   if (!S.token) return;
   setSky();
   if (Date.now() - lastLoad > 60e3) { lastLoad = Date.now(); load(); }
+  S.awaitPaste = S.awaitPaste || sessionStorage.getItem('threads.await');
+  if (S.awaitPaste) showPasteBanner();
   checkClipboard();
 });
 window.addEventListener('focus', checkClipboard);
