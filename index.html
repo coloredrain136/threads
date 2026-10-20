@@ -36,7 +36,7 @@ button{cursor:pointer}
 a{color:inherit;text-decoration:none}
 :focus-visible{outline:2px solid var(--dawn);outline-offset:2px}
 [hidden]{display:none!important}
-.glass{background:var(--glass);border:1px solid var(--line);
+.glass{background:var(--card,var(--glass));border:1px solid var(--line2,var(--line));
   -webkit-backdrop-filter:blur(22px) saturate(1.4);backdrop-filter:blur(22px) saturate(1.4);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 32px var(--shadow)}
 .muted{color:var(--ink-3);font-size:14px}
@@ -451,6 +451,47 @@ body.dragging{user-select:none;-webkit-user-select:none}
 }
 .chat.sel{border-color:var(--c);box-shadow:inset 3px 0 0 var(--c),0 0 0 2px color-mix(in srgb,var(--c) 45%,transparent)}
 
+/* cards stand out from the background, tinted with their project color */
+:root{--card:color-mix(in srgb,var(--ink) 8%,transparent);--line2:color-mix(in srgb,var(--ink) 13%,transparent)}
+.glass{box-shadow:inset 0 1px 0 color-mix(in srgb,var(--ink) 10%,transparent),0 14px 34px var(--shadow)}
+.sec.glass,.phero,.dcard,.ptile{background:linear-gradient(180deg,color-mix(in srgb,var(--c) 15%,var(--card)),color-mix(in srgb,var(--c) 6%,var(--card)));border-color:color-mix(in srgb,var(--c) 34%,var(--line2))}
+.sec.glass:not([class*=" c-"]),.dcard:not([class*=" c-"]){--c:var(--ink-3)}
+/* centered column on Mac for everything but Parked */
+body.narrow #content{max-width:880px;margin:0 auto}
+body.narrow .tabs{margin-left:auto;margin-right:auto}
+.dash{max-width:none}
+/* parked tiles */
+.ptiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:12px}
+.ptile{--c:var(--ink-3);border-radius:var(--r-lg);display:flex;flex-direction:row;align-items:stretch;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
+.ptile-main{flex:1;min-width:0;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto auto;column-gap:12px;row-gap:3px;padding:14px 4px 14px 14px;text-align:left;align-items:center;cursor:pointer}
+.ptile-main .gicon{grid-row:1 / span 3;align-self:start;width:40px;height:40px;min-width:40px;border-radius:12px;font-size:20px}
+.ptile-n{display:flex;align-items:center;gap:8px;min-width:0}
+.ptile-n b{font-size:17px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ptile-l{font-size:14px;color:var(--ink-2);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ptile-l em{font-style:normal;font-weight:700;color:var(--c);margin-right:2px}
+.ptile-m{font-size:12px;color:var(--ink-3)}
+.ptile-a{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:6px;padding:10px 10px 8px 0;flex:none}
+.ptile-a .more{width:34px;height:34px}
+.ptiles{gap:10px}
+.ptile-a .mk-act{width:34px;height:34px;padding:0;justify-content:center}.ptile-a .mk-act span{display:none}
+@media (hover:hover){.ptile{transition:transform .15s,border-color .2s}.ptile:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--c) 60%,var(--line2))}}
+/* park → swap sheet */
+.swap-list .pick-row{width:100%;text-align:left;cursor:pointer}
+.sw-t{flex:1;min-width:0;display:grid}
+.sw-t b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sw-t small{color:var(--ink-3);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* inbox filing */
+.dropbar{display:grid;gap:8px}
+.drop-chips{display:flex;flex-wrap:wrap;gap:8px}
+.drop-chip{--c:var(--ink-3);display:flex!important;align-items:center;min-height:38px!important;padding:0 14px!important;margin:0!important;border-radius:999px;border:1.5px dashed color-mix(in srgb,var(--c) 55%,var(--line2))!important;background:color-mix(in srgb,var(--c) 10%,transparent);font-weight:650;font-size:14px}
+.drop-chip::before{display:none!important}
+.drop-chip .chat{display:none}
+.drop-chip:has(.chat){background:color-mix(in srgb,var(--c) 30%,transparent);border-style:solid!important}
+@media (max-width:430px){.tab{padding:0 10px}.tab[data-act="archive"] span,.tab[data-v="inbox"] span{display:none}}
+
+/* Title Case theme: no forced ALL CAPS on headers */
+.dcard-h h3,.card-h h3,.arch-h{text-transform:none!important;letter-spacing:-.005em!important;font-size:15px!important;color:var(--ink)!important;font-weight:700!important}
+.nn .nl b{text-transform:none!important;letter-spacing:0!important;font-size:13px!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -523,11 +564,41 @@ function applyTheme(id) {
   const t = THEMES[id] || THEMES.midnight;
   const r = document.documentElement.style;
   for (const [k, v] of Object.entries(t.v)) r.setProperty('--' + k, v);
+  r.setProperty('--card', id === 'daylight' ? 'rgba(255,255,255,.92)' : 'color-mix(in srgb, var(--ink) 8%, transparent)');
+  r.setProperty('--line2', id === 'daylight' ? 'rgba(20,30,50,.14)' : 'color-mix(in srgb, var(--ink) 13%, transparent)');
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t.v.night);
   S.theme = THEMES[id] ? id : 'midnight';
   localStorage.setItem('threads.theme', S.theme);
   setSky();
 }
+
+// ---------- Title Case theme ----------
+// Every title, label, button and name shows in Title Case ("Supabase Project"), display only.
+// Words that already have capitals (iPad, API, GitHub), links and numbers are left alone.
+const SMALL = new Set('a an and as at but by for in nor of on or per the to vs via with'.split(' '));
+function tc(t) {
+  let first = true;
+  return String(t ?? '').split(/(\s+)/).map((w) => {
+    if (!w || /^\s+$/.test(w)) return w;
+    const f = first; first = /[:–—]$/.test(w);
+    if (/[A-Z]/.test(w) || /[.\/@]\w/.test(w) || /^\d/.test(w)) return w;
+    const m = w.match(/^([^a-z]*)([a-z])(.*)$/s);
+    if (!m) return w;
+    if (!f && !m[1] && SMALL.has(w.replace(/[^a-z]/g, ''))) return w;
+    return m[1] + m[2].toUpperCase() + m[3];
+  }).join('');
+}
+const TC_SEL = 'h1,h2,h3,h4,.tab,.btn,.pill-btn,.mk-act,.add-btn,.chip,.field > span,.switch,.th,.seg button,.sec-name > span,.chat .txt b,.pin > span,.row-t b,.row-t span,.where,.lchip span,.uchip,.ta-h b,.pick,.fill-t b,.new-sec,.det summary,.arch-row b,.ptile-n b,.dc-label,.nl > b,.upd div,.banner b,.empty h2';
+function tcTree(root) {
+  const els = root.matches?.(TC_SEL) ? [root, ...root.querySelectorAll(TC_SEL)] : root.querySelectorAll?.(TC_SEL) || [];
+  for (const el of els) {
+    if (el.closest('input,textarea,code,.notes-ul')) continue;
+    const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    for (let n; (n = w.nextNode());) { const v = tc(n.data); if (v !== n.data) n.data = v; }
+  }
+}
+new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1) tcTree(n); else if (n.nodeType === 3 && n.parentElement) tcTree(n.parentElement); })
+  .observe(document.documentElement, { childList: true, subtree: true });
 
 // ---------- helpers ----------
 const $ = (s, r = document) => r.querySelector(s);
@@ -598,7 +669,7 @@ const S = {
   sections: [], chats: [], settings: {},
   view: 'main', detailId: null, filter: '', dragging: false, loaded: false,
 };
-S.page = localStorage.getItem('threads.page') === 'parked' ? 'parked' : 'active';
+S.page = ['parked', 'inbox'].includes(localStorage.getItem('threads.page')) ? localStorage.getItem('threads.page') : 'active';
 const collapsed = new Set(JSON.parse(localStorage.getItem('threads.collapsed') || '[]'));
 const dismissed = new Set();
 
@@ -709,7 +780,7 @@ function renderTop() {
   if (!top) return;
   document.body.classList.toggle('v-detail', S.view === 'detail' || S.view === 'config');
   if (S.view === 'detail') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1></h1>`;
-  else if (S.view === 'config') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1>Setup</h1>`;
+  else if (S.view === 'config') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1>${secById(S.configId)?.status === 'active' ? 'Setup' : 'Project'}</h1>`;
   else top.innerHTML = `<h1>Threads</h1>
       <button class="icon-btn" data-act="sync" aria-label="Sync chats from Claude">${ICON.sync}</button>
       <button class="icon-btn" data-act="settings" aria-label="Settings">${ICON.gear}</button>
@@ -719,14 +790,34 @@ function renderTop() {
 // Active · Parked · Archive. Archive lives here now instead of a loose header icon.
 function tabsHTML() {
   const na = archived().length + archivedGroups().length;
+  const ni = inbox() ? chatsIn(inbox().id).length : 0;
   const on = (k) => (k === 'archive' ? S.view === 'archive' : S.view !== 'archive' && S.page === k);
-  return `<nav class="tabs glass"><button class="tab${on('active') ? ' on' : ''}" data-act="page" data-v="active">${ICON.star}Active</button>
-    <button class="tab${on('parked') ? ' on' : ''}" data-act="page" data-v="parked">${ICON.car}Parked<small>${parkedProjects().length}</small></button>
-    <button class="tab${on('archive') ? ' on' : ''}" data-act="archive">${ICON.archive}Archive${na ? `<small>${na}</small>` : ''}</button></nav>`;
+  return `<nav class="tabs glass"><button class="tab${on('active') ? ' on' : ''}" data-act="page" data-v="active">${ICON.star}<span>Active</span></button>
+    <button class="tab${on('parked') ? ' on' : ''}" data-act="page" data-v="parked">${ICON.car}<span>Parked</span><small>${parkedProjects().length}</small></button>
+    <button class="tab${on('inbox') ? ' on' : ''}" data-act="page" data-v="inbox">${ICON.folder}<span>Inbox</span>${ni ? `<small>${ni}</small>` : ''}</button>
+    <button class="tab${on('archive') ? ' on' : ''}" data-act="archive">${ICON.archive}<span>Archive</span>${na ? `<small>${na}</small>` : ''}</button></nav>`;
+}
+// Parked: one compact tile per project instead of every chat at once. Tap opens the project page.
+function ptile(s) {
+  const d = normDoc(s), n = allChatsIn(s).length;
+  const line = d.next ? `<em>Next</em> ${esc(d.next)}` : d.now ? esc(d.now) : '<span class="muted">No status yet</span>';
+  return `<article class="ptile glass${colorCls(colorOf(s))}" data-sid="${s.id}">
+    <button class="ptile-main" data-act="config" data-id="${s.id}">${gIcon(s)}
+      <span class="ptile-n"><b>${esc(s.name)}</b>${d.status ? `<span class="st ${statusCls(d.status)}">${esc(d.status)}</span>` : ''}</span>
+      <span class="ptile-l">${line}</span>
+      <span class="ptile-m">${n} chat${n === 1 ? '' : 's'}${d.updated_at ? ` · updated ${ago(d.updated_at)}` : ''}</span></button>
+    <div class="ptile-a"><button class="mk-act" data-act="make-active" data-id="${s.id}" title="Make Active">${ICON.star}<span>Make Active</span></button><button class="more" data-act="sec-menu" data-id="${s.id}" aria-label="Edit ${esc(s.name)}">${ICON.more}</button></div></article>`;
+}
+// Inbox: drop a chat on a project chip to file it there.
+function inboxHTML() {
+  const ib = inbox();
+  if (!ib) return '';
+  const list = chatsIn(ib.id);
+  return `<div class="dash">${list.length ? `<div class="dropbar"><span class="muted">Drag a chat onto a project to file it</span>
+      <div class="drop-chips">${projects().map((g) => `<div class="chat-list drop-chip${colorCls(colorOf(g))}" data-sid="${g.id}"><span class="dc-label">${g.icon ? esc(g.icon) + ' ' : ''}${esc(g.name)}</span></div>`).join('')}</div></div>` : ''}
+    ${groupHTML(ib, 0)}${list.length ? '' : '<p class="muted" style="text-align:center">New chats land here until you file them.</p>'}</div>`;
 }
 
-// Same rule for every card: path (in lists), then the note's first line, else type and last opened.
-// Open checklist steps show as a small count next to the name instead of replacing the note.
 function subline(c, showPath) {
   const note = (c.notes || '').trim().split('\n')[0];
   const bits = [];
@@ -804,12 +895,13 @@ let sortables = [];
 function renderMain() {
   const el = $('#content');
   if (!el) return;
+  document.body.classList.toggle('narrow', !(S.view === 'main' && S.page === 'parked' && !S.filter));
   sortables.forEach((s) => s.destroy()); sortables = [];
   const clr = $('.filter .clear'); if (clr) clr.hidden = !S.filter;
 
   if (!S.loaded) { el.innerHTML = '<p class="muted" style="text-align:center;margin-top:40px">Loading…</p>'; return; }
   if (S.view === 'detail') return renderDetail($('#content'));
-  if (S.view === 'config') return renderConfig(el);
+  if (S.view === 'config') { renderConfig(el); initSortables(); return; }
 
   if (S.view === 'archive') {
     const list = archived().filter(match);
@@ -844,8 +936,8 @@ function renderMain() {
         : `<button class="pin glass${colorCls(colorOf(secOf(c)))}" data-act="detail" data-id="${c.id}">${inner}</button>`;
     }).join('')}</div>` : ''}
     ${!active().length ? `<div class="empty glass" style="margin-bottom:14px"><h2>Add your first chat</h2><p>Copy a link from Claude (a chat, Cowork session, Code session, or project), then paste it here.</p><button class="add-btn" data-act="add">${ICON.plus}Add</button></div>` : ''}
-    ${S.page === 'active' ? activeHTML() : `<div class="secs" id="secs" data-parent="">${children(null).filter((s) => s.status !== 'active').map((s) => groupHTML(s, 0, { parked: true })).join('')}</div>
-    <button class="new-sec" data-act="sec-new">New group</button>`}`;
+    ${S.page === 'active' ? activeHTML() : S.page === 'inbox' ? inboxHTML() : `<div class="ptiles" id="tiles">${parkedProjects().map(ptile).join('')}</div>
+    <button class="new-sec" data-act="sec-new">New Group</button>`}`;
   initSortables();
   packGroups();
 }
@@ -875,12 +967,12 @@ function normDoc(s) {
 }
 // Sections the "Fill in with Claude" prompt can ask for.
 const FILL = {
-  overview: { title: 'Status, now and next', empty: (d) => !(d.now || d.next) },
+  overview: { title: 'Status, Now and Next', empty: (d) => !(d.now || d.next) },
   tools: { title: 'Stack', empty: (d) => !d.tools.length },
   accounts: { title: 'Accounts', empty: (d) => !d.accounts.length },
-  env: { title: 'Env vars', empty: (d) => !d.env.length },
+  env: { title: 'Env Vars', empty: (d) => !d.env.length },
   links: { title: 'Links', empty: (d) => !d.links.length },
-  notes: { title: 'Deploy notes', empty: (d) => !d.notes.length },
+  notes: { title: 'Deploy Notes', empty: (d) => !d.notes.length },
 };
 const missingOf = (d) => Object.keys(FILL).filter((k) => FILL[k].empty(d));
 const appLink = (d) => d.links.find((l) => /^(live|app|site|website|prod)/i.test(l.label)) || d.links.find((l) => /\.vercel\.app|netlify\.app|pages\.dev/i.test(l.url) && !/vercel\.com/i.test(l.url));
@@ -924,14 +1016,13 @@ function heroHTML(s, d, config) {
 }
 function nowNextHTML(s, d) {
   const empty = !(d.now || d.next);
-  return `<section class="dcard glass nn"><div class="dcard-h"><h3>Now and next</h3><button class="more" data-act="doc-edit" data-id="${s.id}" data-k="overview" aria-label="Edit now and next">${ICON.edit}</button></div>
+  return `<section class="dcard glass nn${colorCls(colorOf(s))}"><div class="dcard-h"><h3>Now and Next</h3><button class="more" data-act="doc-edit" data-id="${s.id}" data-k="overview" aria-label="Edit now and next">${ICON.edit}</button></div>
     ${empty ? '<p class="muted">Not filled in yet.</p>' : `${d.now ? `<div class="nl"><b>Now</b><span>${clip(d.now)}</span></div>` : ''}${d.next ? `<div class="nl nx"><b>Next</b><span>${clip(d.next)}</span></div>` : ''}`}
     ${d.details.length ? `<details class="det"><summary>${d.details.length} detail${d.details.length > 1 ? 's' : ''}</summary><ul>${d.details.slice(0, 3).map((x) => `<li>${esc(x)}</li>`).join('')}</ul></details>` : ''}</section>`;
 }
 function activeHTML() {
   const s = activeProject();
-  const ib = inbox();
-  const tray = ib && !hiddenSec(ib) ? groupHTML(ib, 0) : '';
+  const tray = '';
   if (!s) {
     const list = parkedProjects();
     return `<div class="dash"><div class="empty glass"><h2>Pick your active project</h2><p>One project at a time. The rest wait in Parked.</p>
@@ -947,7 +1038,7 @@ function activeHTML() {
 }
 // ---------- project setup page ----------
 function cfgCard(s, k, title, body, emptyText) {
-  return `<section class="dcard glass"><div class="dcard-h"><h3>${title}</h3><button class="more" data-act="doc-edit" data-id="${s.id}" data-k="${k}" aria-label="Edit ${title}">${ICON.edit}</button></div>${body || `<p class="muted">${emptyText || 'Not filled in yet.'}</p>`}</section>`;
+  return `<section class="dcard glass${colorCls(colorOf(s))}"><div class="dcard-h"><h3>${title}</h3><button class="more" data-act="doc-edit" data-id="${s.id}" data-k="${k}" aria-label="Edit ${title}">${ICON.edit}</button></div>${body || `<p class="muted">${emptyText || 'Not filled in yet.'}</p>`}</section>`;
 }
 function renderConfig(el) {
   const s = secById(S.configId);
@@ -962,12 +1053,13 @@ function renderConfig(el) {
   const links = d.links.map((l) => `<a class="row" href="${esc(l.url)}" target="_blank" rel="noopener"><span class="li">${linkIcon(l)}</span><div class="row-t"><b>${esc(l.label || 'Link')}</b><span>${esc(l.url.replace(/^https?:\/\//, ''))}</span></div>${ICON.go}</a>`).join('');
   const notes = d.notes.length ? `<ul class="notes-ul">${d.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>` : '';
   el.innerHTML = `<div class="dash cfg">${heroHTML(s, d, true)}
+    ${s.status === 'active' ? '' : nowNextHTML(s, d)}${s.status === 'active' ? '' : groupHTML(s, 0)}
     ${fillBar(s, missingOf(d))}
     ${cfgCard(s, 'tools', 'Stack', tools)}
     ${cfgCard(s, 'accounts', 'Accounts', accts && `${accts}<p class="hint-s">${ICON.lock}Only the 1Password item and vault are stored here. Never the password.</p>`)}
-    ${cfgCard(s, 'env', 'Env vars', env && `${env}<p class="hint-s">Names and where they're set. Values stay in Vercel.</p>`)}
+    ${cfgCard(s, 'env', 'Env Vars', env && `${env}<p class="hint-s">Names and where they're set. Values stay in Vercel.</p>`)}
     ${cfgCard(s, 'links', 'Links', links)}
-    ${cfgCard(s, 'notes', 'Deploy notes', notes)}
+    ${cfgCard(s, 'notes', 'Deploy Notes', notes)}
     <div class="cfg-foot"><button class="pill-btn" data-act="copy-prompt" data-id="${s.id}" data-k="${Object.keys(FILL).join(',')}">${ICON.copy}Copy prompt to refresh everything</button></div></div>`;
 }
 function openConfig(id) {
@@ -1019,6 +1111,7 @@ Rules:
 - Never include passwords, API keys, tokens, env var values, or any other secret. For accounts, only give the account name and where its login is saved in 1Password.
 - Use what you know from this chat and this project. If something is missing (like which 1Password item or vault), ask me first, then give the block.
 - Don't guess links. Only include ones you actually know.
+- Use Title Case for names, roles and labels (for example "Supabase Project").
 
 When you're done, reply with ONLY one JSON code block in exactly this shape:
 {"threads_project":2,"id":"${s.id}","project":"${s.name.replace(/"/g, '')}",${keys.map((k) => PROMPT_SHAPE[k]).join(',')}}`;
@@ -1053,6 +1146,15 @@ function parkProject(id) {
   s.status = 'parked';
   renderContent(); toast(`Parked ${s.name}`);
   push([{ op: 'patch', table: 'sections', rows: [{ id: s.id, status: 'parked' }] }]);
+}
+function openParkSheet(id) {
+  const s = secById(id);
+  if (!s) return;
+  const has = (g) => { const d = normDoc(g); return d.next || d.now || d.status ? 0 : 1; };
+  const list = parkedProjects().filter((x) => x.id !== id).sort((a, b) => has(a) - has(b));
+  openSheet(`<h2>Park ${esc(s.name)}?</h2><p class="hint" style="margin-top:0">Pick a project to work on instead, or just park this one.</p>
+    ${list.length ? `<div class="pick-list swap-list">${list.map((g) => { const d = normDoc(g); return `<button class="pick-row${colorCls(colorOf(g))}" data-act="swap-in" data-id="${g.id}">${gIcon(g)}<span class="sw-t"><b>${esc(g.name)}</b>${d.next || d.now ? `<small>${esc((d.next ? 'Next: ' + d.next : d.now).slice(0, 80))}</small>` : ''}</span>${d.status ? `<span class="st ${statusCls(d.status)}">${esc(d.status)}</span>` : ''}<span class="mk-act">${ICON.star}Swap In</span></button>`; }).join('')}</div>` : ''}
+    <button class="btn ghost" data-act="park-only" data-id="${id}" style="margin-top:14px">${ICON.car}Just Park It</button>`);
 }
 const lines = (t) => String(t || '').split('\n').map((x) => x.trim()).filter(Boolean);
 const cells = (t) => lines(t).map((l) => l.split('|').map((x) => x.trim()));
@@ -1143,7 +1245,12 @@ function initSortables() {
     onEnd: (e) => { endDrag(); if (droppedOnArchive()) return archiveChat(e.item.dataset.id); if (e.from !== e.to || e.oldIndex !== e.newIndex) onChatDrop(e.from, e.to); },
   }))));
   // Groups reorder within their own level; use "Put inside" to nest.
-  $$('#secs, .subs').forEach((box) => sortables.push(Sortable.create(box, dragOpts({
+  const tiles = $('.ptiles');
+  if (tiles) sortables.push(Sortable.create(tiles, dragOpts({
+    draggable: '.ptile', delay: 160, filter: '.ptile-a', preventOnFilter: false,
+    onEnd: (e) => { endDrag(); if (droppedOnArchive()) return archiveGroup(e.item.dataset.sid); if (e.oldIndex !== e.newIndex) onSecDrop(tiles); },
+  })));
+  $$('.secs, .subs').forEach((box) => sortables.push(Sortable.create(box, dragOpts({
     handle: '.grip', draggable: '.sec', delay: 120,
     onEnd: (e) => { endDrag(); if (droppedOnArchive()) return archiveGroup(e.item.dataset.sid); if (e.oldIndex !== e.newIndex) onSecDrop(box); },
   }))));
@@ -1183,6 +1290,15 @@ function archiveFx() {
   if (b) { b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); }
 }
 function onChatDrop(from, to) {
+  if (to.classList.contains('drop-chip')) { // filed from Inbox onto a project
+    const c = chatById([...to.children].find((e) => e.classList.contains('chat'))?.dataset.id);
+    if (c) {
+      const sid = to.dataset.sid, g = secById(sid);
+      c.section_id = sid; c.position = chatsIn(sid).filter((x) => x.id !== c.id).length;
+      renderContent(); toast(`Filed in ${g.name}`);
+      return push([{ op: 'patch', table: 'chats', rows: [{ id: c.id, section_id: sid, position: c.position }, ...renumber(chatsIn(from.dataset.sid), 'position')] }]);
+    }
+  }
   const rows = [];
   for (const list of new Set([from, to])) {
     const ordered = [...list.children].filter((r) => r.classList.contains('chat')).map((r) => chatById(r.dataset.id)).filter(Boolean);
@@ -1192,8 +1308,8 @@ function onChatDrop(from, to) {
   if (rows.length) push([{ op: 'patch', table: 'chats', rows }]);
 }
 function onSecDrop(box) {
-  let ordered = [...box.children].filter((e) => e.classList.contains('sec')).map((e) => secById(e.dataset.sid)).filter(Boolean);
-  if (box.id === 'secs') { // the active project isn't on Parked: keep its slot
+  let ordered = [...box.children].filter((e) => e.dataset.sid).map((e) => secById(e.dataset.sid)).filter(Boolean);
+  if (box.id === 'secs' || box.id === 'tiles') { // the active project isn't on Parked: keep its slot
     const vis = new Set(ordered.map((x) => x.id)); let i = 0;
     ordered = children(null).map((x) => (vis.has(x.id) ? ordered[i++] : x));
   }
@@ -1316,7 +1432,9 @@ function showAddForm(p) {
   }
   S.pending = p;
   const last = localStorage.getItem('threads.lastSection');
-  const sid = secById(last) ? last : inbox()?.id;
+  const ap = activeProject();
+  // Default to what you're looking at: the active project on Active, Inbox on Inbox.
+  const sid = S.view === 'main' && S.page === 'active' && ap ? ap.id : S.view === 'main' && S.page === 'inbox' ? inbox()?.id : secById(last) ? last : inbox()?.id;
   openSheet(`<h2>${p.none ? 'Add a notes card' : `Add this ${(KIND[p.kind] || 'chat').toLowerCase()}?`}</h2>
     ${p.none ? `<div class="field"><span>Type</span><div class="chips" id="ac-kind">${['cowork', 'chat', 'code', 'other'].map((k, i) => `<button class="chip${i ? '' : ' on'}" data-act="chip" data-v="${k}">${kindIcon(k)}${KIND[k]}</button>`).join('')}</div></div>` : ''}
     <label class="field"><span>Name</span><input class="inp" id="ac-name" placeholder="What's this about?" maxlength="80" autocomplete="off" enterkeyhint="done"></label>
@@ -1814,11 +1932,13 @@ const A = {
   'unarchive-group': (el) => unarchiveGroup(el.dataset.id),
   'import-open': () => openImport(),
   page: (el) => { S.page = el.dataset.v; localStorage.setItem('threads.page', S.page); S.view = 'main'; renderTop(); renderContent(); scrollTo(0, 0); },
-  config: (el) => openConfig(el.dataset.id),
+  config: (el) => { if (!S.dragging) openConfig(el.dataset.id); },
   'all-tools': () => openAllTools(),
   expand: (el) => el.classList.toggle('open'),
   'make-active': (el) => makeActive(el.dataset.id),
-  park: (el) => { closeSheet(); parkProject(el.dataset.id); },
+  park: (el) => openParkSheet(el.dataset.id),
+  'park-only': (el) => { closeSheet(); parkProject(el.dataset.id); },
+  'swap-in': (el) => makeActive(el.dataset.id),
   'doc-edit': (el) => openDocEdit(el.dataset.id, el.dataset.k),
   'doc-save': (el) => saveDocEdit(el.dataset.id, el.dataset.k),
   'copy-prompt': async (el) => {
