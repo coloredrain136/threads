@@ -124,6 +124,34 @@ body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
 .slist.closed{display:none}
 .slist:empty::before{content:'Drag a project here';display:block;padding:6px 10px;color:var(--ink-3);font-size:12px;border:1px dashed var(--line);border-radius:var(--r-sm);margin:2px 0}
 .side-foot{margin-top:auto;padding-top:12px;display:grid;gap:1px;border-top:1px solid var(--line)}
+.side > *{flex-shrink:0} /* threads-10: long folders scroll instead of overlapping */
+.brand{border-radius:var(--r-sm);padding:2px 4px;margin-left:-4px;text-align:left}
+.brand:hover{background:var(--field)}
+.srow.sub{padding-left:30px;min-height:28px;font-size:13px}
+.srow .sic{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:13px;flex:none;background:var(--field)}
+.rail-only{display:none!important}
+.side-rz{display:none}
+@media (min-width:900px){
+  .side-rz{display:block;position:fixed;top:0;bottom:0;left:calc(var(--side) - 4px);width:8px;cursor:col-resize;z-index:31;touch-action:none}
+  .side-rz::after{content:'';position:absolute;top:0;bottom:0;left:3px;width:2px;background:transparent;transition:background .15s}
+  .side-rz:hover::after,body.resizing .side-rz::after{background:var(--dawn)}
+  body.resizing{cursor:col-resize;user-select:none;-webkit-user-select:none}
+  body.resizing .side,body.resizing .main{pointer-events:none}
+  /* icon rail: drag the edge in past ~150px */
+  body.rail .side{padding:12px 8px;align-items:stretch}
+  body.rail .lbl,body.rail .side .sfield,body.rail .sh > *,body.rail .sproj b,body.rail .sproj .new,body.rail .spin > span:not(.kic),body.rail .srow small,body.rail .syncbtn small{display:none!important}
+  body.rail .rail-only{display:grid!important}
+  body.rail .side-top{flex-direction:column;padding:2px 0 8px;gap:4px}
+  body.rail .brand{margin:0;padding:2px;justify-content:center}
+  body.rail .srow,body.rail .sproj,body.rail .spin,body.rail .syncbtn{justify-content:center;padding:0;min-height:36px;position:relative}
+  body.rail .syncbtn{margin:0 0 8px}
+  body.rail .srow.sub{padding:0}
+  body.rail .sh{height:1px;margin:8px 6px;padding:0;border-top:1px solid var(--line);border-radius:0}
+  body.rail .sproj .gicon{width:28px;height:28px;min-width:28px;font-size:15px}
+  body.rail .sproj .dot{position:absolute;right:6px;top:5px;width:7px;height:7px;box-shadow:0 0 0 2px var(--night)}
+  body.rail .srow .ncount{position:absolute;top:1px;right:4px;min-width:16px;height:16px;font-size:10px;line-height:16px;padding:0 4px}
+  body.rail .side-foot{padding-top:8px}
+}
 .spin{display:flex;align-items:center;gap:9px;min-height:30px;padding:0 8px;border-radius:var(--r-sm);font-size:13.5px;color:var(--ink-2);user-select:none;-webkit-user-select:none}
 .spin:hover{background:var(--field);color:var(--ink)}
 .spin .kic{width:20px;height:20px;border-radius:5px}
@@ -165,13 +193,14 @@ body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
 .lnkbtn:hover{background:var(--field)}
 
 /* health strip */
-.hstrip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.hstrip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .hs{display:grid;gap:2px;padding:12px 14px;border-radius:var(--r-lg);text-align:left;position:relative}
 .hs b{font-size:28px;font-weight:750;letter-spacing:-.02em;line-height:1.1}
 .hs span{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-2)}
 .hs.on{border-color:var(--dawn);box-shadow:0 0 0 1px var(--dawn) inset}
+.hs.unknown b{color:var(--ink-3)}
 .hs.ok b{color:color-mix(in srgb,var(--ok) 85%,var(--ink))}.hs.waiting b{color:color-mix(in srgb,var(--warn) 90%,var(--ink))}.hs.stuck b{color:color-mix(in srgb,var(--danger) 85%,var(--ink))}
-@media (max-width:899px){.hs{padding:10px 11px}.hs b{font-size:23px}.hs span{font-size:12px}}
+@media (max-width:899px){.hstrip{gap:7px}.hs{padding:9px 9px}.hs b{font-size:21px}.hs span{font-size:11px;gap:4px}}
 
 /* do this next */
 .dn{display:grid;border-radius:var(--r-lg);overflow:hidden}
@@ -206,6 +235,8 @@ body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
 .pc-h b{flex:1;min-width:0;font-size:16px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pc-m{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-3)}
 .pc-m code{font-size:12px;color:var(--ink-2)}
+.pc-why{font-size:12.5px;color:var(--ink-3);margin-top:-4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pc-why.waiting{color:color-mix(in srgb,var(--warn) 75%,var(--ink-2))}.pc-why.stuck{color:color-mix(in srgb,var(--danger) 70%,var(--ink-2))}
 .pc-n{font-size:14px;line-height:1.4;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.8em}
 .pc-n em{font-style:normal;font-weight:700;color:var(--c);margin-right:3px}
 .pc-f{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
@@ -232,6 +263,13 @@ body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
 .plist .sproj .prow-t{display:grid;flex:1;min-width:0}
 .plist .sproj .prow-t span{font-size:12.5px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+/* triage + system folders */
+.sysrow{display:flex;align-items:center;gap:12px;padding:12px 14px;width:100%;text-align:left}
+.sysrow + .sysrow{border-top:1px solid var(--line)}
+.sysrow .gicon{width:32px;height:32px;min-width:32px;border-radius:9px;font-size:17px}
+.sysrow .prow-t{flex:1;min-width:0;display:grid}
+.sysrow .prow-t span{font-size:13px;color:var(--ink-3)}
+.sysrow small{font-size:13px;font-weight:700;color:var(--ink-2)}
 /* naming */
 .nm{display:flex;align-items:center;gap:10px;padding:10px 12px 10px 14px;flex-wrap:wrap}
 .nm + .nm{border-top:1px solid var(--line)}
@@ -587,7 +625,7 @@ body.dragging{user-select:none;-webkit-user-select:none}
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-9'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-10'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -679,7 +717,7 @@ function tc(t) {
     return m[1] + m[2].toUpperCase() + m[3];
   }).join('');
 }
-const TC_SEL = 'h1,h2,h3,h4,.btn,.pill-btn,.act,.add-btn,.chip,.field > span,.switch,.th,.seg button,.sec-name > span,.chat .txt b,.row-t b,.where,.uchip,.ta-h b,.pick,.pick-row b,.det summary,.arch-row b,.upd h4,.banner b,.empty h2,.srow > span,.sproj b,.sh > span,.hb,.tagx,.tb span,.pc-h b,.prow-t b,.ptab,.tierbtn,.ck-t > b,.dn-t b,.nm-t b,.det-sec > summary,.syncbtn > span,.brand,.hs span';
+const TC_SEL = 'h1,h2,h3,h4,.btn,.pill-btn,.act,.add-btn,.chip,.field > span,.switch,.th,.seg button,.sec-name > span,.chat .txt b,.row-t b,.where,.uchip,.ta-h b,.pick,.pick-row b,.det summary,.arch-row b,.upd h4,.banner b,.empty h2,.srow > span,.sproj b,.sh > span,.hb,.tagx,.tb span,.pc-h b,.prow-t b,.ptab,.tierbtn,.ck-t > b,.dn-t b,.nm-t b,.det-sec > summary,.syncbtn > span,.brand,.hs span,.sysrow b,.srow .lbl';
 function tcTree(root) {
   const els = root.matches?.(TC_SEL) ? [root, ...root.querySelectorAll(TC_SEL)] : root.querySelectorAll?.(TC_SEL) || [];
   for (const el of els) {
@@ -760,7 +798,9 @@ const S = {
   sections: [], chats: [], settings: {},
   view: 'main', detailId: null, filter: '', dragging: false, loaded: false,
 };
-S.route = ['home', 'projects', 'naming', 'archive', 'project'].includes(localStorage.getItem('threads.route')) ? localStorage.getItem('threads.route') : 'home';
+S.route = (localStorage.getItem('threads.route') || 'home').replace(/^naming$/, 'triage');
+if (!['home', 'projects', 'triage', 'archive', 'project', 'group'].includes(S.route)) S.route = 'home';
+S.gid = localStorage.getItem('threads.gid');
 S.pid = localStorage.getItem('threads.pid'); S.back = 'home'; S.ptab = 'overview'; S.hfilter = ''; S.openDet = new Set();
 const collapsed = new Set(JSON.parse(localStorage.getItem('threads.collapsed') || '[]'));
 const dismissed = new Set();
@@ -825,6 +865,14 @@ async function load() {
       S.migrated = true;
       legacy.forEach((s) => { s.status = 'archived'; s.archived_at = null; });
       push([{ op: 'patch', table: 'sections', rows: legacy.map((s) => ({ id: s.id, status: 'archived', archived_at: null })) }]);
+    }
+    // "Sync threads" chats sitting in Inbox move to the Sync Chats folder (threads-10).
+    const stray = inbox() ? chatsIn(inbox().id).filter((c) => SYNC_RE.test(c.name)) : [];
+    if (stray.length && !S.filedSync) {
+      S.filedSync = true;
+      const sec = ensureSys('sync');
+      stray.forEach((c) => { c.section_id = sec.id; c.suggest = null; });
+      push([{ op: 'patch', table: 'chats', rows: stray.map((c) => ({ id: c.id, section_id: sec.id, suggest: null })) }]);
     }
     saveCache();
     if (j.version && j.version !== APP_VERSION) showUpdate();
@@ -904,12 +952,31 @@ const TIERS = [['active', 'Active'], ['parked', 'Parked'], ['archived', 'Archive
 const TIER_NAME = Object.fromEntries(TIERS);
 const TIER_HINT = { active: 'Building now. Several at once is fine.', parked: 'Interested, but busy with other things.', archived: 'Liked the idea, not building for a long time.' };
 const tierOf = (s) => (s.status === 'active' ? 'active' : s.status === 'archived' ? 'archived' : 'parked');
-const projects = () => children(null).filter((s) => !s.is_inbox);
+// System folders (not projects): Ideas and Sync Chats. Marked with doc.system.
+const SYSTEM = {
+  ideas: { name: 'Ideas', icon: '💡', color: 'gold', hint: "Ideas you're not building yet. Make one a project when it's ready." },
+  sync: { name: 'Sync Chats', icon: '🔄', color: 'slate', hint: 'Every "sync threads" chat lands here on its own, so they never clutter Triage.' },
+};
+const SYNC_RE = /^(sync threads|threads\s*[-–]\s*sync)\b/i;
+const sysOf = (s) => (s && s.doc && typeof s.doc === 'object' ? s.doc.system : null) || null;
+const sysSec = (k) => S.sections.find((s) => !s.parent_id && sysOf(s) === k) || null;
+function ensureSys(k) {
+  let s = sysSec(k);
+  if (s) return s;
+  s = { id: uid(), name: SYSTEM[k].name, icon: SYSTEM[k].icon, color: SYSTEM[k].color, parent_id: null, position: 9000, is_inbox: false, status: 'parked',
+    project_uuid: null, archived_at: null, home_chat_id: null, activated_at: null, doc: { system: k }, created_at: nowISO() };
+  S.sections.push(s);
+  push([{ op: 'upsert', table: 'sections', row: s }]);
+  return s;
+}
+const projects = () => children(null).filter((s) => !s.is_inbox && !sysOf(s));
 const projectsIn = (t) => projects().filter((s) => tierOf(s) === t);
 const syncOf = (s) => { const x = docOf(s).sync; return x && typeof x === 'object' ? x : {}; };
 const slugOf = (s) => syncOf(s).slug || String(s.name).toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // "sync threads" already means every project, so the Threads project's own deep dive is "sync threads project".
 const syncPhrase = (s) => (slugOf(s) === 'threads' ? 'sync threads project' : `sync ${slugOf(s)}`);
+const deepPhrase = (s) => `deep sync ${slugOf(s)}`;
+const BUILDS_PROJECT = '019f4446-1c77-77af-9901-5a74516156ca'; // claude.ai/project/<id> for "Builds"; editable in Settings
 const topOf = (s) => { let x = s; while (x && parentOf(x)) x = parentOf(x); return x; };
 const fmtDate = (d) => { const m = String(d || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? new Date(+m[1], +m[2] - 1, +m[3]).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : String(d || ''); };
 const agoMs = (t) => (t ? ago(new Date(t).toISOString()) : '');
@@ -960,7 +1027,7 @@ function health(s) {
   const tier = tierOf(s), sy = syncOf(s);
   const h = { key: 'ok', tier, why: [], long: (sy.updates_in_chat || 0) >= 9, gaps: (sy.gaps || []).length, la: lastAct(s) };
   if (tier === 'archived') { h.key = 'archived'; return h; }
-  if (!h.la && !sy.synced_at) { h.key = 'unknown'; h.why.push('No sync data yet. Type "sync threads" in a Builds chat.'); return h; }
+  if (!sy.synced_at) { h.key = 'unknown'; h.why.push(`Not synced yet. Run "${deepPhrase(s)}" (or "${syncPhrase(s)}") in its chat.`); return h; }
   const lim = limits()[tier];
   h.days = h.la ? Math.floor((Date.now() - h.la) / 864e5) : null;
   if (h.days === null || h.days >= lim) { h.key = 'stuck'; h.why.push(h.days === null ? 'No Claude activity recorded' : `No activity in ${h.days} days (the ${tier} limit is ${lim})`); }
@@ -971,6 +1038,12 @@ function health(s) {
   if (h.long) h.why.push(`${sy.current_chat || 'The current chat'} is at ${sy.updates_in_chat} updates. About 10 means it's time for the next session chat.`);
   if (h.gaps) h.why.push(`${h.gaps} playbook gap${h.gaps > 1 ? 's' : ''}`);
   return h;
+}
+function whyLine(s, h) {
+  const sy = syncOf(s);
+  if (h.key === 'unknown') return 'Not synced yet';
+  if (h.key === 'ok') return [sy.deployed === true ? null : normDoc(s).status, h.la ? `active ${agoMs(h.la)}` : null, h.long ? 'chat getting long' : null].filter(Boolean).join(' · ') || 'Nothing flagged';
+  return h.why[0] || '';
 }
 const hcls = (h) => (h.key === 'stuck' && h.tier === 'parked' ? 'nudge' : h.key);
 const hbadge = (h) => (h.key === 'archived' ? '' : `<span class="hb ${hcls(h)}">${HL[h.key]}</span>`);
@@ -1010,7 +1083,7 @@ function dnBtn(it) {
 const dnRow = (it) => `<div class="dn-row${colorCls(colorOf(it.s))}">${gIcon(it.s)}<div class="dn-t" data-act="proj" data-id="${it.s.id}" role="button"><div><b>${esc(it.s.name)}</b>${dnTag(it)}</div>${it.text ? `<p>${esc(it.text)}</p>` : ''}</div>${dnBtn(it)}</div>`;
 
 // ---------- chats that need naming ----------
-const needsNaming = () => active().filter((c) => c.suggest);
+const needsNaming = () => active().filter((c) => c.suggest && !sysOf(topOf(secOf(c))));
 const unfiled = () => (inbox() ? chatsIn(inbox().id) : []);
 const namingCount = () => new Set([...needsNaming(), ...unfiled()].map((c) => c.id)).size;
 function nmRow(c) {
@@ -1021,7 +1094,67 @@ function nmRow(c) {
 function ufRow(c) {
   const href = linkFor(c);
   return `<div class="nm"><div class="nm-t" data-act="detail" data-id="${c.id}" role="button"><b>${esc(c.name)}</b><span>${subline(c)}</span></div>
-    <div class="nm-a"><button class="act pri" data-act="d-move" data-id="${c.id}">${ICON.folder}File</button>${href ? `<a class="act" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open</a>` : ''}</div></div>`;
+    <div class="nm-a"><button class="act pri" data-act="d-move" data-id="${c.id}">${ICON.folder}File</button><button class="act" data-act="file-sys" data-k="ideas" data-id="${c.id}">💡 Idea</button><button class="act" data-act="file-sys" data-k="sync" data-id="${c.id}">🔄 Sync Chat</button>${href ? `<a class="act" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open</a>` : ''}</div></div>`;
+}
+const sysCount = (k) => { const s = sysSec(k); return s ? allChatsIn(s).length : 0; };
+function fileSys(id, k) {
+  const c = chatById(id);
+  if (!c) return;
+  const sec = ensureSys(k), old = secOf(c)?.id;
+  c.section_id = sec.id; c.position = Math.min(0, ...chatsIn(sec.id).filter((x) => x.id !== id).map((x) => x.position ?? 0)) - 1;
+  if (k === 'sync') c.suggest = null;
+  renderContent(); toast(`Moved to ${SYSTEM[k].name}`);
+  push([{ op: 'patch', table: 'chats', rows: [{ id, section_id: sec.id, position: c.position, ...(k === 'sync' ? { suggest: null } : {}) }, ...renumber(chatsIn(old), 'position')] }]);
+}
+function openMakeProject(cid) {
+  const c = chatById(cid);
+  if (!c) return;
+  const nm = String(c.name).replace(/^idea\s*[-–:]\s*/i, '').slice(0, 80);
+  openSheet(`<h2>Make a Project</h2><label class="field"><span>Name</span><input class="inp" id="mp-name" value="${esc(nm)}" maxlength="80" autocomplete="off"></label>
+    <div class="field"><span>Tier</span><div class="chips" id="mp-tier">${TIERS.map(([t, l]) => `<button class="chip${t === 'parked' ? ' on' : ''}" data-act="chip" data-v="${t}">${l}</button>`).join('')}</div></div>
+    <p class="hint">The idea moves into the new project. To start it properly, open a new chat and type <b>new build: ${esc(nm)}</b>.</p>
+    <p class="err" id="mp-err"></p><button class="btn" data-act="mp-go" data-id="${cid}">Create Project</button>`);
+}
+function makeProject(cid) {
+  const c = chatById(cid), name = $('#mp-name').value.trim();
+  if (!name) { $('#mp-err').textContent = 'Give it a name.'; return; }
+  if (projects().some((x) => x.name.toLowerCase() === name.toLowerCase())) { $('#mp-err').textContent = 'There is already a project with that name.'; return; }
+  const t = val('mp-tier') || 'parked';
+  const row = { id: uid(), name, icon: null, color: COLORS[projects().length % COLORS.length], parent_id: null, position: Math.max(0, ...projects().map((x) => x.position || 0)) + 1,
+    is_inbox: false, status: t, activated_at: t === 'active' ? nowISO() : null, project_uuid: null, archived_at: null, home_chat_id: null, doc: {}, created_at: nowISO() };
+  S.sections.push(row);
+  c.section_id = row.id; c.position = 0;
+  closeSheet(); toast(`Created ${name}`);
+  push([{ op: 'upsert', table: 'sections', row }, { op: 'patch', table: 'chats', rows: [{ id: c.id, section_id: row.id, position: 0 }] }]);
+  openProject(row.id, 'overview');
+}
+// Copy Context: a short brief of where the project stands, to paste into a new chat.
+function contextFor(s) {
+  const d = normDoc(s), sy = syncOf(s), h = health(s), cur = currentChat(s);
+  const L = [`Context from Threads for ${s.name} (${new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}):`];
+  L.push(`- Tier: ${TIER_NAME[tierOf(s)]} · Health: ${HL[h.key]}${h.why.length && h.key !== 'unknown' ? ` (${h.why.slice(0, 2).join('; ')})` : ''}`);
+  if (d.status || sy.build) L.push(`- Status: ${d.status || '?'}${sy.build ? ` · Latest build: ${sy.build}${sy.deployed === true ? ' (deployed)' : sy.deployed === false ? ' (not deployed yet)' : ''}` : ''}`);
+  if (d.now) L.push(`- Now: ${d.now}`);
+  if (d.next) L.push(`- Next: ${d.next}${sy.next_owner ? ` (on ${sy.next_owner === 'joe' ? 'me' : sy.next_owner})` : ''}`);
+  if (sy.current_chat || cur) L.push(`- Current chat: ${sy.current_chat || cur.name}${sy.updates_in_chat != null ? ` (${sy.updates_in_chat} of ~10 updates)` : ''}`);
+  const links = ARC.map(([k, label]) => { const l = projLink(s, k); return l ? `${label} ${l.url}` : null; }).filter(Boolean);
+  if (links.length) L.push(`- Links: ${links.join(' · ')}`);
+  const b = (sy.builds || []).slice(0, 3);
+  if (b.length) L.push(`- Recent builds: ${b.map((x) => `${x.n != null ? `${slugOf(s)}-${x.n}` : ''}${x.date ? ` (${fmtDate(x.date)})` : ''} ${x.summary}`.trim()).join('; ')}`);
+  if ((sy.gaps || []).length) L.push(`- Playbook gaps: ${sy.gaps.map((g) => g.text).join('; ')}`);
+  if (d.tools.length) L.push(`- Stack: ${d.tools.map((t) => t.name + (t.role ? ` (${t.role})` : '')).join(', ')}`);
+  if (d.env.length) L.push(`- Env var names: ${d.env.map((e) => e.name).join(', ')}`);
+  L.push(`Read claude/builds-playbook.md and claude/${slugOf(s)}-build-log.md before doing anything, and treat the docs as the source of truth if they disagree with this.`);
+  return L.join('\n');
+}
+function openDeepAll() {
+  const st = S.settings.deep?.started_at, list = projects().filter((s) => tierOf(s) !== 'archived');
+  const done = (s) => st && syncOf(s).synced_at && syncOf(s).synced_at >= st;
+  openSheet(`<h2>Deep Sync All</h2><p class="hint" style="margin-top:0">For catching up after a lot of work. For each project: copy its prompt, paste it in its chat, answer the questions, then import the reply here. Rows tick off as replies come in.</p>
+    <p class="muted" style="margin-bottom:10px">${st ? `Round started ${ago(st)} · ${list.filter(done).length} of ${list.length} done` : 'Start a round to track which projects are done.'}</p>
+    <div class="pick-list">${list.map((s) => { const cur = currentChat(s), sy = syncOf(s); return `<div class="pick-row${colorCls(colorOf(s))}"><span class="ck-i ${done(s) ? 'pass' : 'unk'}">${done(s) ? ICON.check : ICON.dash}</span>${gIcon(s)}<span class="prow-t" style="flex:1;min-width:0;display:grid"><b>${esc(s.name)}</b><small>${sy.synced_at ? `synced ${ago(sy.synced_at)}` : 'never synced'}${cur ? ` · ${esc(cur.name)}` : ''}</small></span>
+      <button class="act" data-act="copy-text" data-await="1" data-t="${esc(deepPhrase(s))}" data-msg="${esc(pasteMsg(cur))}">${ICON.copy}Copy</button>${cur ? `<a class="act" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}">${ICON.go}Open</a>` : ''}</div>`; }).join('')}</div>
+    <button class="btn ghost" data-act="deep-round" style="margin-top:14px">${ICON.sync}${st ? 'Start a New Round' : 'Start a Round'}</button>`);
 }
 
 // ---------- shell ----------
@@ -1034,7 +1167,7 @@ function render() {
   if (!S.token) return renderLogin();
   if (!$('#content')) {
     $('#app').classList.add('authed');
-    $('#app').innerHTML = `<aside class="side" id="side"></aside>
+    $('#app').innerHTML = `<aside class="side" id="side"></aside><div class="side-rz" title="Drag to resize · drag far left for icons only · double-click to switch" aria-hidden="true"></div>
       <div class="main"><header class="mtop" id="mtop"></header><div class="msearch" id="msearch"></div><div id="banner"></div><main id="content"></main></div>
       <nav class="tabbar" id="tabbar"></nav>`;
   }
@@ -1047,10 +1180,11 @@ function renderTop() {
   document.body.classList.toggle('v-detail', S.view === 'detail');
   const back = (label) => `<button class="icon-btn" data-act="back" aria-label="Back">${ICON.back}</button><h1 class="sm">${label}</h1>`;
   if (S.view === 'detail') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1 class="sm"></h1>`;
-  else if (S.route === 'project' && secById(S.pid)) top.innerHTML = back(S.back === 'projects' ? 'Projects' : S.back === 'naming' ? 'Needs Naming' : 'Home');
+  else if (S.route === 'project' && secById(S.pid)) top.innerHTML = back(S.back === 'projects' ? 'Projects' : S.back === 'triage' ? 'Triage' : 'Home');
   else if (S.route === 'archive') top.innerHTML = back('Archived Chats');
+  else if (S.route === 'group' && secById(S.gid)) top.innerHTML = `${back(esc(secById(S.gid).name))}<button class="add-btn" data-act="add" aria-label="Add">${ICON.plus}<span>Add</span></button>`;
   else {
-    const t = { home: 'Threads', projects: 'Projects', naming: 'Needs Naming' }[S.route] || 'Threads';
+    const t = { home: 'Threads', projects: 'Projects', triage: 'Triage' }[S.route] || 'Threads';
     top.innerHTML = `<h1>${t}</h1>${S.route === 'home' ? `<button class="icon-btn" data-act="sync" aria-label="Sync">${ICON.sync}</button><button class="icon-btn" data-act="settings" aria-label="Settings">${ICON.gear}</button>` : ''}
       ${S.route === 'projects' ? `<button class="icon-btn" data-act="sec-new" aria-label="New project">${ICON.folder}</button>` : ''}<button class="add-btn" data-act="add" aria-label="Add">${ICON.plus}<span>Add</span></button>`;
   }
@@ -1063,26 +1197,29 @@ function renderSide() {
   if (!el) return;
   if (!wide()) { el.innerHTML = ''; return; }
   if (document.activeElement?.id === 'filter') return; // don't steal focus while searching
-  const on = (r) => (S.route === r && !S.filter ? ' on' : '');
-  const nn = namingCount(), p = pins();
-  el.innerHTML = `<div class="side-top"><span class="brand"><i>🧵</i>Threads</span><button class="icon-btn" data-act="add" title="Add a chat (N)" aria-label="Add a chat">${ICON.plus}</button></div>
+  const on = (r, id) => (S.route === r && !S.filter && (!id || S.gid === id) ? ' on' : '');
+  const nn = namingCount(), p = pins(), na = archived().length;
+  const sysRow = (k) => { const g = sysSec(k), n = sysCount(k); return `<button class="srow${g ? on('group', g.id) : ''}" data-act="sys" data-k="${k}" title="${SYSTEM[k].name}"><span class="sic">${SYSTEM[k].icon}</span><span class="lbl">${SYSTEM[k].name}</span><small>${n || ''}</small></button>`; };
+  el.innerHTML = `<div class="side-top"><button class="brand" data-act="go" data-r="home" title="Dashboard"><i>🧵</i><span class="lbl">Threads</span></button><button class="icon-btn" data-act="add" title="Add a chat (N)" aria-label="Add a chat">${ICON.plus}</button></div>
     <label class="sfield">${ICON.search}<input class="filter-inp" id="filter" type="search" placeholder="Search" autocomplete="off" value="${esc(S.filter)}">${S.filter ? '<button class="clear" data-act="filter-clear" aria-label="Clear">×</button>' : '<kbd>⌘K</kbd>'}</label>
-    <button class="syncbtn" data-act="sync" title="Open your sync chat">${ICON.sync}<span>Sync</span><small>${syncLabel()}</small></button>
-    <button class="srow${on('home')}" data-act="go" data-r="home">${ICON.grid}<span>Dashboard</span></button>
+    <button class="srow rail-only" data-act="rail-search" title="Search (⌘K)">${ICON.search}</button>
+    <button class="syncbtn" data-act="sync" title="Copy &quot;sync threads&quot; and open a new Builds chat">${ICON.sync}<span class="lbl">Sync</span><small>${syncLabel()}</small></button>
+    <button class="srow${on('home')}" data-act="go" data-r="home" title="Dashboard">${ICON.grid}<span class="lbl">Dashboard</span></button>
+    <button class="srow${on('triage')}" data-act="go" data-r="triage" title="Triage">${ICON.tag}<span class="lbl">Triage</span>${nn ? `<i class="ncount">${nn}</i>` : ''}</button>
+    ${sysRow('ideas')}${sysRow('sync')}
     ${p.length ? `<div class="sh${folds.has('pins') ? ' closed' : ''}" data-act="fold" data-v="pins" role="button">${ICON.chev}<span>Pinned</span></div>
-      <div class="slist-p${folds.has('pins') ? '' : ''}" id="spins"${folds.has('pins') ? ' hidden' : ''}>${p.map(pinRow).join('')}</div>` : ''}
+      <div id="spins"${folds.has('pins') ? ' hidden' : ''}>${p.map(pinRow).join('')}</div>` : ''}
     ${TIERS.map(([t, label]) => {
       const list = projectsIn(t), closed = folds.has(t);
       return `<div class="sh${closed ? ' closed' : ''}" data-act="fold" data-v="${t}" role="button">${ICON.chev}<span>${label}</span><small>${list.length}</small><button class="mini" data-act="sec-new" data-tier="${t}" title="New project in ${label}" aria-label="New project in ${label}">${ICON.plus}</button></div>
-        <div class="slist${closed ? ' closed' : ''}" data-tier="${t}">${list.map(sideProj).join('')}</div>`;
+        <div class="slist${closed ? ' closed' : ''}" data-tier="${t}">${list.map(sideProj).join('')}</div>
+        ${t === 'archived' && !closed ? `<button class="srow sub${on('archive')}" data-act="go" data-r="archive" title="Archived Chats">${ICON.archive}<span class="lbl">Archived Chats</span><small>${na || ''}</small></button>` : ''}`;
     }).join('')}
-    <div class="side-foot"><button class="srow${on('naming')}" data-act="go" data-r="naming">${ICON.tag}<span>Needs Naming</span>${nn ? `<i class="ncount">${nn}</i>` : ''}</button>
-      <button class="srow${on('archive')}" data-act="go" data-r="archive">${ICON.archive}<span>Archived Chats</span><small>${archived().length || ''}</small></button>
-      <button class="srow" data-act="settings">${ICON.gear}<span>Settings</span></button></div>`;
+    <div class="side-foot"><button class="srow" data-act="settings" title="Settings">${ICON.gear}<span class="lbl">Settings</span></button></div>`;
 }
 function sideProj(s) {
   const h = health(s), sel = S.route === 'project' && S.pid === s.id && !S.filter;
-  return `<button class="sproj${sel ? ' on' : ''}${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}" data-sid="${s.id}">${gIcon(s)}<b>${esc(s.name)}</b>${syncOf(s).is_new ? '<i class="new">NEW</i>' : ''}${hdot(h)}</button>`;
+  return `<button class="sproj${sel ? ' on' : ''}${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}" data-sid="${s.id}" title="${esc(s.name)} · ${HL[h.key]}">${gIcon(s)}<b>${esc(s.name)}</b>${syncOf(s).is_new ? '<i class="new">NEW</i>' : ''}${hdot(h)}</button>`;
 }
 function pinRow(c) {
   const href = linkFor(c), inner = `<span class="kic">${kindIcon(c.kind)}</span><span><em>${esc(topOf(secOf(c))?.name || '')}</em> ${esc(shortName(c))}</span>`;
@@ -1093,11 +1230,11 @@ function renderTabbar() {
   const el = $('#tabbar');
   if (!el) return;
   if (wide()) { el.innerHTML = ''; return; }
-  const r = S.route === 'project' ? (S.back || 'home') : S.route === 'archive' ? 'home' : S.route;
+  const r = S.route === 'project' ? (S.back || 'home') : S.route === 'archive' ? 'home' : S.route === 'group' ? 'triage' : S.route;
   const nn = namingCount();
   el.innerHTML = `<button class="tb${r === 'home' ? ' on' : ''}" data-act="go" data-r="home">${ICON.home}<span>Home</span></button>
     <button class="tb${r === 'projects' ? ' on' : ''}" data-act="go" data-r="projects">${ICON.stack}<span>Projects</span></button>
-    <button class="tb${r === 'naming' ? ' on' : ''}" data-act="go" data-r="naming">${ICON.tag}<span>Naming</span>${nn ? `<i>${nn}</i>` : ''}</button>`;
+    <button class="tb${r === 'triage' ? ' on' : ''}" data-act="go" data-r="triage">${ICON.tag}<span>Triage</span>${nn ? `<i>${nn}</i>` : ''}</button>`;
 }
 
 function subline(c, showPath) {
@@ -1171,7 +1308,8 @@ function renderMain() {
   const s = S.route === 'project' ? secById(S.pid) : null;
   if (S.filter) el.innerHTML = searchHTML();
   else if (s && !s.is_inbox) el.innerHTML = projectHTML(s);
-  else if (S.route === 'naming') el.innerHTML = namingHTML();
+  else if (S.route === 'triage') el.innerHTML = triageHTML();
+  else if (S.route === 'group' && secById(S.gid)) el.innerHTML = sysPageHTML(secById(S.gid));
   else if (S.route === 'archive') el.innerHTML = archiveHTML();
   else if (S.route === 'projects' && !wide()) el.innerHTML = projectsHTML();
   else el.innerHTML = dashHTML();
@@ -1181,11 +1319,12 @@ function renderMain() {
 function pcard(s, h) {
   const sy = syncOf(s), d = normDoc(s), cur = currentChat(s);
   const meta = [sy.build ? `<code>${esc(sy.build)}</code>` : '', sy.deployed === true ? '<span class="tagx ok">Deployed</span>' : sy.deployed === false ? '<span class="tagx warn">Not deployed</span>' : '',
-    h.la ? `<span>active ${agoMs(h.la)}</span>` : ''].filter(Boolean).join('');
+  ].filter(Boolean).join('');
   const links = ARC.map(([k, label]) => { const l = projLink(s, k); return l ? `<a class="li" href="${esc(l.url)}" target="_blank" rel="noopener" data-act="ext" title="${label}" aria-label="${label}">${LINK_ICON[k]}</a>` : ''; }).join('');
   return `<article class="pcard${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}">
     <div class="pc-h">${gIcon(s)}<b>${esc(s.name)}</b>${hbadge(h)}</div>
-    <div class="pc-m">${meta || '<span>No build info yet</span>'}</div>
+    ${meta ? `<div class="pc-m">${meta}</div>` : ''}
+    <p class="pc-why ${h.key}">${esc(h.key === 'unknown' ? `Not synced yet. Deep Sync fills this in.` : whyLine(s, h))}</p>
     <p class="pc-n">${d.next ? `<em>Next</em>${esc(d.next)}` : d.now ? esc(d.now) : '<span class="muted">No status yet</span>'}</p>
     <div class="pc-f">${links}<span class="sp"></span>${h.long ? '<span class="tagx warn">Long chat</span>' : ''}${h.gaps ? `<span class="tagx bad">${h.gaps} gap${h.gaps > 1 ? 's' : ''}</span>` : ''}${cur ? `<a class="li" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}" title="Open ${esc(cur.name)}" aria-label="Open ${esc(cur.name)}">${ICON.k_chat}</a>` : ''}</div></article>`;
 }
@@ -1204,13 +1343,12 @@ function dashHTML() {
     : `<div class="empty-card">${f ? 'None right now.' : `No active projects yet. ${wide() ? 'Drag one into Active in the sidebar.' : 'Move one to Active from Projects.'}`}</div>`;
   return `<div class="page">
     <header class="ph"><h1>Dashboard</h1><span class="muted">${syncLabel()}</span><div class="ph-a"><button class="act" data-act="sync">${ICON.sync}Sync</button><button class="add-btn" data-act="add">${ICON.plus}Add</button></div></header>
-    <section class="hstrip">${['ok', 'waiting', 'stuck'].map((k) => `<button class="hs glass ${k}${f === k ? ' on' : ''}" data-act="hfilter" data-v="${k}"><b>${cnt(k)}</b><span><i class="dot ${k}"></i>${HL[k]}</span></button>`).join('')}</section>
-    ${unk ? `<p class="muted" style="margin-top:-12px">${unk} project${unk > 1 ? 's' : ''} not synced yet. <button class="lnkbtn" data-act="sync">Sync now</button></p>` : ''}
+    <section class="hstrip">${['ok', 'waiting', 'stuck', 'unknown'].map((k) => `<button class="hs glass ${k}${f === k ? ' on' : ''}" data-act="hfilter" data-v="${k}"><b>${cnt(k)}</b><span><i class="dot ${k}"></i>${HL[k]}</span></button>`).join('')}</section>
     <section class="blk"><div class="blk-h"><h2>Do This Next</h2>${items.length > 3 ? `<button class="lnkbtn" data-act="all-next">${S.allNext ? 'Show less' : `Show all ${items.length}`}</button>` : ''}</div>
-      <div class="dn glass">${shown.length ? shown.map(dnRow).join('') : `<div class="dn-empty">${unk ? 'Run a sync to fill this in.' : 'Nothing waiting. Every project is healthy.'}</div>`}</div></section>
+      <div class="dn glass">${shown.length ? shown.map(dnRow).join('') : `<div class="dn-empty">${unk ? 'Some projects aren\'t synced yet. Run a deep sync on them to fill this in.' : 'Nothing waiting. Every project is healthy.'}</div>`}</div></section>
     <section class="blk"><div class="blk-h"><h2>${f ? `${HL[f]} (${cards.length})` : `Active Projects`}</h2>${f ? '<button class="lnkbtn" data-act="hfilter" data-v="">Show active projects</button>' : `<span class="muted">${cards.length}</span>`}</div>${cardsHTML}</section>
     ${!wide() && p.length ? `<section class="blk"><div class="blk-h"><h2>Pinned</h2></div><div class="dn glass ppins">${p.map(pinRow).join('')}</div></section>` : ''}
-    ${nm.length ? `<section class="blk"><div class="blk-h"><h2>Chats That Need a Proper Name</h2><span class="muted">${nm.length}</span><button class="lnkbtn" data-act="go" data-r="naming">See all</button></div><div class="dn glass">${nm.slice(0, wide() ? 4 : 3).map(nmRow).join('')}</div></section>` : ''}
+    ${nm.length ? `<section class="blk"><div class="blk-h"><h2>Chats That Need a Proper Name</h2><span class="muted">${nm.length}</span><button class="lnkbtn" data-act="go" data-r="triage">Open Triage</button></div><div class="dn glass">${nm.slice(0, wide() ? 4 : 3).map(nmRow).join('')}</div></section>` : ''}
     ${!active().length && !projects().length ? `<div class="empty glass"><h2>Start with a sync</h2><p>Type <code>sync threads</code> in any Builds chat in Claude, copy the reply, and paste it here. Or add a chat link by hand.</p><button class="add-btn" data-act="import-open">${ICON.clip}Paste a sync</button></div>` : ''}
   </div>`;
 }
@@ -1224,12 +1362,23 @@ function projectsHTML() {
   }).join('')}<p class="muted" style="text-align:center">Press and hold a project to drag it between tiers.</p>
     <button class="btn ghost" data-act="sec-new">${ICON.plus}New project</button></div>`;
 }
-function namingHTML() {
+function triageHTML() {
   const nm = needsNaming(), uf = unfiled();
-  return `<div class="page"><header class="ph"><h1>Needs Naming</h1></header>
-    <p class="muted" style="font-size:14px;margin-top:-6px">Chat titles should be <code>Name - Scope</code> or <code>Name - Build N</code>, where N is which build chat it is. Rename in Claude and the next sync picks it up.</p>
-    <section class="blk"><div class="blk-h"><h2>Rename in Claude</h2><span class="muted">${nm.length}</span></div>${nm.length ? `<div class="dn glass">${nm.map(nmRow).join('')}</div>` : '<div class="empty-card">Every synced chat has a proper name.</div>'}</section>
-    <section class="blk"><div class="blk-h"><h2>Not in a Project</h2><span class="muted">${uf.length}</span></div>${uf.length ? `<div class="dn glass">${uf.map(ufRow).join('')}</div>` : '<div class="empty-card">Nothing unfiled.</div>'}</section></div>`;
+  const sys = (k) => { const n = sysCount(k); return `<button class="sysrow c-${SYSTEM[k].color}" data-act="sys" data-k="${k}"><span class="gicon">${SYSTEM[k].icon}</span><span class="prow-t"><b>${SYSTEM[k].name}</b><span>${esc(SYSTEM[k].hint)}</span></span><small>${n}</small></button>`; };
+  return `<div class="page"><header class="ph"><h1>Triage</h1><span class="muted">Keep the Builds project tidy</span></header>
+    <section class="blk"><div class="blk-h"><h2>Folders</h2></div><div class="dn glass">${sys('ideas')}${sys('sync')}</div></section>
+    <section class="blk"><div class="blk-h"><h2>Not in a Project</h2><span class="muted">${uf.length}</span></div>${uf.length ? `<div class="dn glass">${uf.map(ufRow).join('')}</div>` : '<div class="empty-card">Nothing unfiled.</div>'}</section>
+    <section class="blk"><div class="blk-h"><h2>Rename in Claude</h2><span class="muted">${nm.length}</span></div>
+      <p class="muted" style="font-size:13px;margin:-4px 2px 2px">Titles should be <code>Name - Scope</code> or <code>Name - Build N</code> (N = which build chat). Rename in Claude and the next sync picks it up.</p>
+      ${nm.length ? `<div class="dn glass">${nm.map(nmRow).join('')}</div>` : '<div class="empty-card">Every synced chat has a proper name.</div>'}</section></div>`;
+}
+function sysPageHTML(g) {
+  const k = sysOf(g), list = allChatsIn(g).sort(bySort('position'));
+  const row = (c) => { const href = linkFor(c); return `<div class="nm"><div class="nm-t" data-act="detail" data-id="${c.id}" role="button"><b>${esc(c.name)}</b><span>${subline(c)}</span></div>
+    <div class="nm-a">${k === 'ideas' ? `<button class="act pri" data-act="make-proj" data-id="${c.id}">${ICON.star}Make Project</button>` : ''}<button class="act" data-act="d-move" data-id="${c.id}">${ICON.folder}Move</button>${href ? `<a class="act" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open</a>` : ''}</div></div>`; };
+  return `<div class="page"><header class="ph"><h1>${esc(g.name)}</h1><span class="muted">${list.length}</span><div class="ph-a"><button class="add-btn" data-act="add">${ICON.plus}${k === 'ideas' ? 'Add Idea' : 'Add'}</button></div></header>
+    <p class="muted" style="font-size:14px;margin-top:-8px">${esc(SYSTEM[k]?.hint || '')}${k === 'ideas' ? ' No link? Add it as a notes card.' : ''}</p>
+    ${list.length ? `<div class="dn glass">${list.map(row).join('')}</div>` : `<div class="empty-card">${k === 'ideas' ? 'No ideas yet. Hit Add Idea, or file a chat here from Triage.' : 'Sync chats show up here after your next sync.'}</div>`}</div>`;
 }
 function searchHTML() {
   const q = S.filter.toLowerCase();
@@ -1269,7 +1418,9 @@ function projectHTML(s) {
       <div class="pj-sub"><button class="tierbtn" data-act="tier-menu" data-id="${s.id}" title="Move to another tier">${TIER_NAME[tierOf(s)]}${ICON.chev}</button>${hbadge(h)}${sy.build ? `<code>${esc(sy.build)}</code>` : ''}${sy.deployed === false ? '<span class="tagx warn">Not deployed</span>' : sy.deployed ? '<span class="tagx ok">Deployed</span>' : ''}${sy.synced_at ? `<span>synced ${ago(sy.synced_at)}</span>` : ''}</div></div>
     <div class="pj-a">${app ? `<a class="act pri" href="${esc(app.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : ''}
       ${cur ? `<a class="act" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}">${ICON.k_chat}Open ${esc(shortName(cur))}</a>` : ''}
-      <button class="act" data-act="copy-text" data-await="1" data-t="${esc(syncPhrase(s))}" data-msg="${esc(pasteMsg(cur))} Then copy the reply back here." title="Copy the sync prompt for this project">${ICON.copy}<span class="nt">${esc(syncPhrase(s))}</span></button>
+      <button class="act" data-act="copy-text" data-await="1" data-t="${esc(syncPhrase(s))}" data-msg="${esc(pasteMsg(cur))} Then copy the reply back here." title="Copies &quot;${esc(syncPhrase(s))}&quot;: a quick refresh from the build log">${ICON.copy}Sync ${esc(s.name)}${slugOf(s) === 'threads' ? ' Project' : ''}</button>
+      <button class="act" data-act="copy-text" data-await="1" data-t="${esc(deepPhrase(s))}" data-msg="${esc(pasteMsg(cur))} It asks its questions, then gives you the JSON." title="Copies &quot;${esc(deepPhrase(s))}&quot;: reads every chat, fixes the docs, asks you questions">${ICON.sync}Deep Sync</button>
+      <button class="act" data-act="copy-context" data-id="${s.id}" title="Copy a short brief of where this project stands, for a new chat">${ICON.clip}Copy Context</button>
       <button class="more" data-act="sec-menu" data-id="${s.id}" aria-label="Edit ${esc(s.name)}">${ICON.more}</button></div></header>`;
   if (wide()) {
     const tab = PTABS.some(([k]) => k === S.ptab) ? S.ptab : 'overview';
@@ -1325,7 +1476,7 @@ const TAB = {
     if (other.length) rows.push(row('fix', 'Other', '', other));
     const failing = new Set(gaps.map((g) => (known.has(g.check) ? g.check : 'other'))).size;
     return `<section class="dcard glass"><div class="dcard-h"><h3>Playbook Checklist</h3><span class="muted">${synced ? `${Math.max(0, CHECKS.length - failing)} of ${CHECKS.length} pass` : 'Run a sync to check'}</span></div>${rows.join('')}</section>
-      <div class="foot-a"><button class="act" data-act="copy-text" data-await="1" data-t="playbook check" data-msg="${esc(pasteMsg(cur))}">${ICON.copy}Copy <span class="nt">“playbook check”</span></button>${cur ? `<a class="act" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}">${ICON.go}Open ${esc(shortName(cur))}</a>` : ''}</div>`;
+      <div class="foot-a"><button class="act" data-act="copy-text" data-await="1" data-t="playbook check" data-msg="${esc(pasteMsg(cur))}">${ICON.copy}Copy Playbook Check</button>${cur ? `<a class="act" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}">${ICON.go}Open ${esc(shortName(cur))}</a>` : ''}</div>`;
   },
   setup(s) {
     const d = normDoc(s);
@@ -1340,7 +1491,7 @@ const TAB = {
       ${cfgCard(s, 'accounts', 'Accounts', accts && `${accts}<p class="hint-s">${ICON.lock}Only the 1Password item and vault are stored here. Never the password.</p>`)}
       ${cfgCard(s, 'env', 'Env Vars', env && `${env}<p class="hint-s">Names and where they're set. Values stay in Vercel and 1Password.</p>`)}
       ${cfgCard(s, 'notes', 'Deploy Notes', notes)}
-      <div class="foot-a"><button class="act" data-act="copy-text" data-await="1" data-t="${esc(syncPhrase(s))}" data-msg="${esc(pasteMsg(currentChat(s)))}">${ICON.copy}Copy <span class="nt">“${esc(syncPhrase(s))}”</span> to refresh setup</button></div>`;
+      <div class="foot-a"><button class="act" data-act="copy-text" data-await="1" data-t="${esc(syncPhrase(s))}" data-msg="${esc(pasteMsg(currentChat(s)))}">${ICON.copy}Copy Sync ${esc(s.name)} to Refresh Setup</button></div>`;
   },
 };
 function cfgCard(s, k, title, body) {
@@ -1371,7 +1522,7 @@ function openProject(id, tab) {
   renderTop(); renderContent(); scrollTo(0, 0);
 }
 function goBack() {
-  if (S.route === 'project' || S.route === 'archive') return go(S.back && S.back !== 'project' ? S.back : 'home');
+  if (['project', 'archive', 'group'].includes(S.route)) return go(S.back && !['project', 'group'].includes(S.back) ? S.back : 'home');
   go('home');
 }
 // Tier changes: from the sidebar (drag), the project header, or the ⋯ menu.
@@ -1494,21 +1645,13 @@ function openURL(url) {
   if (/^https:/i.test(url) && !isIOS) window.open(url, '_blank', 'noopener');
   else location.href = url;
 }
-function syncChat() { const id = S.settings.sync?.chat_id; return id ? chatById(id) : null; }
-function openSyncSetup() {
-  const guesses = active().filter((c) => (/sync/i.test(c.name) || S.settings.sync?.chat_id === c.id) && linkFor(c)).slice(0, 8);
-  openSheet(`<h2>Set up Sync</h2><p class="hint" style="margin-top:0">Pick the Claude chat where you type <b>sync threads</b> (any chat in the Builds project works). Sync opens it, you copy the reply, and Threads offers to import it when you come back.</p>
-    ${guesses.length ? `<div class="pick-list" style="margin-bottom:14px">${guesses.map((c) => `<div class="pick-row"><b>${esc(pathOf(secOf(c)))} · ${esc(c.name)}</b><button class="mk-act" data-act="sync-set" data-id="${c.id}">Use this</button></div>`).join('')}</div>` : ''}
-    <p class="hint">${guesses.length ? 'Or add it first' : 'Add your sync chat to Threads first (Add → Paste link), name it something with "Sync" in it, then come back here.'}</p>
-    <button class="btn ghost" data-act="add">${ICON.plus}Add a chat</button>
-    <button class="btn ghost" data-act="import-open">${ICON.clip}I already have a sync reply</button>`);
-}
-function runSync() {
-  const c = syncChat();
-  if (!c) return openSyncSetup();
-  markOpened(c.id); awaitPaste('sync');
-  toast('Type "sync threads", copy the reply, then come back here');
-  openURL(linkFor(c));
+// Sync: copy "sync threads" and open a new chat in the Builds project (a fresh chat every time).
+const buildsProject = () => S.settings.sync?.project_id || BUILDS_PROJECT;
+async function runSync() {
+  try { await navigator.clipboard.writeText('sync threads'); dismissed.add('sync threads'); } catch { toast("Couldn't copy. Type sync threads in the new chat.", true); }
+  awaitPaste('sync');
+  toast('Copied "sync threads". Paste it in the new chat, then copy the reply back here');
+  setTimeout(() => openURL(projectLink(buildsProject())), 350);
 }
 
 // ---------- drag and drop ----------
@@ -1671,7 +1814,7 @@ function syncPatch(p, s, kind, at) {
 }
 function parseSync(j) {
   if (Number(j.threads_sync) !== 2) return { error: 'That sync came from an older threads-sync skill. Update the skill, then run sync threads again.' };
-  if (j.kind === 'docs') return { error: "That's a docs sync. The Docs page comes in the next update (threads-10), so there's nothing to import yet." };
+  if (j.kind === 'docs') return { error: "That's a docs sync. The Docs page isn't built yet, so there's nothing to import." };
   const kind = j.kind === 'project' ? 'project' : 'all';
   const at = isoOr(j.synced_at) || nowISO();
   const str = (v, n) => String(v ?? '').trim().slice(0, n);
@@ -1710,8 +1853,10 @@ function parseSync(j) {
     seen.add(lp.chat_uuid);
     const title = str(c.title || c.name, 80) || 'Untitled';
     const upd = isoOr(c.updated_at);
-    const target = c.project ? (find(c.project) || create(c.project, null, upd)) : null;
-    const sug = 'proper' in c ? (c.proper === false ? (str(c.suggest, 80) || null) : null) : undefined;
+    const isSync = SYNC_RE.test(title);
+    let target = c.project ? (find(c.project) || create(c.project, null, upd)) : null;
+    if (isSync) target = sysSec('sync') || plan.sysSync || (plan.sysSync = (() => { const r = { id: uid(), name: SYSTEM.sync.name, icon: SYSTEM.sync.icon, color: SYSTEM.sync.color, parent_id: null, position: 9000, is_inbox: false, status: 'parked', project_uuid: null, archived_at: null, home_chat_id: null, activated_at: null, doc: { system: 'sync' }, created_at: nowISO() }; plan.newSecs.push(r); return r; })());
+    const sug = isSync ? null : 'proper' in c ? (c.proper === false ? (str(c.suggest, 80) || null) : null) : undefined;
     const ex = S.chats.find((x) => sameItem(x, lp));
     if (ex) {
       const up = { id: ex.id };
@@ -1719,7 +1864,7 @@ function parseSync(j) {
       if (upd && upd !== ex.claude_updated_at) up.claude_updated_at = upd;
       if (sug !== undefined && (sug || null) !== (ex.suggest || null)) up.suggest = sug;
       const cur = secOf(ex), curTop = topOf(cur);
-      if (!ex.archived_at && target && curTop?.id !== target.id && (cur?.is_inbox || c.proper === true)) { up.section_id = target.id; plan.moved++; }
+      if (!ex.archived_at && target && curTop?.id !== target.id && (cur?.is_inbox || c.proper === true || isSync)) { up.section_id = target.id; plan.moved++; }
       if (Object.keys(up).length > 1) plan.chatUps.push({ c: ex, up });
     } else {
       const sec = target || inbox();
@@ -1735,7 +1880,7 @@ function previewSync(p) {
   const b = [];
   const nameOf = (id) => S.sections.find((x) => x.id === id)?.name || p.newSecs.find((x) => x.id === id)?.name || 'Inbox';
   if (p.projUps.length) b.push(`<h4>Projects (${p.projUps.length})</h4>${p.projUps.map((u) => { const sy = u.patch.sync; return `<div>${u.isNew ? '<span class="tagx warn">New</span> ' : ''}${esc(u.s.name)}${sy.build ? ` · <code>${esc(sy.build)}</code>` : ''}${u.patch.status ? ` · ${esc(u.patch.status)}` : ''}${u.isNew ? ` → ${TIER_NAME[u.s.status]}` : ''}${sy.gaps?.length ? ` · ${sy.gaps.length} gap${sy.gaps.length > 1 ? 's' : ''}` : ''}</div>`; }).join('')}`);
-  const extra = p.newSecs.filter((r) => !p.projUps.some((u) => u.s === r));
+  const extra = p.newSecs.filter((r) => !p.projUps.some((u) => u.s === r) && !sysOf(r));
   if (extra.length) b.push(`<h4>New projects from chat titles</h4>${extra.map((r) => `<div>${esc(r.name)} → ${TIER_NAME[r.status]}</div>`).join('')}`);
   if (p.newChats.length) b.push(`<h4>New chats (${p.newChats.length})</h4>${p.newChats.slice(0, 40).map((c) => `<div>${esc(c.name)} <span class="muted">· ${esc(nameOf(c.section_id))}</span></div>`).join('')}${p.newChats.length > 40 ? `<div class="muted">and ${p.newChats.length - 40} more</div>` : ''}`);
   const times = p.chatUps.filter((u) => u.up.claude_updated_at).length;
@@ -1752,7 +1897,7 @@ function applySync() {
   S.syncPlan = null; S.awaitPaste = null; sessionStorage.removeItem('threads.await');
   const ops = [];
   let pos = Math.max(0, ...projects().map((s) => s.position || 0)) + 1;
-  for (const r of p.newSecs) r.position = pos++;
+  for (const r of p.newSecs) if (!sysOf(r)) r.position = pos++;
   const secRows = [];
   for (const u of p.projUps) {
     const s = u.s, d = { ...docOf(s) }, pt = u.patch;
@@ -1899,7 +2044,7 @@ function showAddForm(p) {
   S.pending = p;
   const last = localStorage.getItem('threads.lastSection');
   // Default to what you're looking at: the open project, else the last group used, else Inbox.
-  const sid = S.route === 'project' && secById(S.pid) ? S.pid : S.route === 'naming' ? inbox()?.id : secById(last) ? last : inbox()?.id;
+  const sid = S.route === 'project' && secById(S.pid) ? S.pid : S.route === 'group' && secById(S.gid) ? S.gid : S.route === 'triage' ? inbox()?.id : secById(last) ? last : inbox()?.id;
   openSheet(`<h2>${p.none ? 'Add a notes card' : `Add this ${(KIND[p.kind] || 'chat').toLowerCase()}?`}</h2>
     ${p.none ? `<div class="field"><span>Type</span><div class="chips" id="ac-kind">${['cowork', 'chat', 'code', 'other'].map((k, i) => `<button class="chip${i ? '' : ' on'}" data-act="chip" data-v="${k}">${kindIcon(k)}${KIND[k]}</button>`).join('')}</div></div>` : ''}
     <label class="field"><span>Name</span><input class="inp" id="ac-name" placeholder="What's this about?" maxlength="80" autocomplete="off" enterkeyhint="done"></label>
@@ -2110,8 +2255,10 @@ function openSettings() {
       <p class="muted">This device only. Auto uses the web link on iPhone and the app link on Mac and PC. Right now: <b>${linkMode() === 'app' ? 'claude://' : 'https://'}</b></p>
       <div class="seg">${[['auto', 'Auto'], ['app', 'App link'], ['web', 'Web link']].map(([v, l]) => `<button class="${pref === v ? 'on' : ''}" data-act="link-set" data-v="${v}">${l}</button>`).join('')}</div>
     </section>
-    <section class="set"><h3>Sync</h3><p class="muted">${syncChat() ? `Sync opens <b>${esc(syncChat().name)}</b>.` : 'Not set up yet.'} Last sync: ${S.settings.sync?.last_synced ? ago(S.settings.sync.last_synced) : 'never'}.</p>
-      <button class="btn ghost" data-act="sync-setup">${ICON.sync}${syncChat() ? 'Change sync chat' : 'Set up Sync'}</button></section>
+    <section class="set"><h3>Sync</h3><p class="muted">The Sync button copies <b>sync threads</b> and opens a new chat in your Builds project. Last sync: ${S.settings.sync?.last_synced ? ago(S.settings.sync.last_synced) : 'never'}.</p>
+      <label class="field"><span>Builds project link</span><input class="inp" id="bp-link" value="https://claude.ai/project/${esc(buildsProject())}" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+      <button class="btn ghost" data-act="bp-save">Save Link</button>
+      <button class="btn ghost" data-act="deep-all">${ICON.sync}Deep Sync All</button></section>
     <section class="set"><h3>Health</h3><p class="muted">A project shows as Stuck after this many days with no activity in Claude. Archived projects are never flagged.</p>
       <div class="thr"><label>Active (days)<input class="inp" id="th-a" type="number" min="1" max="90" value="${limits().active}"></label><label>Parked (days)<input class="inp" id="th-p" type="number" min="1" max="365" value="${limits().parked}"></label></div>
       <button class="btn ghost" data-act="th-save">Save Thresholds</button></section>
@@ -2462,7 +2609,30 @@ const A = {
     } catch { toast("Couldn't copy.", true); }
   },
   sync: () => runSync(),
-  'sync-setup': () => openSyncSetup(),
+  sys: (el) => { const g = ensureSys(el.dataset.k); flushSaves(); if (S.panel) closePanel(); if (S.route !== 'group') S.back = S.route; S.route = 'group'; S.gid = g.id; S.view = 'main';
+    if (S.filter) { S.filter = ''; $$('.filter-inp').forEach((i) => { i.value = ''; }); }
+    localStorage.setItem('threads.route', 'group'); localStorage.setItem('threads.gid', g.id); closeSheet(); renderTop(); renderContent(); scrollTo(0, 0); },
+  'file-sys': (el) => fileSys(el.dataset.id, el.dataset.k),
+  'make-proj': (el) => openMakeProject(el.dataset.id),
+  'mp-go': (el) => makeProject(el.dataset.id),
+  'copy-context': async (el) => {
+    const s = secById(el.dataset.id), t = contextFor(s);
+    try { await navigator.clipboard.writeText(t); dismissed.add(t); toast('Context copied. Paste it at the start of a new chat.'); } catch { toast("Couldn't copy.", true); }
+  },
+  'deep-all': () => openDeepAll(),
+  'deep-round': () => {
+    S.settings.deep = { started_at: nowISO() };
+    push([{ op: 'upsert', table: 'settings', row: { id: 'deep', value: S.settings.deep } }]);
+    openDeepAll(); toast('New round started');
+  },
+  'bp-save': () => {
+    const v = $('#bp-link').value.trim(), id = projectIdFrom(v) || (UUID_RE.test(v) ? v.toLowerCase() : null);
+    if (!id) return toast('That should look like claude.ai/project/…', true);
+    S.settings.sync = { ...(S.settings.sync || {}), project_id: id };
+    push([{ op: 'upsert', table: 'settings', row: { id: 'sync', value: S.settings.sync } }]);
+    toast('Builds project link saved');
+  },
+  'rail-search': () => { setRail(false); setTimeout(() => { $('#filter')?.focus(); }, 30); },
   'sync-set': (el) => {
     S.settings.sync = { ...(S.settings.sync || {}), chat_id: el.dataset.id };
     closeSheet(); toast('Sync is set up');
@@ -2574,7 +2744,7 @@ document.addEventListener('keydown', (ev) => {
     else if (document.activeElement?.classList.contains('filter-inp') && S.filter) { clearFilter(); }
     else if (S.view !== 'main') backToMain();
     else if (S.hfilter) { S.hfilter = ''; renderContent(); }
-    else if (!/INPUT|TEXTAREA/.test(document.activeElement?.tagName || '') && ['project', 'archive', 'naming'].includes(S.route)) goBack();
+    else if (!/INPUT|TEXTAREA/.test(document.activeElement?.tagName || '') && ['project', 'archive', 'triage', 'group'].includes(S.route)) goBack();
   }
   if (ev.key !== 'Enter') return;
   const id = ev.target.id;
@@ -2637,6 +2807,30 @@ function showUpdate() {
   const b = $('#banner');
   if (b) b.innerHTML = `<div class="banner glass" data-act="reload" role="button" style="cursor:pointer"><b>Update ready · tap to reload</b><button class="add-btn" data-act="reload">Reload</button></div>`;
 }
+
+// ---------- sidebar width (drag the edge; drag far left for an icon rail) ----------
+const SIDE_MIN = 210, SIDE_MAX = 420, RAIL_AT = 150, RAIL_W = 64;
+let sideW = Math.min(SIDE_MAX, Math.max(SIDE_MIN, +localStorage.getItem('threads.sideW') || 264));
+let rail = localStorage.getItem('threads.rail') === '1';
+function applySide() { document.documentElement.style.setProperty('--side', (rail ? RAIL_W : sideW) + 'px'); document.body.classList.toggle('rail', rail); }
+function setRail(on) { rail = on; applySide(); localStorage.setItem('threads.rail', rail ? '1' : ''); }
+document.addEventListener('pointerdown', (e) => {
+  if (!e.target.closest?.('.side-rz')) return;
+  e.preventDefault();
+  document.body.classList.add('resizing');
+  const move = (ev) => {
+    if (ev.clientX < RAIL_AT) { if (!rail) { rail = true; applySide(); } return; }
+    rail = false; sideW = Math.min(SIDE_MAX, Math.max(SIDE_MIN, Math.round(ev.clientX))); applySide();
+  };
+  const up = () => {
+    document.body.classList.remove('resizing');
+    removeEventListener('pointermove', move); removeEventListener('pointerup', up);
+    localStorage.setItem('threads.sideW', sideW); localStorage.setItem('threads.rail', rail ? '1' : '');
+  };
+  addEventListener('pointermove', move); addEventListener('pointerup', up);
+});
+document.addEventListener('dblclick', (e) => { if (e.target.closest?.('.side-rz')) setRail(!rail); });
+applySide();
 
 // ---------- iOS home-screen fixes (Holdfast, Oct 2026) ----------
 const standalone = () => navigator.standalone || matchMedia('(display-mode: standalone)').matches;
