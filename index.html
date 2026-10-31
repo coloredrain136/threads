@@ -632,7 +632,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-11'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-12'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -875,6 +875,13 @@ async function load() {
     }
     // "Sync threads" chats sitting in Inbox move to the Sync Chats folder (threads-10).
     const stray = inbox() ? chatsIn(inbox().id).filter((c) => SYNC_RE.test(c.name)) : [];
+    const shortStray = inbox() ? chatsIn(inbox().id).filter((c) => SHORTCUT_RE.test(c.name)) : [];
+    if (shortStray.length && !S.filedShort) {
+      S.filedShort = true;
+      const sec = ensureSys('shortcuts');
+      shortStray.forEach((c) => { c.section_id = sec.id; });
+      push([{ op: 'patch', table: 'chats', rows: shortStray.map((c) => ({ id: c.id, section_id: sec.id })) }]);
+    }
     if (stray.length && !S.filedSync) {
       S.filedSync = true;
       const sec = ensureSys('sync');
@@ -962,8 +969,12 @@ const tierOf = (s) => (s.status === 'active' ? 'active' : s.status === 'archived
 // System folders (not projects): Ideas and Sync Chats. Marked with doc.system.
 const SYSTEM = {
   ideas: { name: 'Ideas', icon: '💡', color: 'gold', hint: "Ideas you're not building yet. Make one a project when it's ready." },
+  general: { name: 'General', icon: '💬', color: 'blue', hint: 'Questions and ideas about how the Builds project itself works.' },
+  shortcuts: { name: 'Apple Shortcuts', icon: '⚡', color: 'violet', hint: 'Apple Shortcuts builds and fixes.' },
   sync: { name: 'Sync Chats', icon: '🔄', color: 'slate', hint: 'Every "sync threads" chat lands here on its own, so they never clutter Triage.' },
 };
+const SYS_KEYS = ['ideas', 'general', 'shortcuts', 'sync'];
+const SHORTCUT_RE = /^(\[shortcut\]|shortcut\s*[-–:]|apple shortcut)/i;
 const SYNC_RE = /^(sync threads|threads\s*[-–]\s*sync)\b/i;
 const sysOf = (s) => (s && s.doc && typeof s.doc === 'object' ? s.doc.system : null) || null;
 const sysSec = (k) => S.sections.find((s) => !s.parent_id && sysOf(s) === k) || null;
@@ -1101,7 +1112,22 @@ function nmRow(c) {
 function ufRow(c) {
   const href = linkFor(c);
   return `<div class="nm"><div class="nm-t" data-act="detail" data-id="${c.id}" role="button"><b>${esc(c.name)}</b><span>${subline(c)}</span></div>
-    <div class="nm-a"><button class="act pri" data-act="d-move" data-id="${c.id}">${ICON.folder}File</button><button class="act" data-act="file-sys" data-k="ideas" data-id="${c.id}">💡 Idea</button><button class="act" data-act="file-sys" data-k="sync" data-id="${c.id}">🔄 Sync Chat</button>${href ? `<a class="act" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open</a>` : ''}</div></div>`;
+    <div class="nm-a"><button class="act pri" data-act="file-open" data-id="${c.id}">${ICON.folder}File</button><button class="act" data-act="file-sys" data-k="ideas" data-id="${c.id}">💡 Idea</button><button class="act" data-act="file-sys" data-k="general" data-id="${c.id}">💬 General</button>${href ? `<a class="act" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open</a>` : ''}</div></div>`;
+}
+function openFile(id) {
+  const c = chatById(id);
+  if (!c) return;
+  const here = topOf(secOf(c));
+  openSheet(`<h2>File ${esc(c.name)}</h2>
+    <div class="field"><span>Folders</span><div class="chips">${SYS_KEYS.map((k) => `<button class="chip${sysOf(here) === k ? ' on' : ''}" data-act="file-sys" data-k="${k}" data-id="${id}">${SYSTEM[k].icon} ${SYSTEM[k].name}</button>`).join('')}</div></div>
+    <div class="field"><span>Projects</span><div class="pick-list">${TIERS.map(([t]) => projectsIn(t).map((s) => `<button class="pick-row${colorCls(colorOf(s))}${here?.id === s.id ? ' on' : ''}" data-act="file-proj" data-id="${id}" data-sid="${s.id}">${gIcon(s)}<b>${esc(s.name)}</b><small>${TIER_NAME[t]}</small></button>`).join('')).join('')}</div></div>`);
+}
+function fileToProject(id, sid) {
+  const c = chatById(id), old = secOf(c)?.id;
+  if (!c || !sid || sid === old) return closeSheet();
+  c.section_id = sid; c.position = Math.min(0, ...chatsIn(sid).filter((x) => x.id !== id).map((x) => x.position ?? 0)) - 1;
+  closeSheet(); renderContent(); toast(`Filed in ${secById(sid).name}`);
+  push([{ op: 'patch', table: 'chats', rows: [{ id, section_id: sid, position: c.position }, ...renumber(chatsIn(old), 'position')] }]);
 }
 const sysCount = (k) => { const s = sysSec(k); return s ? allChatsIn(s).length : 0; };
 function fileSys(id, k) {
@@ -1110,7 +1136,7 @@ function fileSys(id, k) {
   const sec = ensureSys(k), old = secOf(c)?.id;
   c.section_id = sec.id; c.position = Math.min(0, ...chatsIn(sec.id).filter((x) => x.id !== id).map((x) => x.position ?? 0)) - 1;
   if (k === 'sync') c.suggest = null;
-  renderContent(); toast(`Moved to ${SYSTEM[k].name}`);
+  closeSheet(); renderContent(); toast(`Moved to ${SYSTEM[k].name}`);
   push([{ op: 'patch', table: 'chats', rows: [{ id, section_id: sec.id, position: c.position, ...(k === 'sync' ? { suggest: null } : {}) }, ...renumber(chatsIn(old), 'position')] }]);
 }
 function openMakeProject(cid) {
@@ -1213,7 +1239,8 @@ function renderSide() {
     <button class="syncbtn" data-act="sync" title="Copy &quot;sync threads&quot; and open a new Builds chat">${ICON.sync}<span class="lbl">Sync</span><small>${syncLabel()}</small></button>
     <button class="srow${on('home')}" data-act="go" data-r="home" title="Dashboard">${ICON.grid}<span class="lbl">Dashboard</span></button>
     <button class="srow${on('triage')}" data-act="go" data-r="triage" title="Triage">${ICON.tag}<span class="lbl">Triage</span>${nn ? `<i class="ncount">${nn}</i>` : ''}</button>
-    ${sysRow('ideas')}${sysRow('sync')}
+    <div class="sh${folds.has('folders') ? ' closed' : ''}" data-act="fold" data-v="folders" role="button">${ICON.chev}<span>Folders</span></div>
+    ${folds.has('folders') ? '' : SYS_KEYS.map(sysRow).join('')}
     ${p.length ? `<div class="sh${folds.has('pins') ? ' closed' : ''}" data-act="fold" data-v="pins" role="button">${ICON.chev}<span>Pinned</span></div>
       <div id="spins"${folds.has('pins') ? ' hidden' : ''}>${p.map(pinRow).join('')}</div>` : ''}
     ${TIERS.map(([t, label]) => {
@@ -1373,7 +1400,7 @@ function triageHTML() {
   const nm = needsNaming(), uf = unfiled();
   const sys = (k) => { const n = sysCount(k); return `<button class="sysrow c-${SYSTEM[k].color}" data-act="sys" data-k="${k}"><span class="gicon">${SYSTEM[k].icon}</span><span class="prow-t"><b>${SYSTEM[k].name}</b><span>${esc(SYSTEM[k].hint)}</span></span><small>${n}</small></button>`; };
   return `<div class="page"><header class="ph"><h1>Triage</h1><span class="muted">Keep the Builds project tidy</span></header>
-    <section class="blk"><div class="blk-h"><h2>Folders</h2></div><div class="dn glass">${sys('ideas')}${sys('sync')}</div></section>
+    <section class="blk"><div class="blk-h"><h2>Folders</h2></div><div class="dn glass">${SYS_KEYS.map(sys).join('')}</div></section>
     <section class="blk"><div class="blk-h"><h2>Not in a Project</h2><span class="muted">${uf.length}</span></div>${uf.length ? `<div class="dn glass">${uf.map(ufRow).join('')}</div>` : '<div class="empty-card">Nothing unfiled.</div>'}</section>
     <section class="blk"><div class="blk-h"><h2>Rename in Claude</h2><span class="muted">${nm.length}</span></div>
       <p class="muted" style="font-size:13px;margin:-4px 2px 2px">Titles should be <code>Name - Scope</code> or <code>Name - Build N</code> (N = which build chat). Rename in Claude and the next sync picks it up.</p>
@@ -1382,7 +1409,7 @@ function triageHTML() {
 function sysPageHTML(g) {
   const k = sysOf(g), list = allChatsIn(g).sort(bySort('position'));
   const row = (c) => { const href = linkFor(c); return `<div class="nm"><div class="nm-t" data-act="detail" data-id="${c.id}" role="button"><b>${esc(c.name)}</b><span>${subline(c)}</span></div>
-    <div class="nm-a">${k === 'ideas' ? `<button class="act pri" data-act="make-proj" data-id="${c.id}">${ICON.star}Make Project</button>` : ''}<button class="act" data-act="d-move" data-id="${c.id}">${ICON.folder}Move</button>${href ? `<a class="act" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open</a>` : ''}</div></div>`; };
+    <div class="nm-a">${k === 'ideas' ? `<button class="act pri" data-act="make-proj" data-id="${c.id}">${ICON.star}Make Project</button>` : ''}<button class="act" data-act="file-open" data-id="${c.id}">${ICON.folder}Move</button>${href ? `<a class="act" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open</a>` : ''}</div></div>`; };
   return `<div class="page"><header class="ph"><h1>${esc(g.name)}</h1><span class="muted">${list.length}</span><div class="ph-a"><button class="add-btn" data-act="add">${ICON.plus}${k === 'ideas' ? 'Add Idea' : 'Add'}</button></div></header>
     <p class="muted" style="font-size:14px;margin-top:-8px">${esc(SYSTEM[k]?.hint || '')}${k === 'ideas' ? ' No link? Add it as a notes card.' : ''}</p>
     ${list.length ? `<div class="dn glass">${list.map(row).join('')}</div>` : `<div class="empty-card">${k === 'ideas' ? 'No ideas yet. Hit Add Idea, or file a chat here from Triage.' : 'Sync chats show up here after your next sync.'}</div>`}</div>`;
@@ -1648,6 +1675,15 @@ function showPasteBanner() {
   if (!b || S.view !== 'main') return;
   b.innerHTML = `<div class="banner glass"><b>${S.awaitPaste === 'sync' ? 'Copied the sync reply?' : 'Copied the reply from Claude?'}</b><button class="add-btn" data-act="banner-paste">${ICON.clip}Paste</button><button class="act" data-act="import-open">Choose File</button><button class="x" data-act="banner-x" aria-label="Dismiss">×</button></div>`;
 }
+// Opens the Claude app; if it doesn't take over within ~1.5s (not installed / link not supported), opens the website.
+function openInApp(appUrl, webUrl) {
+  let left = false;
+  const gone = () => { left = true; };
+  document.addEventListener('visibilitychange', gone, { once: true });
+  window.addEventListener('pagehide', gone, { once: true });
+  location.href = appUrl;
+  setTimeout(() => { if (!left && !document.hidden) location.href = webUrl; }, 1500);
+}
 function openURL(url) {
   if (/^https:/i.test(url) && !isIOS) window.open(url, '_blank', 'noopener');
   else location.href = url;
@@ -1658,7 +1694,7 @@ async function runSync() {
   try { await navigator.clipboard.writeText('sync threads'); dismissed.add('sync threads'); } catch { toast("Couldn't copy. Type sync threads in the new chat.", true); }
   awaitPaste('sync');
   toast('Copied "sync threads". Paste it in the new chat, then copy the reply back here');
-  setTimeout(() => openURL(projectLink(buildsProject())), 350);
+  setTimeout(() => (isIOS && linkPref() === 'auto' ? openInApp(projectLink(buildsProject(), 'app'), projectLink(buildsProject(), 'web')) : openURL(projectLink(buildsProject()))), 350);
 }
 
 // ---------- drag and drop ----------
@@ -1862,8 +1898,11 @@ function parseSync(j) {
     const upd = isoOr(c.updated_at);
     const isSync = SYNC_RE.test(title);
     let target = c.project ? (find(c.project) || create(c.project, null, upd)) : null;
-    if (isSync) target = sysSec('sync') || plan.sysSync || (plan.sysSync = (() => { const r = { id: uid(), name: SYSTEM.sync.name, icon: SYSTEM.sync.icon, color: SYSTEM.sync.color, parent_id: null, position: 9000, is_inbox: false, status: 'parked', project_uuid: null, archived_at: null, home_chat_id: null, activated_at: null, doc: { system: 'sync' }, created_at: nowISO() }; plan.newSecs.push(r); return r; })());
-    const sug = isSync ? null : 'proper' in c ? (c.proper === false ? (str(c.suggest, 80) || null) : null) : undefined;
+    // Folder chats: sync chats always; otherwise the skill's "folder" hint or a shortcut-style title, when there's no project.
+    const fk = isSync ? 'sync' : !target && SYS_KEYS.includes(c.folder) ? c.folder : !target && SHORTCUT_RE.test(title) ? 'shortcuts' : null;
+    plan.sys = plan.sys || {};
+    if (fk) target = sysSec(fk) || plan.sys[fk] || (plan.sys[fk] = (() => { const r = { id: uid(), name: SYSTEM[fk].name, icon: SYSTEM[fk].icon, color: SYSTEM[fk].color, parent_id: null, position: 9000, is_inbox: false, status: 'parked', project_uuid: null, archived_at: null, home_chat_id: null, activated_at: null, doc: { system: fk }, created_at: nowISO() }; plan.newSecs.push(r); return r; })());
+    const sug = isSync || fk ? null : 'proper' in c ? (c.proper === false ? (str(c.suggest, 80) || null) : null) : undefined;
     const ex = S.chats.find((x) => sameItem(x, lp));
     if (ex) {
       const up = { id: ex.id };
@@ -1872,6 +1911,7 @@ function parseSync(j) {
       if (sug !== undefined && (sug || null) !== (ex.suggest || null)) up.suggest = sug;
       const cur = secOf(ex), curTop = topOf(cur);
       if (!ex.archived_at && target && curTop?.id !== target.id && (cur?.is_inbox || c.proper === true || isSync)) { up.section_id = target.id; plan.moved++; }
+      if (fk && sug === null && ex.suggest) up.suggest = null;
       if (Object.keys(up).length > 1) plan.chatUps.push({ c: ex, up });
     } else {
       const sec = target || inbox();
@@ -2292,7 +2332,7 @@ function openSettings() {
       <div class="theme-grid">${Object.entries(THEMES).map(([id, t]) => `<button class="th${id === S.theme ? ' on' : ''}" data-act="theme-set" data-v="${id}"><span class="swt" style="background:linear-gradient(135deg,${t.v.night},${t.v['night-2']})"><i style="background:${t.v.dawn}"></i></span>${t.name}</button>`).join('')}</div>
     </section>
     <section class="set"><h3>Open items with</h3>
-      <p class="muted">This device only. Auto uses the web link on iPhone and the app link on Mac and PC. Right now: <b>${linkMode() === 'app' ? 'claude://' : 'https://'}</b></p>
+      <p class="muted">This device only. Auto opens the Claude app (claude://). On iPhone it tries the app first and falls back to the website if the app doesn't open. App Link always uses claude://, Web Link always uses the website.</p>
       <div class="seg">${[['auto', 'Auto'], ['app', 'App link'], ['web', 'Web link']].map(([v, l]) => `<button class="${pref === v ? 'on' : ''}" data-act="link-set" data-v="${v}">${l}</button>`).join('')}</div>
     </section>
     <section class="set"><h3>Sync</h3><p class="muted">The Sync button copies <b>sync threads</b> and opens a new chat in your Builds project. Last sync: ${S.settings.sync?.last_synced ? ago(S.settings.sync.last_synced) : 'never'}.</p>
@@ -2537,7 +2577,13 @@ function signOut(msg) {
 // ---------- actions ----------
 const siblingsOn = (el, sel) => el.parentElement.querySelectorAll(sel).forEach((b) => b.classList.toggle('on', b === el));
 const A = {
-  open: (el, ev) => { if (S.dragging) { ev.preventDefault(); return; } markOpened(el.dataset.id); if (el.dataset.await) awaitPaste('update'); },
+  open: (el, ev) => {
+    if (S.dragging) { ev.preventDefault(); return; }
+    markOpened(el.dataset.id); if (el.dataset.await) awaitPaste('update');
+    // iPhone home-screen apps load https links inside themselves, so try the Claude app first.
+    const c = chatById(el.dataset.id);
+    if (isIOS && linkPref() === 'auto' && c) { ev.preventDefault(); openInApp(linkFor(c, 'app'), linkFor(c, 'web')); }
+  },
   detail: (el) => { if (S.dragging) return; openDetail(el.dataset.id); },
   main: () => backToMain(),
   'panel-close': () => closePanel(),
@@ -2653,6 +2699,8 @@ const A = {
     if (S.filter) { S.filter = ''; $$('.filter-inp').forEach((i) => { i.value = ''; }); }
     localStorage.setItem('threads.route', 'group'); localStorage.setItem('threads.gid', g.id); closeSheet(); renderTop(); renderContent(); scrollTo(0, 0); },
   'file-sys': (el) => fileSys(el.dataset.id, el.dataset.k),
+  'file-open': (el) => openFile(el.dataset.id),
+  'file-proj': (el) => fileToProject(el.dataset.id, el.dataset.sid),
   'make-proj': (el) => openMakeProject(el.dataset.id),
   'mp-go': (el) => makeProject(el.dataset.id),
   'copy-context': async (el) => {
