@@ -42,7 +42,7 @@ function cleanDoc(d) {
   if ('links' in d) o.links = list(d.links, 40).map((l) => ({ label: str(l?.label, 60), url: str(l?.url, 500) })).filter((l) => URLRE.test(l.url));
   if ('updated_at' in d) o.updated_at = str(d.updated_at, 40);
   if ('sync' in d) o.sync = cleanSync(d.sync);
-  if (['ideas', 'sync'].includes(d.system)) o.system = d.system; // system folders (threads-10)
+  if (['ideas', 'general', 'shortcuts', 'sync'].includes(d.system)) o.system = d.system; // system folders (threads-10)
   return o;
 }
 
