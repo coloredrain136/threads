@@ -632,7 +632,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-12'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-13'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1194,7 +1194,7 @@ function openDeepAll() {
 const WIDE = window.matchMedia ? matchMedia('(min-width: 900px)') : { matches: false, addEventListener() {} };
 const wide = () => WIDE.matches;
 const folds = new Set(JSON.parse(localStorage.getItem('threads.folds') || '[]'));
-function syncLabel() { const t = S.settings.sync?.last_synced; return t ? `synced ${ago(t)}` : 'not synced yet'; }
+function syncLabel() { const t = S.settings.sync?.last_synced; return t ? `synced ${ago(t)}${/^connector/.test(S.settings.sync?.last_source || '') ? ' · auto' : ''}` : 'not synced yet'; }
 
 function render() {
   if (!S.token) return renderLogin();
@@ -2339,6 +2339,10 @@ function openSettings() {
       <label class="field"><span>Builds project link</span><input class="inp" id="bp-link" value="https://claude.ai/project/${esc(buildsProject())}" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
       <button class="btn ghost" data-act="bp-save">Save Link</button>
       <button class="btn ghost" data-act="deep-all">${ICON.sync}Deep Sync All</button></section>
+    <section class="set"><h3>Threads Connector</h3><p class="muted">Lets Claude update Threads by itself: build chats push their status after every build, and "sync threads" applies straight to Threads with nothing to paste. Last update from the connector: <b>${/^connector/.test(S.settings.sync?.last_source || '') && S.settings.sync?.last_synced ? ago(S.settings.sync.last_synced) : 'none yet'}</b>.</p>
+      <p class="muted">Set up once in Claude: Customize → Connectors → Add custom connector → name it Threads → URL:</p>
+      <div class="inp" style="font:600 13px ui-monospace,Menlo,monospace;word-break:break-all;margin-bottom:8px">${esc(location.origin)}/mcp/<span style="color:var(--dawn)">THREADS_MCP_KEY</span></div>
+      <p class="muted">Replace THREADS_MCP_KEY with the key saved in 1Password (Threads — env). That link is the password, so don't share it.</p></section>
     <section class="set"><h3>Health</h3><p class="muted">A project shows as Stuck after this many days with no activity in Claude. Archived projects are never flagged.</p>
       <div class="thr"><label>Active (days)<input class="inp" id="th-a" type="number" min="1" max="90" value="${limits().active}"></label><label>Parked (days)<input class="inp" id="th-p" type="number" min="1" max="365" value="${limits().parked}"></label></div>
       <button class="btn ghost" data-act="th-save">Save Thresholds</button></section>
@@ -2879,7 +2883,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) return flushSaves();
   if (!S.token) return;
   setSky();
-  if (Date.now() - lastLoad > 60e3) { lastLoad = Date.now(); load(); }
+  if (Date.now() - lastLoad > 15e3) { lastLoad = Date.now(); load(); }
   S.awaitPaste = S.awaitPaste || sessionStorage.getItem('threads.await');
   if (S.awaitPaste) showPasteBanner();
   checkClipboard(); checkVersion();

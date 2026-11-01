@@ -5,9 +5,9 @@ let client;
 export function db() {
   if (!client) {
     const url = process.env.SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
+    const key = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY; // playbook name first (threads-13)
     if (!url || !key) {
-      throw Object.assign(new Error('Supabase is not configured. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel, then redeploy.'), { status: 500 });
+      throw Object.assign(new Error('Supabase is not configured. Add SUPABASE_URL and SUPABASE_SECRET_KEY in Vercel, then redeploy.'), { status: 500 });
     }
     client = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   }
