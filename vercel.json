@@ -44,12 +44,25 @@
           "value": "no-store"
         }
       ]
+    },
+    {
+      "source": "/widget/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
     }
   ],
   "rewrites": [
     {
       "source": "/mcp/:key",
       "destination": "/api/mcp?key=:key"
+    },
+    {
+      "source": "/widget/:key",
+      "destination": "/api/widget?key=:key"
     }
   ]
 }

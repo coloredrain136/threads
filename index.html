@@ -632,7 +632,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-13'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-14'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -860,6 +860,14 @@ async function api(path, opts = {}) {
   if (!res.ok) throw new Error(j.error || `Request failed (${res.status}).`);
   return j;
 }
+// ?p=<slug> opens that project (threads-14: the Home Screen widget links here). Runs once, then cleans the URL.
+function openDeepLink() {
+  const u = new URL(location.href), want = (u.searchParams.get('p') || '').toLowerCase();
+  if (!want) return;
+  u.searchParams.delete('p'); history.replaceState(null, '', u.pathname + u.search + u.hash);
+  const s = projects().find((x) => slugOf(x) === want || x.name.toLowerCase() === want);
+  if (s) openProject(s.id);
+}
 async function load() {
   try {
     const j = await api('/api/data');
@@ -894,6 +902,7 @@ async function load() {
     if (t && THEMES[t] && t !== S.theme) applyTheme(t);
     if (S.view === 'detail') { renderTop(); return; } // don't clobber what you're typing
     renderTop(); renderContent();
+    openDeepLink();
   } catch (err) {
     if (S.token) toast(S.loaded ? 'Offline. Showing your saved list.' : err.message, true);
   }
@@ -2343,6 +2352,9 @@ function openSettings() {
       <p class="muted">Set up once in Claude: Customize → Connectors → Add custom connector → name it Threads → URL:</p>
       <div class="inp" style="font:600 13px ui-monospace,Menlo,monospace;word-break:break-all;margin-bottom:8px">${esc(location.origin)}/mcp/<span style="color:var(--dawn)">THREADS_MCP_KEY</span></div>
       <p class="muted">Replace THREADS_MCP_KEY with the key saved in 1Password (Threads — env). That link is the password, so don't share it.</p></section>
+    <section class="set"><h3>Home Screen Widget</h3><p class="muted">Feeds the Scriptable "Build Status" widget on your iPhone. It can only read: current build, active builds, health and Do This Next. Tapping a project in the widget opens it here.</p>
+      <div class="inp" style="font:600 13px ui-monospace,Menlo,monospace;word-break:break-all;margin-bottom:8px">${esc(location.origin)}/widget/<span style="color:var(--dawn)">THREADS_WIDGET_KEY</span></div>
+      <p class="muted">The widget asks for the key the first time you run it. It's in 1Password (Threads — env), separate from the connector key.</p></section>
     <section class="set"><h3>Health</h3><p class="muted">A project shows as Stuck after this many days with no activity in Claude. Archived projects are never flagged.</p>
       <div class="thr"><label>Active (days)<input class="inp" id="th-a" type="number" min="1" max="90" value="${limits().active}"></label><label>Parked (days)<input class="inp" id="th-p" type="number" min="1" max="365" value="${limits().parked}"></label></div>
       <button class="btn ghost" data-act="th-save">Save Thresholds</button></section>
