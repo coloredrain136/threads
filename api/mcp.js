@@ -38,7 +38,7 @@ const TOOLS = [
         docs: { type: 'object', properties: { scope: { type: 'boolean' }, log: { type: 'boolean' }, carryover: { type: 'boolean' } } },
         gaps: { type: 'array', description: 'Playbook audit misses. Send the full current list (an empty list clears them).', items: { type: 'object', properties: { check: s('names, docs, icloud, supabase, env, version or links'), text: s('One short line'), fix: s('Copyable prompt Joe pastes in the project\'s current chat') }, required: ['text'] } },
         builds: { type: 'array', description: 'New or changed builds, newest first. Merged by build number with what Threads has.', items: { type: 'object', properties: { n: { type: 'integer' }, date: s('YYYY-MM-DD'), summary: s('One line') } } },
-        setup: { type: 'object', description: 'Optional: stack, accounts (1Password item + vault only), env var names, deploy notes.', properties: { tools: { type: 'array', items: { type: 'object' } }, accounts: { type: 'array', items: { type: 'object' } }, env: { type: 'array', items: { type: 'object' } }, notes: { type: 'array', items: { type: 'string' } } } },
+        setup: { type: 'object', description: 'Optional: stack, accounts (1Password item + vault only; every item is tagged "Projects - <Project Name>"), env var names, deploy notes.', properties: { tools: { type: 'array', items: { type: 'object' } }, accounts: { type: 'array', items: { type: 'object' } }, env: { type: 'array', items: { type: 'object' } }, notes: { type: 'array', items: { type: 'string' } } } },
       },
     },
     annotations: { title: 'Update a Project in Threads', readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },

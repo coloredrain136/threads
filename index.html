@@ -114,14 +114,17 @@ body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
 .sproj .new{font-style:normal;font-size:10px;font-weight:750;color:var(--dawn);letter-spacing:.02em}
 .sh{display:flex;align-items:center;gap:6px;width:100%;height:28px;padding:0 6px 0 8px;margin-top:10px;font-size:12px;font-weight:650;color:var(--ink-3);text-align:left;border-radius:6px}
 .sh span{flex:1}
-.sh .chev{width:12px;height:12px;transition:transform .2s}
+.sh .chev{width:12px;height:12px;transition:transform .32s cubic-bezier(.32,.72,0,1)}
 .sh.closed .chev{transform:rotate(-90deg)}
 .sh .mini{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;color:var(--ink-3);opacity:0;transition:opacity .15s}
 .sh:hover .mini,.sh:focus-within .mini{opacity:1}
 .sh .mini svg{width:14px;height:14px}
 .sh .mini:hover{background:var(--field)}
 .slist{display:grid;gap:1px;min-height:6px}
-.slist.closed{display:none}
+.sfold{display:grid;grid-template-rows:1fr;opacity:1;transition:grid-template-rows .32s cubic-bezier(.32,.72,0,1),opacity .24s ease}
+.sfold > .sfi{min-height:0;overflow:hidden}
+.sfold.closed{grid-template-rows:0fr;opacity:0}
+.sfold.closed > .sfi{visibility:hidden;transition:visibility 0s .32s}
 .slist:empty::before{content:'Drag a project here';display:block;padding:6px 10px;color:var(--ink-3);font-size:12px;border:1px dashed var(--line);border-radius:var(--r-sm);margin:2px 0}
 .side-foot{margin-top:auto;padding-top:12px;display:grid;gap:1px;border-top:1px solid var(--line)}
 .side > *{flex-shrink:0} /* threads-10: long folders scroll instead of overlapping */
@@ -590,6 +593,12 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 .uchip{--c:var(--ink-3);height:26px;padding:0 9px;border-radius:6px;font-size:13px;font-weight:600;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--ink)}
 .cnt{font-style:normal;font-weight:500}
 
+/* tooltip: replaces the browser's plain title box on computer */
+.tip{position:fixed;left:0;top:0;z-index:80;max-width:240px;padding:6px 9px;border-radius:7px;pointer-events:none;
+  background:var(--sheet);border:1px solid var(--line2);color:var(--ink-2);font-size:12px;font-weight:550;line-height:1.35;letter-spacing:.005em;
+  box-shadow:0 8px 24px var(--shadow);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);
+  opacity:0;transform:translateY(var(--ty,3px)) scale(.98);transition:opacity .14s ease,transform .18s cubic-bezier(.2,.8,.2,1)}
+.tip.on{opacity:1;transform:none}
 /* toast */
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 92px);transform:translate(-50%,16px);opacity:0;padding:10px 15px;border-radius:10px;
   background:var(--sheet);border:1px solid var(--line);font-size:14px;font-weight:560;z-index:60;transition:opacity .25s,transform .3s;pointer-events:none;max-width:88vw;text-align:center;box-shadow:0 10px 30px var(--shadow)}
@@ -632,7 +641,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-14'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-15'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1249,14 +1258,14 @@ function renderSide() {
     <button class="srow${on('home')}" data-act="go" data-r="home" title="Dashboard">${ICON.grid}<span class="lbl">Dashboard</span></button>
     <button class="srow${on('triage')}" data-act="go" data-r="triage" title="Triage">${ICON.tag}<span class="lbl">Triage</span>${nn ? `<i class="ncount">${nn}</i>` : ''}</button>
     <div class="sh${folds.has('folders') ? ' closed' : ''}" data-act="fold" data-v="folders" role="button">${ICON.chev}<span>Folders</span></div>
-    ${folds.has('folders') ? '' : SYS_KEYS.map(sysRow).join('')}
+    ${foldBox('folders', SYS_KEYS.map(sysRow).join(''))}
     ${p.length ? `<div class="sh${folds.has('pins') ? ' closed' : ''}" data-act="fold" data-v="pins" role="button">${ICON.chev}<span>Pinned</span></div>
-      <div id="spins"${folds.has('pins') ? ' hidden' : ''}>${p.map(pinRow).join('')}</div>` : ''}
+      ${foldBox('pins', `<div id="spins">${p.map(pinRow).join('')}</div>`)}` : ''}
     ${TIERS.map(([t, label]) => {
       const list = projectsIn(t), closed = folds.has(t);
       return `<div class="sh${closed ? ' closed' : ''}" data-act="fold" data-v="${t}" role="button">${ICON.chev}<span>${label}</span><small>${list.length}</small><button class="mini" data-act="sec-new" data-tier="${t}" title="New project in ${label}" aria-label="New project in ${label}">${ICON.plus}</button></div>
-        <div class="slist${closed ? ' closed' : ''}" data-tier="${t}">${list.map(sideProj).join('')}</div>
-        ${t === 'archived' && !closed ? `<button class="srow sub${on('archive')}" data-act="go" data-r="archive" title="Archived Chats">${ICON.archive}<span class="lbl">Archived Chats</span><small>${na || ''}</small></button>` : ''}`;
+        ${foldBox(t, `<div class="slist" data-tier="${t}">${list.map(sideProj).join('')}</div>
+        ${t === 'archived' ? `<button class="srow sub${on('archive')}" data-act="go" data-r="archive" title="Archived Chats">${ICON.archive}<span class="lbl">Archived Chats</span><small>${na || ''}</small></button>` : ''}`)}`;
     }).join('')}
     <div class="side-foot"><button class="srow" data-act="settings" title="Settings">${ICON.gear}<span class="lbl">Settings</span></button></div>`;
 }
@@ -1461,8 +1470,8 @@ function projectHTML(s) {
       <div class="pj-sub"><button class="tierbtn" data-act="tier-menu" data-id="${s.id}" title="Move to another tier">${TIER_NAME[tierOf(s)]}${ICON.chev}</button>${hbadge(h)}${sy.build ? `<code>${esc(sy.build)}</code>` : ''}${sy.deployed === false ? '<span class="tagx warn">Not deployed</span>' : sy.deployed ? '<span class="tagx ok">Deployed</span>' : ''}${sy.synced_at ? `<span>synced ${ago(sy.synced_at)}</span>` : ''}</div></div>
     <div class="pj-a">${app ? `<a class="act pri" href="${esc(app.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : ''}
       ${cur ? `<a class="act" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}">${ICON.k_chat}Open ${esc(shortName(cur))}</a>` : ''}
-      <button class="act" data-act="copy-text" data-await="1" data-t="${esc(syncPhrase(s))}" data-msg="${esc(pasteMsg(cur))} Then copy the reply back here." title="Copies &quot;${esc(syncPhrase(s))}&quot;: a quick refresh from the build log">${ICON.copy}Sync ${esc(s.name)}${slugOf(s) === 'threads' ? ' Project' : ''}</button>
-      <button class="act" data-act="copy-text" data-await="1" data-t="${esc(deepPhrase(s))}" data-msg="${esc(pasteMsg(cur))} It asks its questions, then gives you the JSON." title="Copies &quot;${esc(deepPhrase(s))}&quot;: reads every chat, fixes the docs, asks you questions">${ICON.sync}Deep Sync</button>
+      <button class="act" data-act="copy-text" data-await="1" data-t="${esc(syncPhrase(s))}" data-msg="${esc(pasteMsg(cur))} Threads updates itself." title="Copies &quot;${esc(syncPhrase(s))}&quot;: a quick refresh from the build log">${ICON.copy}Sync ${esc(s.name)}${slugOf(s) === 'threads' ? ' Project' : ''}</button>
+      <button class="act" data-act="copy-text" data-await="1" data-t="${esc(deepPhrase(s))}" data-msg="${esc(pasteMsg(cur))} It asks its questions, then updates Threads." title="Copies &quot;${esc(deepPhrase(s))}&quot;: reads every chat, fixes the docs, asks you questions">${ICON.sync}Deep Sync</button>
       <button class="act" data-act="copy-context" data-id="${s.id}" title="Copy a short brief of where this project stands, for a new chat">${ICON.clip}Copy Context</button>
       <button class="more" data-act="sec-menu" data-id="${s.id}" aria-label="Edit ${esc(s.name)}">${ICON.more}</button></div></header>`;
   if (wide()) {
@@ -1531,12 +1540,17 @@ const TAB = {
     const env = d.env.map((e) => `<div class="row"><code>${esc(e.name)}</code><span class="where">${esc(e.where || 'Not set yet')}</span></div>`).join('');
     const notes = d.notes.length ? `<ul class="notes-ul">${d.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>` : '';
     return `${cfgCard(s, 'tools', 'Stack', tools)}
-      ${cfgCard(s, 'accounts', 'Accounts', accts && `${accts}<p class="hint-s">${ICON.lock}Only the 1Password item and vault are stored here. Never the password.</p>`)}
+      ${cfgCard(s, 'accounts', 'Accounts', `${accts || `<p class="muted">No accounts yet. <code>${esc(syncPhrase(s))}</code> fills this in.</p>`}${opTagRow(s)}<p class="hint-s">${ICON.lock}Only the 1Password item and vault are stored here. Never the password.</p>`)}
       ${cfgCard(s, 'env', 'Env Vars', env && `${env}<p class="hint-s">Names and where they're set. Values stay in Vercel and 1Password.</p>`)}
       ${cfgCard(s, 'notes', 'Deploy Notes', notes)}
       <div class="foot-a"><button class="act" data-act="copy-text" data-await="1" data-t="${esc(syncPhrase(s))}" data-msg="${esc(pasteMsg(currentChat(s)))}">${ICON.copy}Copy Sync ${esc(s.name)} to Refresh Setup</button></div>`;
   },
 };
+// Sidebar fold body: animates open/closed in place (no re-render).
+function foldBox(k, html) { const c = folds.has(k); return `<div class="sfold${c ? ' closed' : ''}" data-fold="${k}"${c ? ' inert' : ''}><div class="sfi">${html}</div></div>`; }
+// Every 1Password item for a project gets the tag "Projects - <Name>".
+const opTag = (s) => `Projects - ${s.name}`;
+const opTagRow = (s) => `<div class="row"><div class="row-t"><b>1Password Tag</b><span>${ICON.lock}Add it to every item for this project</span></div><button class="pill-btn" data-act="copy-text" data-t="${esc(opTag(s))}" data-msg="Tag copied">${ICON.copy}${esc(opTag(s))}</button></div>`;
 function cfgCard(s, k, title, body) {
   return `<section class="dcard glass"><div class="dcard-h"><h3>${title}</h3><button class="more" data-act="doc-edit" data-id="${s.id}" data-k="${k}" aria-label="Edit ${title}">${ICON.edit}</button></div>${body || '<p class="muted">Not filled in yet. <code>' + esc(syncPhrase(s)) + '</code> fills this in.</p>'}</section>`;
 }
@@ -1676,14 +1690,10 @@ function saveDocEdit(id, k) {
   closeSheet(); setDoc(s, patch);
 }
 
-// ---------- paste-back from Claude ----------
-// After you open a Claude chat from Threads, coming back offers to paste its reply.
-function awaitPaste(what) { S.awaitPaste = what; sessionStorage.setItem('threads.await', what); }
-function showPasteBanner() {
-  const b = $('#banner');
-  if (!b || S.view !== 'main') return;
-  b.innerHTML = `<div class="banner glass"><b>${S.awaitPaste === 'sync' ? 'Copied the sync reply?' : 'Copied the reply from Claude?'}</b><button class="add-btn" data-act="banner-paste">${ICON.clip}Paste</button><button class="act" data-act="import-open">Choose File</button><button class="x" data-act="banner-x" aria-label="Dismiss">×</button></div>`;
-}
+// The Threads connector writes syncs straight in, so there's no paste-back banner anymore.
+// (Import in Settings still takes a pasted JSON block as a fallback.)
+function awaitPaste() {}
+sessionStorage.removeItem('threads.await');
 // Opens the Claude app; if it doesn't take over within ~1.5s (not installed / link not supported), opens the website.
 function openInApp(appUrl, webUrl) {
   let left = false;
@@ -1702,7 +1712,7 @@ const buildsProject = () => S.settings.sync?.project_id || BUILDS_PROJECT;
 async function runSync() {
   try { await navigator.clipboard.writeText('sync threads'); dismissed.add('sync threads'); } catch { toast("Couldn't copy. Type sync threads in the new chat.", true); }
   awaitPaste('sync');
-  toast('Copied "sync threads". Paste it in the new chat, then copy the reply back here');
+  toast('Copied "sync threads". Paste it in the new chat. Threads updates itself');
   setTimeout(() => (isIOS && linkPref() === 'auto' ? openInApp(projectLink(buildsProject(), 'app'), projectLink(buildsProject(), 'web')) : openURL(projectLink(buildsProject()))), 350);
 }
 
@@ -2673,9 +2683,14 @@ const A = {
   'all-next': () => { S.allNext = !S.allNext; renderContent(); },
   fold: (el) => {
     const k = el.dataset.v;
-    folds.has(k) ? folds.delete(k) : folds.add(k);
+    const c = !folds.has(k);
+    c ? folds.add(k) : folds.delete(k);
     localStorage.setItem('threads.folds', JSON.stringify([...folds]));
-    renderContent();
+    const box = $(`.sfold[data-fold="${k}"]`);
+    if (!box) return renderContent();
+    el.classList.toggle('closed', c);
+    box.classList.toggle('closed', c);
+    box.inert = c;
   },
   'tier-menu': (el) => openTierMenu(el.dataset.id),
   'tier-set': (el) => setTier(el.dataset.id, el.dataset.v),
@@ -2741,14 +2756,6 @@ const A = {
     S.settings.sync = { ...(S.settings.sync || {}), chat_id: el.dataset.id };
     closeSheet(); toast('Sync is set up');
     push([{ op: 'upsert', table: 'settings', row: { id: 'sync', value: S.settings.sync } }]);
-  },
-  'banner-paste': async () => {
-    try {
-      const t = await navigator.clipboard.readText();
-      if (!/"threads_(import|project|sync)"/.test(t)) return toast("Your clipboard doesn't have the reply yet. Copy the code block in Claude first.", true);
-      S.awaitPaste = null; sessionStorage.removeItem('threads.await'); hideBanner();
-      openImport(); $('#imp-text').value = t; previewImport(t);
-    } catch { openImport(); }
   },
   'banner-import': () => { const t = S.bannerText; dismissed.add(t); hideBanner(); openImport(); $('#imp-text').value = t; previewImport(t); },
   'proj-go': () => {
@@ -2895,12 +2902,50 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) return flushSaves();
   if (!S.token) return;
   setSky();
-  if (Date.now() - lastLoad > 15e3) { lastLoad = Date.now(); load(); }
-  S.awaitPaste = S.awaitPaste || sessionStorage.getItem('threads.await');
-  if (S.awaitPaste) showPasteBanner();
+  if (Date.now() - lastLoad > 5e3) { lastLoad = Date.now(); load(); }
   checkClipboard(); checkVersion();
 });
 window.addEventListener('focus', checkClipboard);
+
+// ---------- tooltips ----------
+// Hover a button for ~half a second to see a small styled hint. Mouse/trackpad only; skipped when the hint
+// just repeats the button's visible label.
+const tipEl = Object.assign(document.createElement('div'), { className: 'tip', role: 'tooltip' });
+document.body.append(tipEl);
+let tipFor = null, tipT = 0;
+function hideTip() { clearTimeout(tipT); tipFor = null; tipEl.classList.remove('on'); }
+function showTip(el) {
+  if (!el.isConnected) return;
+  tipEl.textContent = el.dataset.tip;
+  const r = el.getBoundingClientRect(), w = tipEl.offsetWidth, h = tipEl.offsetHeight, vw = innerWidth, vh = innerHeight, m = 8;
+  let x, y, ty = '3px';
+  if (el.closest('.side') && document.body.classList.contains('rail')) { x = r.right + 10; y = r.top + r.height / 2 - h / 2; ty = '0'; }
+  else { x = r.left + r.width / 2 - w / 2; y = r.bottom + 8; if (y + h > vh - m) { y = r.top - h - 8; ty = '-3px'; } }
+  x = Math.max(m, Math.min(x, vw - w - m)); y = Math.max(m, Math.min(y, vh - h - m));
+  tipEl.style.left = x + 'px'; tipEl.style.top = y + 'px'; tipEl.style.setProperty('--ty', ty);
+  requestAnimationFrame(() => tipEl.classList.add('on'));
+}
+document.addEventListener('pointerover', (e) => {
+  if (e.pointerType !== 'mouse') return;
+  const el = e.target.closest?.('[title],[data-tip]');
+  if (el === tipFor) return;
+  hideTip();
+  if (!el) return;
+  if (el.hasAttribute('title')) {
+    const t = el.getAttribute('title'); el.removeAttribute('title');
+    if (!t) return;
+    el.dataset.tip = t;
+    if (!el.getAttribute('aria-label') && !el.textContent.trim()) el.setAttribute('aria-label', t);
+  }
+  const label = el.textContent.replace(/\s+/g, ' ').trim().toLowerCase(), tip = el.dataset.tip.toLowerCase();
+  const railSide = el.closest('.side') && document.body.classList.contains('rail');
+  if (!railSide && label && (tip === label || label.startsWith(tip))) return;
+  tipFor = el; tipT = setTimeout(() => showTip(el), 450);
+});
+document.addEventListener('pointerout', (e) => { if (tipFor && !tipFor.contains(e.relatedTarget)) hideTip(); });
+for (const ev of ['pointerdown', 'keydown', 'wheel']) document.addEventListener(ev, hideTip, { passive: true, capture: true });
+addEventListener('scroll', hideTip, { passive: true, capture: true });
+addEventListener('blur', hideTip);
 
 // ---------- updates ----------
 async function checkVersion() {
