@@ -313,6 +313,16 @@ body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
 .kv{display:grid;grid-template-columns:72px minmax(0,1fr);gap:7px 12px;font-size:14px;line-height:1.45}
 .kv > b{font-size:12.5px;font-weight:650;color:var(--ink-3);padding-top:1px}
 .kv > div{min-width:0;overflow-wrap:anywhere}
+.longbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px;padding:12px 14px;border-radius:var(--r-lg);background:color-mix(in srgb,var(--warn) 12%,var(--glass));border:1px solid color-mix(in srgb,var(--warn) 34%,transparent)}
+.longbar>svg{width:20px;height:20px;flex:none;color:var(--warn)}
+.longbar .lb-t{flex:1;min-width:180px;display:grid;gap:2px}.longbar .lb-t span{color:var(--ink-2);font-size:13px}
+.longbar .lb-a{display:flex;gap:8px;flex-wrap:wrap}
+.nc-step{display:grid;grid-template-columns:28px 1fr;gap:10px 12px;align-items:start;padding:12px;border-radius:var(--r-md,10px);border:1px solid var(--line);background:var(--field);margin-bottom:10px}
+.nc-step .nc-n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;background:color-mix(in srgb,var(--dawn) 20%,transparent);color:var(--ink)}
+.nc-step.done .nc-n{background:color-mix(in srgb,var(--ok,#5fd08a) 26%,transparent)}.nc-step .nc-n svg{width:14px;height:14px}
+.nc-step p{margin:3px 0 0;color:var(--ink-2);font-size:13px;line-height:1.4}
+.nc-step .nc-b{grid-column:2;display:flex;gap:8px;flex-wrap:wrap}
+.nc-pre{white-space:pre-wrap;word-break:break-word;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink-2);background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;margin:4px 0 0;max-height:240px;overflow:auto;user-select:text;-webkit-user-select:text}
 .nextbox{padding:9px 11px;border-radius:var(--r-sm);background:color-mix(in srgb,var(--dawn) 10%,transparent);border:1px solid color-mix(in srgb,var(--dawn) 22%,transparent)}
 .why{display:grid;gap:4px;margin:8px 0 2px;font-size:14px;color:var(--ink-2)}
 .why li{list-style:none;display:flex;gap:7px;align-items:baseline}
@@ -645,7 +655,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-16'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-17'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -666,6 +676,8 @@ const ICON = {
   edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
   go: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>',
   shipped: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.2 2.4 2.4 4.6-5"/></svg>',
+  next: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h11v7H8l-4 3z"/><path d="M14 15h6M17 12l3 3-3 3"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.3v.2"/></svg>',
   redo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>',
   check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>',
   grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.6"/><rect x="4" y="13" width="7" height="7" rx="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.6"/></svg>',
@@ -739,7 +751,7 @@ function tc(t) {
     return m[1] + m[2].toUpperCase() + m[3];
   }).join('');
 }
-const TC_SEL = 'h1,h2,h3,h4,.btn,.pill-btn,.act,.add-btn,.chip,.field > span,.switch,.th,.seg button,.sec-name > span,.chat .txt b,.row-t b,.where,.uchip,.ta-h b,.pick,.pick-row b,.det summary,.arch-row b,.upd h4,.banner b,.empty h2,.srow > span,.sproj b,.sh > span,.hb,.tagx,.tb span,.pc-h b,.prow-t b,.ptab,.tierbtn,.ck-t > b,.dn-t b,.nm-t b,.det-sec > summary,.syncbtn > span,.brand,.hs span,.sysrow b,.srow .lbl';
+const TC_SEL = 'h1,h2,h3,h4,.btn,.pill-btn,.act,.add-btn,.chip,.field > span,.switch,.th,.seg button,.sec-name > span,.chat .txt b,.row-t b,.where,.uchip,.ta-h b,.pick,.pick-row b,.det summary,.arch-row b,.upd h4,.banner b,.empty h2,.srow > span,.sproj b,.sh > span,.hb,.tagx,.tb span,.pc-h b,.prow-t b,.ptab,.tierbtn,.ck-t > b,.dn-t b,.nm-t b,.det-sec > summary,.syncbtn > span,.brand,.hs span,.sysrow b,.srow .lbl,.nc-step b,.lb-t b';
 function tcTree(root) {
   const els = root.matches?.(TC_SEL) ? [root, ...root.querySelectorAll(TC_SEL)] : root.querySelectorAll?.(TC_SEL) || [];
   for (const el of els) {
@@ -1070,7 +1082,7 @@ function lastAct(s) {
 // Stuck > Waiting on you > Healthy. Long chats and playbook gaps are badges, not the main state.
 function health(s) {
   const tier = tierOf(s), sy = syncOf(s);
-  const h = { key: 'ok', tier, why: [], long: (sy.updates_in_chat || 0) >= 9, gaps: (sy.gaps || []).length, la: lastAct(s) };
+  const h = { key: 'ok', tier, why: [], long: (sy.updates_in_chat || 0) >= LONG_AT, gaps: (sy.gaps || []).length, la: lastAct(s) };
   if (tier === 'archived' || tier === 'hold' || tier === 'backlog') { h.key = tier; return h; }
   if (tier === 'shipped') {
     // Quiet: playbook gaps are notes, not warnings. Only an undeployed build flags it.
@@ -1102,7 +1114,6 @@ const hbadge = (h) => (h.key === 'archived' || h.key === 'hold' || h.key === 'ba
 const hdot = (h) => (h.key === 'live' ? `<i class="shipck" title="Live">${ICON.check}</i>` : QUIET.has(h.key) ? '' : `<i class="dot ${h.key}" title="${HL[h.key]}"></i>`);
 
 // "Do this next": text always comes from the sync (next, gaps), never made up here.
-const LONG_PROMPT = "It's time for the next session chat. Write the carryover doc from the template, update the build log, and give me the handoff message.";
 function nextItems() {
   const out = [];
   for (const s of projects()) {
@@ -1116,7 +1127,7 @@ function nextItems() {
       const v = sy.deployed === false && projLink(s, 'vercel');
       out.push({ s, tr, rank: 1, tag: 'waiting', h, text: d.next || h.why.find((w) => /deployed|on you/.test(w)) || '', ...(v ? { btn: 'link', link: v } : chatBtn) });
     }
-    if (h.long) out.push({ s, tr, rank: 2, tag: 'long', h, text: `${sy.current_chat || 'Current chat'} is at ${sy.updates_in_chat} updates`, btn: 'prompt', prompt: LONG_PROMPT, chat: cur });
+    if (h.long) out.push({ s, tr, rank: 2, tag: 'long', h, text: `${sy.current_chat || 'Current chat'} is at ${sy.updates_in_chat} of ~10 updates. Wrap it up, then start Build ${nextSession(s)}.`, btn: 'next', chat: cur });
     if (tier === 'building') for (const g of sy.gaps || []) out.push({ s, tr, rank: 3, tag: 'gap', h, text: g.text, btn: 'prompt', prompt: g.fix || 'playbook check', chat: cur });
   }
   return out.sort((a, b) => a.tr - b.tr || a.rank - b.rank);
@@ -1130,6 +1141,7 @@ function dnTag(it) {
 const pasteMsg = (c) => (c ? `Copied. Paste it in ${c.name}.` : 'Copied. Paste it in the project\'s current chat.');
 function dnBtn(it) {
   if (it.btn === 'chat') return `<a class="act pri" href="${esc(linkFor(it.chat))}"${linkTarget()} data-act="open" data-await="1" data-id="${it.chat.id}">${ICON.go}Open chat</a>`;
+  if (it.btn === 'next') return `<button class="act pri" data-act="next-chat" data-id="${it.s.id}">${ICON.next}Next Chat</button>`;
   if (it.btn === 'link') return `<a class="act pri" href="${esc(it.link.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.vercel}Open Vercel</a>`;
   return `<button class="act" data-act="copy-text" data-await="1" data-t="${esc(it.prompt)}" data-msg="${esc(pasteMsg(it.chat))}">${ICON.copy}Copy prompt</button>`;
 }
@@ -1215,6 +1227,79 @@ function contextFor(s) {
   L.push(`Read claude/builds-playbook.md and claude/${slugOf(s)}-build-log.md before doing anything, and treat the docs as the source of truth if they disagree with this.`);
   return L.join('\n');
 }
+// ---------- next chat (threads-17) ----------
+// At LONG_AT updates the project shows a warning. Two steps: "wrap up" in the current chat (it writes the
+// carryover = the full chat summary, updates the build log + Threads), then a handoff for the next session chat.
+const LONG_AT = 9;
+function nextSession(s) {
+  const m = String(syncOf(s).current_chat || currentChat(s)?.name || '').match(/build\s*(\d+)\s*$/i);
+  return m ? +m[1] + 1 : 1;
+}
+function nextBuildN(s) {
+  const sy = syncOf(s);
+  if (sy.build_n != null && Number.isFinite(+sy.build_n)) return Math.round(+sy.build_n) + 1;
+  const m = String(sy.build || '').match(/-(\d+)\s*$/);
+  if (m) return +m[1] + 1;
+  return Math.max(0, ...(sy.builds || []).map((b) => +b.n || 0)) + 1;
+}
+const nextChatTitle = (s) => `${s.name} - Build ${nextSession(s)}`;
+const WRAP_PHRASE = 'wrap up';
+const wrapKey = (s) => `${s.id}|${syncOf(s).current_chat || currentChat(s)?.name || ''}`;
+const wrapped = (s) => { try { return JSON.parse(localStorage.getItem('threads.wrapped') || '[]').includes(wrapKey(s)); } catch { return false; } };
+function markWrapped(s) {
+  try { const a = JSON.parse(localStorage.getItem('threads.wrapped') || '[]').filter((k) => !k.startsWith(s.id + '|')); a.push(wrapKey(s)); localStorage.setItem('threads.wrapped', JSON.stringify(a.slice(-40))); } catch {}
+}
+// The handoff message, built only from what Threads knows (playbook: chat name, slug, next build, docs, state, goal, code).
+function handoffFor(s) {
+  const d = normDoc(s), sy = syncOf(s), slug = slugOf(s), title = nextChatTitle(s), gh = projLink(s, 'github');
+  const L = [`${title} (slug: ${slug}). Next build: ${slug}-${nextBuildN(s)}.`];
+  L.push(`Read first, in order: claude/builds-playbook.md, claude/${slug}-scope.md, claude/${slug}-build-log.md, claude/${slug}-carryover.md.`);
+  const st = [d.now, sy.build ? `Latest build ${sy.build}${sy.deployed === true ? ' is deployed' : sy.deployed === false ? ' is built but not deployed yet' : ''}.` : null].filter(Boolean);
+  if (st.length) L.push(`Where it stands: ${st.map((x) => x.trim().replace(/([^.!?])$/, '$1.')).join(' ')}`);
+  L.push(`Goal for this chat: ${d.next || 'ask me what to build next'}${/[.!?]$/.test(d.next || '') ? '' : '.'}`);
+  if (sy.deployed === false && sy.build) L.push(`First ask me whether ${sy.build} got deployed.`);
+  L.push(sy.build ? `There's existing code. Check the build log for the latest build, then get the current repo before writing anything (GitHub → Code → Download ZIP${gh ? `, or clone ${gh.url} if it's public` : ''}). Never rebuild from memory.` : 'No existing code yet.');
+  L.push(`Before anything else, call threads_update_project with current_chat "${title}" and updates_in_chat 0. Count every update I ask for; at about 10, tell me it's time to wrap up.`);
+  return L.join('\n');
+}
+function openNextChat(id) {
+  const s = secById(id);
+  if (!s) return;
+  const sy = syncOf(s), cur = currentChat(s), w = wrapped(s), n = nextSession(s), curName = sy.current_chat || cur?.name;
+  const count = sy.updates_in_chat != null ? `${curName || 'The current chat'} is at ${sy.updates_in_chat} of ~10 updates.` : '';
+  openSheet(`<h2>Start Next Chat</h2><p class="hint" style="margin-top:0">${esc(count)} Wrap this chat up first so the next one starts from a full summary.</p>
+    <div class="nc-step${w ? ' done' : ''}"><span class="nc-n">${w ? ICON.check : '1'}</span><div><b>Wrap Up This Chat</b><p>Copies <code>${WRAP_PHRASE}</code>${cur ? ` and opens ${esc(cur.name)}` : ''}. That chat writes the carryover (the full summary of the chat), updates the build log and Threads.</p></div>
+      <div class="nc-b"><button class="act${w ? '' : ' pri'}" data-act="nc-wrap" data-id="${s.id}">${ICON.copy}${w ? 'Copy Again' : cur ? 'Copy and Open Chat' : 'Copy'}</button></div></div>
+    <div class="nc-step"><span class="nc-n">2</span><div><b>Start Build ${n}</b><p>Copies the handoff below and opens a new chat in the Builds project. Paste it as the first message${w ? '' : ', after the wrap-up is done'}.</p></div>
+      <div class="nc-b"><button class="act${w ? ' pri' : ''}" data-act="nc-start" data-id="${s.id}">${ICON.next}Copy and Open New Chat</button></div></div>
+    <pre class="nc-pre">${esc(handoffFor(s))}</pre>`);
+}
+const longBar = (s, h) => (tierOf(s) === 'building' && h.long ? `<div class="longbar" role="status">${ICON.warn}<div class="lb-t"><b>${esc(syncOf(s).current_chat || currentChat(s)?.name || 'This chat')} Is Getting Long</b><span>${syncOf(s).updates_in_chat} of ~10 updates. Wrap it up, then start Build ${nextSession(s)}.</span></div>
+  <div class="lb-a"><button class="act${wrapped(s) ? '' : ' pri'}" data-act="nc-wrap" data-id="${s.id}">${wrapped(s) ? ICON.check : ICON.copy}Wrap Up This Chat</button><button class="act${wrapped(s) ? ' pri' : ''}" data-act="nc-start" data-id="${s.id}">${ICON.next}Start Build ${nextSession(s)}</button></div></div>` : '');
+function openBuilds() {
+  setTimeout(() => (isIOS && linkPref() === 'auto' ? openInApp(projectLink(buildsProject(), 'app'), projectLink(buildsProject(), 'web')) : openURL(projectLink(buildsProject()))), 350);
+}
+function openChatNow(c) {
+  setTimeout(() => (isIOS && linkPref() === 'auto' ? openInApp(linkFor(c, 'app'), linkFor(c, 'web')) : openURL(linkFor(c))), 350);
+}
+async function ncWrap(id) {
+  const s = secById(id), cur = s && currentChat(s);
+  if (!s) return;
+  try { await navigator.clipboard.writeText(WRAP_PHRASE); dismissed.add(WRAP_PHRASE); } catch { toast(`Couldn't copy. Type ${WRAP_PHRASE} in the chat.`, true); }
+  markWrapped(s); closeSheet(); renderContent();
+  toast(cur ? `Copied "${WRAP_PHRASE}". Paste it in ${cur.name}. Threads updates itself` : `Copied "${WRAP_PHRASE}". Paste it in the project's current chat.`);
+  if (cur) { markOpened(cur.id); openChatNow(cur); }
+}
+async function ncStart(id) {
+  const s = secById(id);
+  if (!s) return;
+  const t = handoffFor(s);
+  try { await navigator.clipboard.writeText(t); dismissed.add(t); } catch { toast("Couldn't copy the handoff.", true); return; }
+  closeSheet();
+  toast(`Handoff copied. Paste it as the first message, then name the chat ${nextChatTitle(s)}`);
+  openBuilds();
+}
+
 function openDeepAll() {
   const st = S.settings.deep?.started_at, list = projects().filter((s) => tierOf(s) !== 'archived');
   const done = (s) => st && syncOf(s).synced_at && syncOf(s).synced_at >= st;
@@ -1522,15 +1607,16 @@ function projectHTML(s) {
       ${cur ? `<a class="act" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}">${ICON.k_chat}Open ${esc(shortName(cur))}</a>` : ''}
       <button class="act" data-act="copy-text" data-await="1" data-t="${esc(syncPhrase(s))}" data-msg="${esc(pasteMsg(cur))} Threads updates itself." title="Copies &quot;${esc(syncPhrase(s))}&quot;: a quick refresh from the build log">${ICON.copy}Sync ${esc(s.name)}${slugOf(s) === 'threads' ? ' Project' : ''}</button>
       <button class="act" data-act="copy-text" data-await="1" data-t="${esc(deepPhrase(s))}" data-msg="${esc(pasteMsg(cur))} It asks its questions, then updates Threads." title="Copies &quot;${esc(deepPhrase(s))}&quot;: reads every chat, fixes the docs, asks you questions">${ICON.sync}Deep Sync</button>
+      ${tierOf(s) === 'building' ? `<button class="act" data-act="next-chat" data-id="${s.id}" title="Wrap up this chat, then copy the handoff and open Build ${nextSession(s)}">${ICON.next}Start Next Chat</button>` : ''}
       <button class="act" data-act="copy-context" data-id="${s.id}" title="Copy a short brief of where this project stands, for a new chat">${ICON.clip}Copy Context</button>
       <button class="more" data-act="sec-menu" data-id="${s.id}" aria-label="Edit ${esc(s.name)}">${ICON.more}</button></div></header>`;
   if (wide()) {
     const tab = PTABS.some(([k]) => k === S.ptab) ? S.ptab : 'overview';
-    return `<div class="page">${head}<nav class="ptabs">${PTABS.map(([k, l]) => `<button class="ptab${k === tab ? ' on' : ''}" data-act="ptab" data-v="${k}">${l}${k === 'chats' ? `<small>${allChatsIn(s).length}</small>` : k === 'playbook' && gapsN ? `<small class="bad">${gapsN}</small>` : ''}</button>`).join('')}</nav>
+    return `<div class="page">${head}${longBar(s, h)}<nav class="ptabs">${PTABS.map(([k, l]) => `<button class="ptab${k === tab ? ' on' : ''}" data-act="ptab" data-v="${k}">${l}${k === 'chats' ? `<small>${allChatsIn(s).length}</small>` : k === 'playbook' && gapsN ? `<small class="bad">${gapsN}</small>` : ''}</button>`).join('')}</nav>
       <div class="pbody">${TAB[tab](s)}</div></div>`;
   }
   const det = (k, label, extra) => `<details class="det-sec glass" data-det="${k}"${S.openDet.has(k) ? ' open' : ''}><summary>${ICON.chev}${label}${extra || ''}</summary><div class="pbody">${TAB[k](s)}</div></details>`;
-  return `<div class="page">${head}${TAB.overview(s)}<h3 class="sect-t">Chats</h3>${TAB.chats(s)}<h3 class="sect-t">Links</h3>${TAB.links(s)}
+  return `<div class="page">${head}${longBar(s, h)}${TAB.overview(s)}<h3 class="sect-t">Chats</h3>${TAB.chats(s)}<h3 class="sect-t">Links</h3>${TAB.links(s)}
     ${det('playbook', 'Playbook', gapsN ? `<small class="tagx bad">${gapsN} to fix</small>` : '')}${det('setup', 'Setup')}</div>`;
 }
 const TAB = {
@@ -1763,7 +1849,7 @@ async function runSync() {
   try { await navigator.clipboard.writeText('sync threads'); dismissed.add('sync threads'); } catch { toast("Couldn't copy. Type sync threads in the new chat.", true); }
   awaitPaste('sync');
   toast('Copied "sync threads". Paste it in the new chat. Threads updates itself');
-  setTimeout(() => (isIOS && linkPref() === 'auto' ? openInApp(projectLink(buildsProject(), 'app'), projectLink(buildsProject(), 'web')) : openURL(projectLink(buildsProject()))), 350);
+  openBuilds();
 }
 
 // ---------- drag and drop ----------
@@ -2790,6 +2876,9 @@ const A = {
     const s = secById(el.dataset.id), t = contextFor(s);
     try { await navigator.clipboard.writeText(t); dismissed.add(t); toast('Context copied. Paste it at the start of a new chat.'); } catch { toast("Couldn't copy.", true); }
   },
+  'next-chat': (el) => openNextChat(el.dataset.id),
+  'nc-wrap': (el) => ncWrap(el.dataset.id),
+  'nc-start': (el) => ncStart(el.dataset.id),
   'deep-all': () => openDeepAll(),
   'deep-round': () => {
     S.settings.deep = { started_at: nowISO() };
