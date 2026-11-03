@@ -57,7 +57,7 @@ const TOOLS = [
   {
     name: 'threads_status',
     title: 'Read Threads Status',
-    description: 'Read where Joe\'s Builds projects stand in Threads: tier, status, latest build, deployed, now/next, current chat, gaps. Pass a project name for its details, links, recent builds and chat links.',
+    description: 'Read where Joe\'s Builds projects stand in Threads: tier (Building, Shipped, On Hold, Backlog, Archived; Joe moves tiers himself in the app), status, latest build, deployed, now/next, current chat, gaps. Pass a project name for its details, links, recent builds and chat links.',
     inputSchema: { type: 'object', properties: { project: s('Optional project name or slug.') } },
     annotations: { title: 'Read Threads Status', readOnlyHint: true, openWorldHint: false },
   },

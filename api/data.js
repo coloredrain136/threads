@@ -2,6 +2,7 @@ import { route, send, body } from './_lib/auth.js';
 import { db, q } from './_lib/db.js';
 import { APP_VERSION } from './_lib/version.js';
 import { cleanDoc, iso } from './_lib/clean.js';
+import { normTier } from './_lib/tiers.js';
 
 const T = { sections: 'threads_sections', chats: 'threads_chats', settings: 'threads_settings' };
 const COLS = {
@@ -36,7 +37,7 @@ function pick(table, row) {
     if ('color' in o) o.color = COLORS.has(o.color) ? o.color : null;
     if ('icon' in o) o.icon = o.icon ? String(o.icon).slice(0, 16) : null;
     if ('project_uuid' in o) o.project_uuid = uuidOrNull(o.project_uuid, 'project link');
-    if ('status' in o) o.status = ['active', 'parked', 'archived'].includes(o.status) ? o.status : 'parked'; // tiers
+    if ('status' in o) o.status = normTier(o.status); // tiers (threads-16)
     if ('home_chat_id' in o) o.home_chat_id = uuidOrNull(o.home_chat_id, 'home chat');
     if ('doc' in o) o.doc = cleanDoc(o.doc);
   }

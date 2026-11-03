@@ -1,10 +1,11 @@
 // Applies a threads_sync v2 payload straight to the database (used by the Threads connector).
 // Same rules as the in-app Import: chats by link (Claude title wins), projects by slug/name,
-// tiers never change, new projects Active if touched in 7 days else Parked, folder chats filed,
+// tiers never change, new projects Building if touched in 7 days else On Hold, folder chats filed,
 // builds merged, secrets stripped (by api/data.js cleanDoc on the way in).
 import crypto from 'node:crypto';
 import { db, q } from './db.js';
 import { cleanDocExport as cleanDoc } from './clean.js';
+import { normTier } from './tiers.js';
 
 const T = { sections: 'threads_sections', chats: 'threads_chats', settings: 'threads_settings' };
 const COLORS = ['gold', 'coral', 'rose', 'violet', 'blue', 'teal', 'green', 'slate'];
@@ -117,14 +118,14 @@ export async function applySync(j, source = 'connector') {
   let pos = Math.max(0, ...projects.map((s) => s.position || 0)) + 1;
   const create = (name, p, act) => {
     const recent = act && Date.now() - Date.parse(act) < 7 * 864e5;
-    const row = { id: uid(), name: str(name, 80), parent_id: null, position: pos++, is_inbox: false, status: recent ? 'active' : 'parked',
+    const row = { id: uid(), name: str(name, 80), parent_id: null, position: pos++, is_inbox: false, status: recent ? 'building' : 'hold',
       icon: p?.icon ? str(p.icon, 16) : null, color: COLORS.includes(p?.color) ? p.color : COLORS[colorIdx++ % COLORS.length],
       project_uuid: null, archived_at: null, home_chat_id: null, activated_at: recent ? nowISO() : null, doc: { sync: { is_new: true } }, created_at: nowISO() };
     newSecs.push(row); add(row.name, row); add(p?.slug, row);
     return row;
   };
   const ensureSys = (k) => sysSec(k) || sysNew[k] || (sysNew[k] = (() => {
-    const r = { id: uid(), name: SYSTEM[k].name, icon: SYSTEM[k].icon, color: SYSTEM[k].color, parent_id: null, position: 9000, is_inbox: false, status: 'parked',
+    const r = { id: uid(), name: SYSTEM[k].name, icon: SYSTEM[k].icon, color: SYSTEM[k].color, parent_id: null, position: 9000, is_inbox: false, status: 'hold',
       project_uuid: null, archived_at: null, home_chat_id: null, activated_at: null, doc: { system: k }, created_at: nowISO() };
     newSecs.push(r); return r;
   })());
@@ -215,7 +216,7 @@ export async function status(projectName) {
   const one = projectName ? projects.find((s) => s.name.toLowerCase() === String(projectName).toLowerCase() || slugOf(s) === String(projectName).toLowerCase()) : null;
   const brief = (s) => {
     const d = docOf(s), sy = d.sync || {};
-    return { name: s.name, slug: slugOf(s), tier: s.status || 'parked', status: d.status || null, build: sy.build || null, deployed: sy.deployed ?? null,
+    return { name: s.name, slug: slugOf(s), tier: normTier(s.status), status: d.status || null, build: sy.build || null, deployed: sy.deployed ?? null,
       now: d.now || null, next: d.next || null, next_owner: sy.next_owner || null, current_chat: sy.current_chat || null, updates_in_chat: sy.updates_in_chat ?? null,
       synced_at: sy.synced_at || null, gaps: (sy.gaps || []).map((g) => g.text) };
   };

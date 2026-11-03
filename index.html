@@ -70,7 +70,7 @@ code{font:600 13px ui-monospace,SFMono-Regular,Menlo,monospace}
 .msearch .sfield{height:40px}
 
 /* phone tab bar */
-.tabbar{position:fixed;left:0;right:0;bottom:calc(-1 * var(--gap));z-index:35;display:grid;grid-template-columns:repeat(3,1fr);
+.tabbar{position:fixed;left:0;right:0;bottom:calc(-1 * var(--gap));z-index:35;display:grid;grid-template-columns:repeat(4,1fr);
   padding:6px 10px calc(env(safe-area-inset-bottom) + var(--gap) + 6px);background:var(--bar);border-top:1px solid var(--line);
   -webkit-backdrop-filter:blur(24px) saturate(1.5);backdrop-filter:blur(24px) saturate(1.5)}
 .tb{display:grid;justify-items:center;gap:2px;padding:4px 0;font-size:11px;font-weight:600;color:var(--ink-3);position:relative}
@@ -165,6 +165,10 @@ body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
 /* health dots + badges */
 .dot{width:8px;height:8px;border-radius:50%;flex:none;background:var(--ink-3);opacity:.6}
 .dot.ok{background:var(--ok);opacity:1}.dot.waiting{background:var(--warn);opacity:1}.dot.stuck{background:var(--danger);opacity:1}
+.shipck{display:grid;place-items:center;width:14px;height:14px;flex:none;color:var(--ok);opacity:.85}
+.shipck svg{width:12px;height:12px}
+.hb.live{background:color-mix(in srgb,var(--ok) 14%,transparent);color:color-mix(in srgb,var(--ok) 75%,var(--ink))}
+.shipcard .pc-f .act{height:28px;font-size:12.5px}
 .dot.unknown{background:transparent;border:1.5px solid var(--ink-3);opacity:.7}
 .hb{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-radius:6px;font-size:12px;font-weight:650;white-space:nowrap;flex:none;background:var(--hi);color:var(--ink-2)}
 .hb::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
@@ -641,7 +645,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-15'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-16'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -661,6 +665,8 @@ const ICON = {
   copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>',
   edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
   go: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>',
+  shipped: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.2 2.4 2.4 4.6-5"/></svg>',
+  redo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>',
   check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>',
   grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.6"/><rect x="4" y="13" width="7" height="7" rx="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.6"/></svg>',
   home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z"/></svg>',
@@ -815,7 +821,7 @@ const S = {
   view: 'main', detailId: null, filter: '', dragging: false, loaded: false,
 };
 S.route = (localStorage.getItem('threads.route') || 'home').replace(/^naming$/, 'triage');
-if (!['home', 'projects', 'triage', 'archive', 'project', 'group'].includes(S.route)) S.route = 'home';
+if (!['home', 'projects', 'shipped', 'triage', 'archive', 'project', 'group'].includes(S.route)) S.route = 'home';
 S.gid = localStorage.getItem('threads.gid');
 S.pid = localStorage.getItem('threads.pid'); S.back = 'home'; S.ptab = 'overview'; S.hfilter = ''; S.openDet = new Set();
 const collapsed = new Set(JSON.parse(localStorage.getItem('threads.collapsed') || '[]'));
@@ -979,11 +985,13 @@ function linkIcon(l) {
   if (/docs\.|notion\.|\/doc/.test(u) || /doc/.test(t)) return LINK_ICON.doc;
   return LINK_ICON.link;
 }
-// ---------- tiers + projects (Arc folders: Active → Parked → Archived) ----------
-const TIERS = [['active', 'Active'], ['parked', 'Parked'], ['archived', 'Archived']];
+// ---------- tiers + projects (threads-16: Building → Shipped → On Hold → Backlog → Archived) ----------
+// Only Building gets health dots. Shipped is live and done for now (quiet unless a build isn't deployed).
+const TIERS = [['building', 'Building'], ['shipped', 'Shipped'], ['hold', 'On Hold'], ['backlog', 'Backlog'], ['archived', 'Archived']];
 const TIER_NAME = Object.fromEntries(TIERS);
-const TIER_HINT = { active: 'Building now. Several at once is fine.', parked: 'Interested, but busy with other things.', archived: 'Liked the idea, not building for a long time.' };
-const tierOf = (s) => (s.status === 'active' ? 'active' : s.status === 'archived' ? 'archived' : 'parked');
+const TIER_HINT = { building: 'Working on it now. Several at once is fine.', shipped: 'Live and done for now. No dots, no nagging.', hold: 'Started, paused for now.', backlog: 'Not built yet. Someday.', archived: 'Not building this.' };
+// Old tier names from before threads-16: active → Building, parked → On Hold.
+const tierOf = (s) => { const v = s.status; return v === 'active' ? 'building' : v === 'parked' ? 'hold' : TIER_NAME[v] ? v : 'hold'; };
 // System folders (not projects): Ideas and Sync Chats. Marked with doc.system.
 const SYSTEM = {
   ideas: { name: 'Ideas', icon: '💡', color: 'gold', hint: "Ideas you're not building yet. Make one a project when it's ready." },
@@ -999,7 +1007,7 @@ const sysSec = (k) => S.sections.find((s) => !s.parent_id && sysOf(s) === k) || 
 function ensureSys(k) {
   let s = sysSec(k);
   if (s) return s;
-  s = { id: uid(), name: SYSTEM[k].name, icon: SYSTEM[k].icon, color: SYSTEM[k].color, parent_id: null, position: 9000, is_inbox: false, status: 'parked',
+  s = { id: uid(), name: SYSTEM[k].name, icon: SYSTEM[k].icon, color: SYSTEM[k].color, parent_id: null, position: 9000, is_inbox: false, status: 'hold',
     project_uuid: null, archived_at: null, home_chat_id: null, activated_at: null, doc: { system: k }, created_at: nowISO() };
   S.sections.push(s);
   push([{ op: 'upsert', table: 'sections', row: s }]);
@@ -1051,8 +1059,9 @@ const appLink = (d) => d.links.find((l) => linkKind(l) === 'live');
 const shortUrl = (u) => String(u || '').replace(/^https?:\/\//, '').replace(/\/$/, '');
 
 // ---------- health ----------
-const HL = { ok: 'Healthy', waiting: 'Waiting on you', stuck: 'Stuck', unknown: 'Not synced', archived: 'Archived' };
-const limits = () => { const h = S.settings.health || {}; return { active: +h.active || 5, parked: +h.parked || 30 }; };
+const HL = { ok: 'Healthy', waiting: 'Waiting on you', stuck: 'Stuck', unknown: 'Not synced', archived: 'Archived', live: 'Live', hold: 'On Hold', backlog: 'Backlog' };
+const QUIET = new Set(['live', 'hold', 'backlog', 'archived']);
+const limits = () => { const h = S.settings.health || {}; return { building: +h.active || 5 }; };
 function lastAct(s) {
   let t = Date.parse(syncOf(s).last_activity || '') || 0;
   for (const c of allChatsIn(s)) if (c.claude_updated_at) t = Math.max(t, Date.parse(c.claude_updated_at) || 0);
@@ -1062,11 +1071,17 @@ function lastAct(s) {
 function health(s) {
   const tier = tierOf(s), sy = syncOf(s);
   const h = { key: 'ok', tier, why: [], long: (sy.updates_in_chat || 0) >= 9, gaps: (sy.gaps || []).length, la: lastAct(s) };
-  if (tier === 'archived') { h.key = 'archived'; return h; }
+  if (tier === 'archived' || tier === 'hold' || tier === 'backlog') { h.key = tier; return h; }
+  if (tier === 'shipped') {
+    // Quiet: playbook gaps are notes, not warnings. Only an undeployed build flags it.
+    h.key = 'live'; h.long = false;
+    if (sy.deployed === false) { h.key = 'waiting'; h.why.push(`${sy.build || 'The latest build'} is built but not deployed`); }
+    return h;
+  }
   if (!sy.synced_at) { h.key = 'unknown'; h.why.push(`Not synced yet. Run "${deepPhrase(s)}" (or "${syncPhrase(s)}") in its chat.`); return h; }
   const lim = limits()[tier];
   h.days = h.la ? Math.floor((Date.now() - h.la) / 864e5) : null;
-  if (h.days === null || h.days >= lim) { h.key = 'stuck'; h.why.push(h.days === null ? 'No Claude activity recorded' : `No activity in ${h.days} days (the ${tier} limit is ${lim})`); }
+  if (h.days === null || h.days >= lim) { h.key = 'stuck'; h.why.push(h.days === null ? 'No Claude activity recorded' : `No activity in ${h.days} days (the limit is ${lim})`); }
   const notDeployed = sy.deployed === false, onJoe = sy.next_owner === 'joe';
   if (notDeployed) h.why.push(`${sy.build || 'The latest build'} is built but not deployed`);
   if (onJoe) h.why.push('The next step is on you');
@@ -1081,9 +1096,10 @@ function whyLine(s, h) {
   if (h.key === 'ok') return [sy.deployed === true ? null : normDoc(s).status, h.la ? `active ${agoMs(h.la)}` : null, h.long ? 'chat getting long' : null].filter(Boolean).join(' · ') || 'Nothing flagged';
   return h.why[0] || '';
 }
-const hcls = (h) => (h.key === 'stuck' && h.tier === 'parked' ? 'nudge' : h.key);
-const hbadge = (h) => (h.key === 'archived' ? '' : `<span class="hb ${hcls(h)}">${HL[h.key]}</span>`);
-const hdot = (h) => (h.key === 'archived' ? '' : `<i class="dot ${h.key === 'stuck' && h.tier === 'parked' ? 'waiting' : h.key}" title="${HL[h.key]}"></i>`);
+const hcls = (h) => h.key;
+const hbadge = (h) => (h.key === 'archived' || h.key === 'hold' || h.key === 'backlog' ? '' : `<span class="hb ${hcls(h)}">${HL[h.key]}</span>`);
+// Sidebar marker: a dot for Building, a small check for Shipped, nothing for On Hold / Backlog / Archived.
+const hdot = (h) => (h.key === 'live' ? `<i class="shipck" title="Live">${ICON.check}</i>` : QUIET.has(h.key) ? '' : `<i class="dot ${h.key}" title="${HL[h.key]}"></i>`);
 
 // "Do this next": text always comes from the sync (next, gaps), never made up here.
 const LONG_PROMPT = "It's time for the next session chat. Write the carryover doc from the template, update the build log, and give me the handoff message.";
@@ -1091,8 +1107,9 @@ function nextItems() {
   const out = [];
   for (const s of projects()) {
     const tier = tierOf(s);
-    if (tier === 'archived') continue;
-    const h = health(s), sy = syncOf(s), d = normDoc(s), cur = currentChat(s), tr = tier === 'active' ? 0 : 1;
+    if (tier !== 'building' && tier !== 'shipped') continue;
+    const h = health(s), sy = syncOf(s), d = normDoc(s), cur = currentChat(s), tr = tier === 'building' ? 0 : 1;
+    if (tier === 'shipped' && h.key !== 'waiting') continue;
     const chatBtn = cur ? { btn: 'chat', chat: cur } : { btn: 'prompt', prompt: syncPhrase(s) };
     if (h.key === 'stuck') out.push({ s, tr, rank: 0, tag: 'stuck', h, text: d.next || h.why[0], ...chatBtn });
     else if (h.key === 'waiting') {
@@ -1100,7 +1117,7 @@ function nextItems() {
       out.push({ s, tr, rank: 1, tag: 'waiting', h, text: d.next || h.why.find((w) => /deployed|on you/.test(w)) || '', ...(v ? { btn: 'link', link: v } : chatBtn) });
     }
     if (h.long) out.push({ s, tr, rank: 2, tag: 'long', h, text: `${sy.current_chat || 'Current chat'} is at ${sy.updates_in_chat} updates`, btn: 'prompt', prompt: LONG_PROMPT, chat: cur });
-    for (const g of sy.gaps || []) out.push({ s, tr, rank: 3, tag: 'gap', h, text: g.text, btn: 'prompt', prompt: g.fix || 'playbook check', chat: cur });
+    if (tier === 'building') for (const g of sy.gaps || []) out.push({ s, tr, rank: 3, tag: 'gap', h, text: g.text, btn: 'prompt', prompt: g.fix || 'playbook check', chat: cur });
   }
   return out.sort((a, b) => a.tr - b.tr || a.rank - b.rank);
 }
@@ -1162,7 +1179,7 @@ function openMakeProject(cid) {
   if (!c) return;
   const nm = String(c.name).replace(/^idea\s*[-–:]\s*/i, '').slice(0, 80);
   openSheet(`<h2>Make a Project</h2><label class="field"><span>Name</span><input class="inp" id="mp-name" value="${esc(nm)}" maxlength="80" autocomplete="off"></label>
-    <div class="field"><span>Tier</span><div class="chips" id="mp-tier">${TIERS.map(([t, l]) => `<button class="chip${t === 'parked' ? ' on' : ''}" data-act="chip" data-v="${t}">${l}</button>`).join('')}</div></div>
+    <div class="field"><span>Tier</span><div class="chips" id="mp-tier">${TIERS.filter(([t]) => t !== 'archived').map(([t, l]) => `<button class="chip${t === 'backlog' ? ' on' : ''}" data-act="chip" data-v="${t}">${l}</button>`).join('')}</div></div>
     <p class="hint">The idea moves into the new project. To start it properly, open a new chat and type <b>new build: ${esc(nm)}</b>.</p>
     <p class="err" id="mp-err"></p><button class="btn" data-act="mp-go" data-id="${cid}">Create Project</button>`);
 }
@@ -1170,9 +1187,9 @@ function makeProject(cid) {
   const c = chatById(cid), name = $('#mp-name').value.trim();
   if (!name) { $('#mp-err').textContent = 'Give it a name.'; return; }
   if (projects().some((x) => x.name.toLowerCase() === name.toLowerCase())) { $('#mp-err').textContent = 'There is already a project with that name.'; return; }
-  const t = val('mp-tier') || 'parked';
+  const t = val('mp-tier') || 'backlog';
   const row = { id: uid(), name, icon: null, color: COLORS[projects().length % COLORS.length], parent_id: null, position: Math.max(0, ...projects().map((x) => x.position || 0)) + 1,
-    is_inbox: false, status: t, activated_at: t === 'active' ? nowISO() : null, project_uuid: null, archived_at: null, home_chat_id: null, doc: {}, created_at: nowISO() };
+    is_inbox: false, status: t, activated_at: nowISO(), project_uuid: null, archived_at: null, home_chat_id: null, doc: {}, created_at: nowISO() };
   S.sections.push(row);
   c.section_id = row.id; c.position = 0;
   closeSheet(); toast(`Created ${name}`);
@@ -1212,6 +1229,11 @@ function openDeepAll() {
 const WIDE = window.matchMedia ? matchMedia('(min-width: 900px)') : { matches: false, addEventListener() {} };
 const wide = () => WIDE.matches;
 const folds = new Set(JSON.parse(localStorage.getItem('threads.folds') || '[]'));
+// threads-16: Backlog and Archived start folded so the sidebar opens calm. Old Active/Parked fold keys are dropped.
+if (!localStorage.getItem('threads.tiers16')) {
+  folds.delete('active'); folds.delete('parked'); folds.add('backlog'); folds.add('archived');
+  localStorage.setItem('threads.folds', JSON.stringify([...folds])); localStorage.setItem('threads.tiers16', '1');
+}
 function syncLabel() { const t = S.settings.sync?.last_synced; return t ? `synced ${ago(t)}${/^connector/.test(S.settings.sync?.last_source || '') ? ' · auto' : ''}` : 'not synced yet'; }
 
 function render() {
@@ -1231,11 +1253,11 @@ function renderTop() {
   document.body.classList.toggle('v-detail', S.view === 'detail');
   const back = (label) => `<button class="icon-btn" data-act="back" aria-label="Back">${ICON.back}</button><h1 class="sm">${label}</h1>`;
   if (S.view === 'detail') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1 class="sm"></h1>`;
-  else if (S.route === 'project' && secById(S.pid)) top.innerHTML = back(S.back === 'projects' ? 'Projects' : S.back === 'triage' ? 'Triage' : 'Home');
+  else if (S.route === 'project' && secById(S.pid)) top.innerHTML = back(S.back === 'projects' ? 'Projects' : S.back === 'triage' ? 'Triage' : S.back === 'shipped' ? 'Shipped' : 'Home');
   else if (S.route === 'archive') top.innerHTML = back('Archived Chats');
   else if (S.route === 'group' && secById(S.gid)) top.innerHTML = `${back(esc(secById(S.gid).name))}<button class="add-btn" data-act="add" aria-label="Add">${ICON.plus}<span>Add</span></button>`;
   else {
-    const t = { home: 'Threads', projects: 'Projects', triage: 'Triage' }[S.route] || 'Threads';
+    const t = { home: 'Threads', projects: 'Projects', shipped: 'Shipped', triage: 'Triage' }[S.route] || 'Threads';
     top.innerHTML = `<h1>${t}</h1>${S.route === 'home' ? `<button class="icon-btn" data-act="sync" aria-label="Sync">${ICON.sync}</button><button class="icon-btn" data-act="settings" aria-label="Settings">${ICON.gear}</button>` : ''}
       ${S.route === 'projects' ? `<button class="icon-btn" data-act="sec-new" aria-label="New project">${ICON.folder}</button>` : ''}<button class="add-btn" data-act="add" aria-label="Add">${ICON.plus}<span>Add</span></button>`;
   }
@@ -1256,6 +1278,7 @@ function renderSide() {
     <button class="srow rail-only" data-act="rail-search" title="Search (⌘K)">${ICON.search}</button>
     <button class="syncbtn" data-act="sync" title="Copy &quot;sync threads&quot; and open a new Builds chat">${ICON.sync}<span class="lbl">Sync</span><small>${syncLabel()}</small></button>
     <button class="srow${on('home')}" data-act="go" data-r="home" title="Dashboard">${ICON.grid}<span class="lbl">Dashboard</span></button>
+    <button class="srow${on('shipped')}" data-act="go" data-r="shipped" title="Shipped">${ICON.shipped}<span class="lbl">Shipped</span><small>${projectsIn('shipped').length || ''}</small></button>
     <button class="srow${on('triage')}" data-act="go" data-r="triage" title="Triage">${ICON.tag}<span class="lbl">Triage</span>${nn ? `<i class="ncount">${nn}</i>` : ''}</button>
     <div class="sh${folds.has('folders') ? ' closed' : ''}" data-act="fold" data-v="folders" role="button">${ICON.chev}<span>Folders</span></div>
     ${foldBox('folders', SYS_KEYS.map(sysRow).join(''))}
@@ -1286,6 +1309,7 @@ function renderTabbar() {
   const nn = namingCount();
   el.innerHTML = `<button class="tb${r === 'home' ? ' on' : ''}" data-act="go" data-r="home">${ICON.home}<span>Home</span></button>
     <button class="tb${r === 'projects' ? ' on' : ''}" data-act="go" data-r="projects">${ICON.stack}<span>Projects</span></button>
+    <button class="tb${r === 'shipped' ? ' on' : ''}" data-act="go" data-r="shipped">${ICON.shipped}<span>Shipped</span></button>
     <button class="tb${r === 'triage' ? ' on' : ''}" data-act="go" data-r="triage">${ICON.tag}<span>Triage</span>${nn ? `<i>${nn}</i>` : ''}</button>`;
 }
 
@@ -1363,6 +1387,7 @@ function renderMain() {
   else if (S.route === 'triage') el.innerHTML = triageHTML();
   else if (S.route === 'group' && secById(S.gid)) el.innerHTML = sysPageHTML(secById(S.gid));
   else if (S.route === 'archive') el.innerHTML = archiveHTML();
+  else if (S.route === 'shipped') el.innerHTML = shippedHTML();
   else if (S.route === 'projects' && !wide()) el.innerHTML = projectsHTML();
   else el.innerHTML = dashHTML();
 }
@@ -1385,23 +1410,46 @@ function prow(s, h) {
   return `<button class="prow${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}">${gIcon(s)}<span class="prow-t"><b>${esc(s.name)}</b><span>${esc(line)}</span></span>${hbadge(h)}</button>`;
 }
 function dashHTML() {
-  const hs = projects().filter((s) => tierOf(s) !== 'archived').map((s) => [s, health(s)]);
+  const hs = projectsIn('building').map((s) => [s, health(s)]);
   const cnt = (k) => hs.filter(([, h]) => h.key === k).length;
   const unk = cnt('unknown'), f = S.hfilter;
-  const cards = f ? hs.filter(([, h]) => h.key === f) : hs.filter(([s]) => tierOf(s) === 'active');
+  const cards = f ? hs.filter(([, h]) => h.key === f) : hs;
   const items = nextItems(), shown = S.allNext ? items : items.slice(0, 3);
   const nm = needsNaming(), p = pins();
   const cardsHTML = cards.length ? (wide() ? `<div class="pgrid">${cards.map(([s, h]) => pcard(s, h)).join('')}</div>` : `<div class="plist glass">${cards.map(([s, h]) => prow(s, h)).join('')}</div>`)
-    : `<div class="empty-card">${f ? 'None right now.' : `No active projects yet. ${wide() ? 'Drag one into Active in the sidebar.' : 'Move one to Active from Projects.'}`}</div>`;
+    : `<div class="empty-card">${f ? 'None right now.' : `Nothing in Building. ${wide() ? 'Drag a project into Building in the sidebar, or Plan an Update on a shipped one.' : 'Move one to Building from Projects.'}`}</div>`;
   return `<div class="page">
     <header class="ph"><h1>Dashboard</h1><span class="muted">${syncLabel()}</span><div class="ph-a"><button class="act" data-act="sync">${ICON.sync}Sync</button><button class="add-btn" data-act="add">${ICON.plus}Add</button></div></header>
     <section class="hstrip">${['ok', 'waiting', 'stuck', 'unknown'].map((k) => `<button class="hs glass ${k}${f === k ? ' on' : ''}" data-act="hfilter" data-v="${k}"><b>${cnt(k)}</b><span><i class="dot ${k}"></i>${HL[k]}</span></button>`).join('')}</section>
     <section class="blk"><div class="blk-h"><h2>Do This Next</h2>${items.length > 3 ? `<button class="lnkbtn" data-act="all-next">${S.allNext ? 'Show less' : `Show all ${items.length}`}</button>` : ''}</div>
-      <div class="dn glass">${shown.length ? shown.map(dnRow).join('') : `<div class="dn-empty">${unk ? 'Some projects aren\'t synced yet. Run a deep sync on them to fill this in.' : 'Nothing waiting. Every project is healthy.'}</div>`}</div></section>
-    <section class="blk"><div class="blk-h"><h2>${f ? `${HL[f]} (${cards.length})` : `Active Projects`}</h2>${f ? '<button class="lnkbtn" data-act="hfilter" data-v="">Show active projects</button>' : `<span class="muted">${cards.length}</span>`}</div>${cardsHTML}</section>
+      <div class="dn glass">${shown.length ? shown.map(dnRow).join('') : `<div class="dn-empty">${unk ? 'Some projects aren\'t synced yet. Run a deep sync on them to fill this in.' : 'Nothing waiting. Everything in Building is healthy.'}</div>`}</div></section>
+    <section class="blk"><div class="blk-h"><h2>${f ? `${HL[f]} (${cards.length})` : `Building`}</h2>${f ? '<button class="lnkbtn" data-act="hfilter" data-v="">Show all building</button>' : `<span class="muted">${cards.length}</span>`}</div>${cardsHTML}</section>
     ${!wide() && p.length ? `<section class="blk"><div class="blk-h"><h2>Pinned</h2></div><div class="dn glass ppins">${p.map(pinRow).join('')}</div></section>` : ''}
     ${nm.length ? `<section class="blk"><div class="blk-h"><h2>Chats That Need a Proper Name</h2><span class="muted">${nm.length}</span><button class="lnkbtn" data-act="go" data-r="triage">Open Triage</button></div><div class="dn glass">${nm.slice(0, wide() ? 4 : 3).map(nmRow).join('')}</div></section>` : ''}
     ${!active().length && !projects().length ? `<div class="empty glass"><h2>Start with a sync</h2><p>Type <code>sync threads</code> in any Builds chat in Claude, copy the reply, and paste it here. Or add a chat link by hand.</p><button class="add-btn" data-act="import-open">${ICON.clip}Paste a sync</button></div>` : ''}
+  </div>`;
+}
+// ---------- shipped (threads-16): live apps that are done for now ----------
+function shippedHTML() {
+  const list = projectsIn('shipped'), hs = list.map((s) => [s, health(s)]);
+  const live = hs.filter(([s]) => syncOf(s).deployed !== false).length;
+  const gaps = list.reduce((n, s) => n + (syncOf(s).gaps || []).length, 0);
+  const planned = list.filter((s) => normDoc(s).next).length;
+  const stat = (n, l) => `<div class="hs glass ok"><b>${n}</b><span>${l}</span></div>`;
+  const card = ([s, h]) => {
+    const sy = syncOf(s), d = normDoc(s), app = projLink(s, 'live'), g = (sy.gaps || []).length;
+    const since = s.activated_at ? `shipped ${new Date(s.activated_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : '';
+    return `<article class="pcard shipcard${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}">
+      <div class="pc-h">${gIcon(s)}<b>${esc(s.name)}</b>${hbadge(h)}</div>
+      <div class="pc-m">${sy.build ? `<code>${esc(sy.build)}</code>` : ''}${since ? `<span>${since}</span>` : ''}${g ? `<span>· ${g} playbook note${g > 1 ? 's' : ''}</span>` : ''}</div>
+      <p class="pc-n">${h.key === 'waiting' ? esc(h.why[0]) : d.next ? `<em>Planned</em>${esc(d.next)}` : '<span class="muted">No updates planned</span>'}</p>
+      <div class="pc-f">${app ? `<a class="act" href="${esc(app.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : ''}<span class="sp"></span><button class="act" data-act="plan-update" data-id="${s.id}" title="Moves it to Building">${ICON.redo}Plan an Update</button></div></article>`;
+  };
+  return `<div class="page">
+    <header class="ph"><h1>Shipped</h1><span class="muted">Live and done for now</span></header>
+    <section class="hstrip">${stat(list.length, 'Shipped')}${stat(live, 'Live and Deployed')}${stat(gaps, 'Playbook Notes')}${stat(planned, 'Planned Updates')}</section>
+    ${list.length ? `<div class="pgrid">${hs.map(card).join('')}</div>` : `<div class="empty-card">Nothing shipped yet. When a project is live and done for now, use Mark Shipped on its page or drag it into Shipped.</div>`}
+    <p class="muted" style="font-size:13px;text-align:center">Plan an Update moves a project back to Building. Mark Shipped (on a Building project's page) moves it here.</p>
   </div>`;
 }
 function projectsHTML() {
@@ -1468,7 +1516,9 @@ function projectHTML(s) {
   const h = health(s), sy = syncOf(s), app = projLink(s, 'live'), cur = currentChat(s), gapsN = (sy.gaps || []).length;
   const head = `<header class="pj-h${colorCls(colorOf(s))}">${gIcon(s)}<div class="pj-t"><h1>${esc(s.name)}</h1>
       <div class="pj-sub"><button class="tierbtn" data-act="tier-menu" data-id="${s.id}" title="Move to another tier">${TIER_NAME[tierOf(s)]}${ICON.chev}</button>${hbadge(h)}${sy.build ? `<code>${esc(sy.build)}</code>` : ''}${sy.deployed === false ? '<span class="tagx warn">Not deployed</span>' : sy.deployed ? '<span class="tagx ok">Deployed</span>' : ''}${sy.synced_at ? `<span>synced ${ago(sy.synced_at)}</span>` : ''}</div></div>
-    <div class="pj-a">${app ? `<a class="act pri" href="${esc(app.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : ''}
+    <div class="pj-a">${tierOf(s) === 'shipped' ? `<button class="act pri" data-act="plan-update" data-id="${s.id}" title="Moves ${esc(s.name)} to Building so it gets health and Do This Next again">${ICON.redo}Plan an Update</button>` : ''}
+      ${tierOf(s) === 'building' && sy.deployed === true ? `<button class="act" data-act="mark-shipped" data-id="${s.id}" title="Done for now: moves ${esc(s.name)} to Shipped and stops the health nudges">${ICON.shipped}Mark Shipped</button>` : ''}
+      ${app ? `<a class="act${tierOf(s) === 'shipped' ? '' : ' pri'}" href="${esc(app.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : ''}
       ${cur ? `<a class="act" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}">${ICON.k_chat}Open ${esc(shortName(cur))}</a>` : ''}
       <button class="act" data-act="copy-text" data-await="1" data-t="${esc(syncPhrase(s))}" data-msg="${esc(pasteMsg(cur))} Threads updates itself." title="Copies &quot;${esc(syncPhrase(s))}&quot;: a quick refresh from the build log">${ICON.copy}Sync ${esc(s.name)}${slugOf(s) === 'threads' ? ' Project' : ''}</button>
       <button class="act" data-act="copy-text" data-await="1" data-t="${esc(deepPhrase(s))}" data-msg="${esc(pasteMsg(cur))} It asks its questions, then updates Threads." title="Copies &quot;${esc(deepPhrase(s))}&quot;: reads every chat, fixes the docs, asks you questions">${ICON.sync}Deep Sync</button>
@@ -1589,7 +1639,7 @@ function setTier(id, t) {
   closeSheet();
   if (tierOf(s) === t) return;
   const row = { id: s.id, status: t, position: Math.max(0, ...projects().map((x) => x.position || 0)) + 1 };
-  if (t === 'active') row.activated_at = nowISO();
+  row.activated_at = nowISO(); // when it entered this tier (Shipped shows it as the shipped date)
   Object.assign(s, row);
   if (s.archived_at) { s.archived_at = null; row.archived_at = null; }
   folds.delete(t); localStorage.setItem('threads.folds', JSON.stringify([...folds]));
@@ -1755,7 +1805,7 @@ function onTierDrop(root) {
     const s = secById(el.dataset.sid);
     if (!s) continue;
     const ch = {};
-    if (tierOf(s) !== t) { s.status = t; ch.status = t; if (t === 'active') { s.activated_at = nowISO(); ch.activated_at = s.activated_at; } }
+    if (tierOf(s) !== t) { s.status = t; ch.status = t; s.activated_at = nowISO(); ch.activated_at = s.activated_at; }
     if (s.position !== pos) { s.position = pos; ch.position = pos; }
     pos++;
     if (Object.keys(ch).length) rows.push({ id: s.id, ...ch });
@@ -1890,7 +1940,7 @@ function parseSync(j) {
   let colorIdx = projects().length;
   const create = (name, p, act) => {
     const recent = act && Date.now() - Date.parse(act) < 7 * 864e5; // new projects: Active if touched in the last 7 days
-    const row = { id: uid(), name: str(name, 80), parent_id: null, position: 0, is_inbox: false, status: recent ? 'active' : 'parked',
+    const row = { id: uid(), name: str(name, 80), parent_id: null, position: 0, is_inbox: false, status: recent ? 'building' : 'hold',
       icon: p?.icon ? str(p.icon, 16) : null, color: COLORS.includes(p?.color) ? p.color : COLORS[colorIdx++ % COLORS.length],
       project_uuid: null, archived_at: null, home_chat_id: null, activated_at: recent ? nowISO() : null, doc: { sync: { is_new: true } }, created_at: nowISO() };
     plan.newSecs.push(row); add(row.name, row); add(p?.slug, row);
@@ -1920,7 +1970,7 @@ function parseSync(j) {
     // Folder chats: sync chats always; otherwise the skill's "folder" hint or a shortcut-style title, when there's no project.
     const fk = isSync ? 'sync' : !target && SYS_KEYS.includes(c.folder) ? c.folder : !target && SHORTCUT_RE.test(title) ? 'shortcuts' : null;
     plan.sys = plan.sys || {};
-    if (fk) target = sysSec(fk) || plan.sys[fk] || (plan.sys[fk] = (() => { const r = { id: uid(), name: SYSTEM[fk].name, icon: SYSTEM[fk].icon, color: SYSTEM[fk].color, parent_id: null, position: 9000, is_inbox: false, status: 'parked', project_uuid: null, archived_at: null, home_chat_id: null, activated_at: null, doc: { system: fk }, created_at: nowISO() }; plan.newSecs.push(r); return r; })());
+    if (fk) target = sysSec(fk) || plan.sys[fk] || (plan.sys[fk] = (() => { const r = { id: uid(), name: SYSTEM[fk].name, icon: SYSTEM[fk].icon, color: SYSTEM[fk].color, parent_id: null, position: 9000, is_inbox: false, status: 'hold', project_uuid: null, archived_at: null, home_chat_id: null, activated_at: null, doc: { system: fk }, created_at: nowISO() }; plan.newSecs.push(r); return r; })());
     const sug = isSync || fk ? null : 'proper' in c ? (c.proper === false ? (str(c.suggest, 80) || null) : null) : undefined;
     const ex = S.chats.find((x) => sameItem(x, lp));
     if (ex) {
@@ -2259,7 +2309,7 @@ function deleteGroupForever(id, btn) {
   push([...(chatIds.length ? [{ op: 'delete_many', table: 'chats', ids: chatIds }] : []), { op: 'delete_many', table: 'sections', ids }]);
 }
 function openGroupForm(id, parentId, tier) {
-  S.newTier = tier || 'active';
+  S.newTier = TIER_NAME[tier] ? tier : 'building';
   const s = id ? secById(id) : null;
   const skip = s ? new Set([s.id, ...descendants(s.id)]) : new Set();
   const parent = s ? (parentOf(s)?.id || '') : (parentId || '');
@@ -2302,9 +2352,9 @@ function saveGroup(id) {
   if (projText && !project_uuid) { $('#g-err').textContent = 'That project link should look like claude.ai/project/…'; return; }
   const parent_id = s?.is_inbox ? null : (val('g-parent') || null);
   if (!s) {
-    const top = !parent_id, t = S.newTier || 'active';
+    const top = !parent_id, t = S.newTier || 'building';
     const row = { id: uid(), name: name.slice(0, 80), icon, color, project_uuid, parent_id, position: top ? Math.max(0, ...projects().map((x) => x.position || 0)) + 1 : children(parent_id).length,
-      is_inbox: false, status: top ? t : 'parked', activated_at: top && t === 'active' ? nowISO() : null, doc: {}, created_at: nowISO() };
+      is_inbox: false, status: top ? t : 'hold', activated_at: top ? nowISO() : null, doc: {}, created_at: nowISO() };
     S.sections.push(row);
     if (parent_id) collapsed.delete(parent_id);
     closeSheet(); toast(`Created ${row.name}`);
@@ -2365,8 +2415,8 @@ function openSettings() {
     <section class="set"><h3>Home Screen Widget</h3><p class="muted">Feeds the Scriptable "Build Status" widget on your iPhone. It can only read: current build, active builds, health and Do This Next. Tapping a project in the widget opens it here.</p>
       <div class="inp" style="font:600 13px ui-monospace,Menlo,monospace;word-break:break-all;margin-bottom:8px">${esc(location.origin)}/widget/<span style="color:var(--dawn)">THREADS_WIDGET_KEY</span></div>
       <p class="muted">The widget asks for the key the first time you run it. It's in 1Password (Threads — env), separate from the connector key.</p></section>
-    <section class="set"><h3>Health</h3><p class="muted">A project shows as Stuck after this many days with no activity in Claude. Archived projects are never flagged.</p>
-      <div class="thr"><label>Active (days)<input class="inp" id="th-a" type="number" min="1" max="90" value="${limits().active}"></label><label>Parked (days)<input class="inp" id="th-p" type="number" min="1" max="365" value="${limits().parked}"></label></div>
+    <section class="set"><h3>Health</h3><p class="muted">A Building project shows as Stuck after this many days with no activity in Claude. Shipped, On Hold and Backlog are never flagged.</p>
+      <div class="thr"><label>Building (days)<input class="inp" id="th-a" type="number" min="1" max="90" value="${limits().building}"></label></div>
       <button class="btn ghost" data-act="th-save">Save Thresholds</button></section>
     <section class="set"><h3>All tools</h3><p class="muted">Every tool across your projects, and which projects use it.</p>
       <button class="btn ghost" data-act="all-tools">${ICON.gear}See all tools</button></section>
@@ -2427,7 +2477,7 @@ function resolvePath(parts, plan) {
     if (hit) { plan.map[key] = hit.id; parent = hit.id; continue; }
     const m = plan.meta[key] || {};
     const row = { id: uid(), name, parent_id: parent, position: children(parent, true).length + plan.rows.filter((r) => r.parent_id === parent).length,
-      color: m.color || (parent ? null : COLORS[plan.colorIdx++ % COLORS.length]), icon: m.icon || null, project_uuid: null, archived_at: null, status: 'parked', doc: {}, created_at: nowISO() };
+      color: m.color || (parent ? null : COLORS[plan.colorIdx++ % COLORS.length]), icon: m.icon || null, project_uuid: null, archived_at: null, status: 'hold', doc: {}, created_at: nowISO() };
     plan.rows.push(row); plan.map[key] = row.id; parent = row.id;
   }
   return parent;
@@ -2667,7 +2717,7 @@ const A = {
     el.closest('.sec').classList.toggle('closed', collapsed.has(id));
   },
   'sec-menu': (el) => openGroupForm(el.dataset.id),
-  'sec-new': (el) => openGroupForm(null, null, el.dataset.tier || 'active'),
+  'sec-new': (el) => openGroupForm(null, null, el.dataset.tier || 'building'),
   'sec-new-sub': (el) => openGroupForm(null, el.dataset.id),
   'g-save': (el) => saveGroup(el.dataset.id),
   'sec-delete': (el) => deleteGroup(el.dataset.id, el),
@@ -2706,15 +2756,17 @@ const A = {
     } catch { toast("Couldn't copy.", true); }
   },
   'th-save': () => {
-    const a = Math.min(90, Math.max(1, +$('#th-a').value || 5)), p = Math.min(365, Math.max(1, +$('#th-p').value || 30));
-    S.settings.health = { active: a, parked: p };
-    closeSheet(); renderContent(); toast(`Stuck after ${a} days (Active) and ${p} days (Parked)`);
+    const a = Math.min(90, Math.max(1, +$('#th-a').value || 5));
+    S.settings.health = { ...(S.settings.health || {}), active: a }; // stored as "active" so the widget feed keeps reading it
+    closeSheet(); renderContent(); toast(`Building projects show Stuck after ${a} days`);
     push([{ op: 'upsert', table: 'settings', row: { id: 'health', value: S.settings.health } }]);
   },
   'all-tools': () => openAllTools(),
   expand: (el) => el.classList.toggle('open'),
-  'make-active': (el) => setTier(el.dataset.id, 'active'),
-  park: (el) => setTier(el.dataset.id, 'parked'),
+  'make-active': (el) => setTier(el.dataset.id, 'building'),
+  park: (el) => setTier(el.dataset.id, 'hold'),
+  'plan-update': (el) => { const id = el.dataset.id; setTier(id, 'building'); if (S.route !== 'project') openProject(id); },
+  'mark-shipped': (el) => setTier(el.dataset.id, 'shipped'),
   'doc-edit': (el) => openDocEdit(el.dataset.id, el.dataset.k),
   'doc-save': (el) => saveDocEdit(el.dataset.id, el.dataset.k),
   'copy-prompt': async (el) => {
