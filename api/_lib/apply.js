@@ -4,7 +4,7 @@
 // builds merged, secrets stripped (by api/data.js cleanDoc on the way in).
 import crypto from 'node:crypto';
 import { db, q } from './db.js';
-import { cleanDocExport as cleanDoc } from './clean.js';
+import { cleanDocExport as cleanDoc, carryChecks } from './clean.js';
 import { normTier } from './tiers.js';
 
 const T = { sections: 'threads_sections', chats: 'threads_chats', settings: 'threads_settings' };
@@ -182,6 +182,8 @@ export async function applySync(j, source = 'connector') {
   for (const u of projUps) {
     const d = { ...docOf(u.s) };
     for (const k of Object.keys(u.patch)) d[k] = u.patch[k];
+    if (u.patch.env) d.env = carryChecks(docOf(u.s).env, u.patch.env, ['vercel', 'op']); // keep Joe's setup checks (threads-18)
+    if (u.patch.accounts) d.accounts = carryChecks(docOf(u.s).accounts, u.patch.accounts, ['op']);
     if ('now' in u.patch) delete d.summary;
     const old = d.sync && typeof d.sync === 'object' ? d.sync : {};
     const sy = { ...old, ...u.sy };

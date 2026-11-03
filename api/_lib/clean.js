@@ -7,6 +7,26 @@ const str = (v, n) => String(v ?? '').trim().slice(0, n);
 const URLRE = /^https?:\/\//i;
 const OPRE = /^(https:\/\/(start|my)\.1password\.(com|ca|eu)\/|onepassword:\/\/)/i;
 const list = (v, n) => (Array.isArray(v) ? v.slice(0, n) : []);
+// Setup checks (threads-18): true = confirmed, false = missing, left out = not checked yet.
+const tri = (v) => (v === true || /^(yes|true|confirmed|ok|set)$/i.test(String(v ?? '')) ? true : v === false || /^(no|false|missing)$/i.test(String(v ?? '')) ? false : null);
+function checks(e, keys) {
+  const o = {};
+  for (const k of keys) { const t = tri(e?.[k]); if (t !== null) o[k] = t; }
+  const c = str(e?.checked, 10);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(c)) o.checked = c;
+  return o;
+}
+// A sync that resends env/accounts without checks keeps the ones Joe already set (matched by name).
+export function carryChecks(oldL, newL, keys) {
+  const m = new Map((Array.isArray(oldL) ? oldL : []).map((e) => [String(e?.name || '').toLowerCase(), e]));
+  return (Array.isArray(newL) ? newL : []).map((e) => {
+    const o = m.get(String(e?.name || '').toLowerCase());
+    if (!o || !e || typeof e !== 'object') return e;
+    const x = { ...e };
+    for (const k of [...keys, 'checked']) if (!(k in x) && k in o) x[k] = o[k];
+    return x;
+  });
+}
 export function cleanDoc(d) {
   if (!d || typeof d !== 'object' || Array.isArray(d)) return {};
   const o = {};
@@ -19,8 +39,8 @@ export function cleanDoc(d) {
   if ('tools' in d) o.tools = list(d.tools, 40).map((t) => (typeof t === 'string' ? { name: str(t, 60), role: '', url: '' }
     : { name: str(t?.name, 60), role: str(t?.role, 120), url: URLRE.test(str(t?.url, 500)) ? str(t.url, 500) : '' })).filter((t) => t.name);
   if ('accounts' in d) o.accounts = list(d.accounts, 40).map((a) => ({ name: str(a?.name, 80), item: str(a?.item, 120), vault: str(a?.vault, 60),
-    link: OPRE.test(str(a?.link, 600)) ? str(a.link, 600) : '' })).filter((a) => a.name);
-  if ('env' in d) o.env = list(d.env, 60).map((e) => ({ name: str(String(e?.name ?? '').split('=')[0], 80), where: str(e?.where, 60) })).filter((e) => e.name);
+    link: OPRE.test(str(a?.link, 600)) ? str(a.link, 600) : '', ...checks(a, ['op']) })).filter((a) => a.name);
+  if ('env' in d) o.env = list(d.env, 60).map((e) => ({ name: str(String(e?.name ?? '').split('=')[0], 80), where: str(e?.where, 60), ...checks(e, ['vercel', 'op']) })).filter((e) => e.name);
   if ('links' in d) o.links = list(d.links, 40).map((l) => ({ label: str(l?.label, 60), url: str(l?.url, 500) })).filter((l) => URLRE.test(l.url));
   if ('updated_at' in d) o.updated_at = str(d.updated_at, 40);
   if ('sync' in d) o.sync = cleanSync(d.sync);

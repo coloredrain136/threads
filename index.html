@@ -313,13 +313,24 @@ body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
 .kv{display:grid;grid-template-columns:72px minmax(0,1fr);gap:7px 12px;font-size:14px;line-height:1.45}
 .kv > b{font-size:12.5px;font-weight:650;color:var(--ink-3);padding-top:1px}
 .kv > div{min-width:0;overflow-wrap:anywhere}
+.ck-row{flex-wrap:wrap}.ck-row .row-t,.ck-row .row-l{flex:1;min-width:150px;display:grid;gap:2px;color:inherit;text-decoration:none}
+.ck-row .row-t span{color:var(--ink-2);font-size:13px;display:flex;align-items:center;gap:5px}.ck-row .row-t span svg{width:13px;height:13px}
+.cks{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;align-items:center}
+.ckc{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px;border-radius:8px;font:600 12px/1 inherit;font-family:inherit;cursor:pointer;border:1px solid var(--line);background:var(--field);color:var(--ink-3)}
+.ckc svg{width:12px;height:12px}
+.ckc.ok{color:color-mix(in srgb,var(--ok) 85%,var(--ink));background:color-mix(in srgb,var(--ok) 14%,transparent);border-color:color-mix(in srgb,var(--ok) 34%,transparent)}
+.ckc.bad{color:color-mix(in srgb,var(--danger) 85%,var(--ink));background:color-mix(in srgb,var(--danger) 14%,transparent);border-color:color-mix(in srgb,var(--danger) 34%,transparent)}
+.ck-sum{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:var(--r-lg);margin-bottom:12px}
+.ck-sum>svg{width:18px;height:18px;flex:none;color:var(--ink-3)}.ck-sum.ok>svg{color:var(--ok)}.ck-sum.bad>svg{color:var(--danger)}
+.ck-sum div{display:grid;gap:2px}.ck-sum span{color:var(--ink-2);font-size:13px}
+.linkish{background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;cursor:pointer}
 .longbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px;padding:12px 14px;border-radius:var(--r-lg);background:color-mix(in srgb,var(--warn) 12%,var(--glass));border:1px solid color-mix(in srgb,var(--warn) 34%,transparent)}
 .longbar>svg{width:20px;height:20px;flex:none;color:var(--warn)}
 .longbar .lb-t{flex:1;min-width:180px;display:grid;gap:2px}.longbar .lb-t span{color:var(--ink-2);font-size:13px}
 .longbar .lb-a{display:flex;gap:8px;flex-wrap:wrap}
 .nc-step{display:grid;grid-template-columns:28px 1fr;gap:10px 12px;align-items:start;padding:12px;border-radius:var(--r-md,10px);border:1px solid var(--line);background:var(--field);margin-bottom:10px}
 .nc-step .nc-n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;background:color-mix(in srgb,var(--dawn) 20%,transparent);color:var(--ink)}
-.nc-step.done .nc-n{background:color-mix(in srgb,var(--ok,#5fd08a) 26%,transparent)}.nc-step .nc-n svg{width:14px;height:14px}
+.nc-step.done .nc-n{background:color-mix(in srgb,var(--ok) 26%,transparent)}.nc-step .nc-n svg{width:14px;height:14px}
 .nc-step p{margin:3px 0 0;color:var(--ink-2);font-size:13px;line-height:1.4}
 .nc-step .nc-b{grid-column:2;display:flex;gap:8px;flex-wrap:wrap}
 .nc-pre{white-space:pre-wrap;word-break:break-word;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink-2);background:var(--field);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;margin:4px 0 0;max-height:240px;overflow:auto;user-select:text;-webkit-user-select:text}
@@ -655,7 +666,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-17'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-18'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1223,7 +1234,8 @@ function contextFor(s) {
   if (b.length) L.push(`- Recent builds: ${b.map((x) => `${x.n != null ? `${slugOf(s)}-${x.n}` : ''}${x.date ? ` (${fmtDate(x.date)})` : ''} ${x.summary}`.trim()).join('; ')}`);
   if ((sy.gaps || []).length) L.push(`- Playbook gaps: ${sy.gaps.map((g) => g.text).join('; ')}`);
   if (d.tools.length) L.push(`- Stack: ${d.tools.map((t) => t.name + (t.role ? ` (${t.role})` : '')).join(', ')}`);
-  if (d.env.length) L.push(`- Env var names: ${d.env.map((e) => e.name).join(', ')}`);
+  const ckw = (v) => (v === true ? '✓' : v === false ? 'missing' : '?');
+  if (d.env.length) L.push(`- Env vars (Vercel / 1Password): ${d.env.map((e) => `${e.name} (${ckw(e.vercel)} / ${ckw(e.op)})`).join(', ')}`);
   L.push(`Read claude/builds-playbook.md and claude/${slugOf(s)}-build-log.md before doing anything, and treat the docs as the source of truth if they disagree with this.`);
   return L.join('\n');
 }
@@ -1629,7 +1641,7 @@ const TAB = {
       ${d.details.length ? `<ul class="why">${d.details.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}</section>`;
     const hc = `<section class="dcard glass"><div class="dcard-h"><h3>Health</h3>${hbadge(h) || '<span class="hb archived">Archived</span>'}</div>
       ${h.why.length ? `<ul class="why">${h.why.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : `<p class="muted">${h.key === 'archived' ? 'Archived projects are never flagged.' : 'Nothing flagged.'}</p>`}
-      <div class="kv" style="margin-top:10px"><b>Activity</b><div>${h.la ? agoMs(h.la) : 'None recorded'}</div>${sy.current_chat ? `<b>Chat</b><div>${esc(sy.current_chat)}${sy.updates_in_chat != null ? ` · ${sy.updates_in_chat} of ~10 updates` : ''}</div>` : ''}${sy.docs ? `<b>Docs</b><div>${['scope', 'log', 'carryover'].map((k) => `<span class="tagx${sy.docs[k] ? ' ok' : ''}">${{ scope: 'Scope', log: 'Build log', carryover: 'Carryover' }[k]}</span>`).join(' ')}</div>` : ''}</div></section>`;
+      <div class="kv" style="margin-top:10px"><b>Activity</b><div>${h.la ? agoMs(h.la) : 'None recorded'}</div>${sy.current_chat ? `<b>Chat</b><div>${esc(sy.current_chat)}${sy.updates_in_chat != null ? ` · ${sy.updates_in_chat} of ~10 updates` : ''}</div>` : ''}${setupChecks(s).total ? `<b>Setup</b><div><button class="linkish" data-act="ptab-setup" data-id="${s.id}">${esc(ckSummary(setupChecks(s)))}</button></div>` : ''}${sy.docs ? `<b>Docs</b><div>${['scope', 'log', 'carryover'].map((k) => `<span class="tagx${sy.docs[k] ? ' ok' : ''}">${{ scope: 'Scope', log: 'Build log', carryover: 'Carryover' }[k]}</span>`).join(' ')}</div>` : ''}</div></section>`;
     const all = (sy.builds || []).slice().sort((a, b) => (b.n ?? 0) - (a.n ?? 0) || String(b.date).localeCompare(String(a.date)));
     const builds = all.slice(0, 10);
     const tl = `<section class="dcard glass"><div class="dcard-h"><h3>Builds</h3><span class="muted">${all.length > 10 ? `last 10 of ${all.length}` : ''}</span></div>
@@ -1669,21 +1681,68 @@ const TAB = {
   setup(s) {
     const d = normDoc(s);
     const tools = d.tools.map((t) => `<div class="row"><div class="row-t"><b>${esc(t.name)}</b>${t.role ? `<span>${esc(t.role)}</span>` : ''}</div>${t.url ? `<a class="pill-btn" href="${esc(t.url)}" target="_blank" rel="noopener">Dashboard${ICON.go}</a>` : ''}</div>`).join('');
-    const accts = d.accounts.map((a) => {
-      const inner = `<div class="row-t"><b>${esc(a.name)}</b><span>${ICON.lock}${esc([a.item, a.vault].filter(Boolean).join(' · ') || 'No 1Password item yet')}</span></div>${a.link ? '<span class="pill-btn accent">Open in 1Password</span>' : ''}`;
-      return a.link ? `<a class="row" href="${esc(a.link)}">${inner}</a>` : `<div class="row">${inner}</div>`;
+    const accts = d.accounts.map((a, ai) => {
+      const inner = `<div class="row-t"><b>${esc(a.name)}</b><span>${ICON.lock}${esc([a.item, a.vault].filter(Boolean).join(' · ') || 'No 1Password item yet')}</span></div>`;
+      return `<div class="row ck-row">${a.link ? `<a class="row-l" href="${esc(a.link)}">${inner}</a>` : inner}<span class="cks">${a.link ? `<a class="pill-btn accent" href="${esc(a.link)}">Open in 1Password</a>` : ''}${ckChip(s, 'accounts', ai, 'op', a.op)}</span></div>`;
     }).join('');
-    const env = d.env.map((e) => `<div class="row"><code>${esc(e.name)}</code><span class="where">${esc(e.where || 'Not set yet')}</span></div>`).join('');
+    const env = d.env.map((e, i) => `<div class="row ck-row"><div class="row-t"><code>${esc(e.name)}</code>${e.where ? `<span>${esc(e.where)}</span>` : ''}</div><span class="cks">${ckChip(s, 'env', i, 'vercel', e.vercel)}${ckChip(s, 'env', i, 'op', e.op)}</span></div>`).join('');
+    const sc = setupChecks(s);
     const notes = d.notes.length ? `<ul class="notes-ul">${d.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>` : '';
     return `${cfgCard(s, 'tools', 'Stack', tools)}
+      ${sc.total ? `<div class="ck-sum glass${sc.bad ? ' bad' : sc.unk ? '' : ' ok'}">${sc.bad ? ICON.x : sc.unk ? ICON.lock : ICON.check}<div><b>Setup Checks</b><span>${esc(ckSummary(sc))}${sc.unk ? ` · ${sc.unk} not checked yet` : ''}. Tap a chip to confirm it: not checked → confirmed → missing.</span></div></div>` : ''}
       ${cfgCard(s, 'accounts', 'Accounts', `${accts || `<p class="muted">No accounts yet. <code>${esc(syncPhrase(s))}</code> fills this in.</p>`}${opTagRow(s)}<p class="hint-s">${ICON.lock}Only the 1Password item and vault are stored here. Never the password.</p>`)}
-      ${cfgCard(s, 'env', 'Env Vars', env && `${env}<p class="hint-s">Names and where they're set. Values stay in Vercel and 1Password.</p>`)}
+      ${cfgCard(s, 'env', 'Env Vars', env && `${env}<p class="hint-s">Names only. Values stay in Vercel and 1Password. The chips say whether each one is confirmed set in Vercel and saved in 1Password.</p>`)}
       ${cfgCard(s, 'notes', 'Deploy Notes', notes)}
       <div class="foot-a"><button class="act" data-act="copy-text" data-await="1" data-t="${esc(syncPhrase(s))}" data-msg="${esc(pasteMsg(currentChat(s)))}">${ICON.copy}Copy Sync ${esc(s.name)} to Refresh Setup</button></div>`;
   },
 };
 // Sidebar fold body: animates open/closed in place (no re-render).
 function foldBox(k, html) { const c = folds.has(k); return `<div class="sfold${c ? ' closed' : ''}" data-fold="${k}"${c ? ' inert' : ''}><div class="sfi">${html}</div></div>`; }
+// ---------- setup checks (threads-18) ----------
+// Per env var: set in Vercel? saved in 1Password? Per account: saved in 1Password? true / false / not checked.
+const triV = (v) => (v === true || /^(yes|true|confirmed|ok|set)$/i.test(String(v ?? '')) ? true : v === false || /^(no|false|missing)$/i.test(String(v ?? '')) ? false : null);
+function ckFields(x, keys) {
+  const o = {};
+  for (const k of keys) { const t = triV(x?.[k]); if (t !== null) o[k] = t; }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(x?.checked || ''))) o.checked = String(x.checked);
+  return o;
+}
+function carryChecks(oldL, newL, keys) {
+  const m = new Map((Array.isArray(oldL) ? oldL : []).map((e) => [String(e?.name || '').toLowerCase(), e]));
+  return (Array.isArray(newL) ? newL : []).map((e) => {
+    const o = m.get(String(e?.name || '').toLowerCase());
+    if (!o || !e || typeof e !== 'object') return e;
+    const x = { ...e };
+    for (const k of [...keys, 'checked']) if (!(k in x) && k in o) x[k] = o[k];
+    return x;
+  });
+}
+const CK = { vercel: ['Vercel', 'Set in Vercel'], op: ['1Password', 'Saved in 1Password'] };
+function ckChip(s, list, i, k, v) {
+  const st = v === true ? 'ok' : v === false ? 'bad' : 'unk';
+  const tip = `${CK[k][1]}: ${st === 'ok' ? 'confirmed' : st === 'bad' ? 'missing' : 'not checked yet'}. Tap to change.`;
+  return `<button class="ckc ${st}" data-act="ck" data-id="${s.id}" data-l="${list}" data-i="${i}" data-k="${k}" title="${esc(tip)}" aria-label="${esc(tip)}">${st === 'ok' ? ICON.check : st === 'bad' ? ICON.x : ICON.dash}${CK[k][0]}</button>`;
+}
+// Counts every check (env: Vercel + 1Password, accounts: 1Password).
+function setupChecks(s) {
+  const d = normDoc(s), r = { ok: 0, bad: 0, unk: 0, total: 0 };
+  const add = (v) => { r.total++; r[v === true ? 'ok' : v === false ? 'bad' : 'unk']++; };
+  d.env.forEach((e) => { add(e.vercel); add(e.op); });
+  d.accounts.forEach((a) => add(a.op));
+  return r;
+}
+const ckSummary = (r) => (r.total ? `${r.ok} of ${r.total} confirmed${r.bad ? ` · ${r.bad} missing` : ''}` : '');
+function toggleCheck(id, list, i, k) {
+  const s = secById(id), d = normDoc(s), arr = (d[list] || []).map((x) => ({ ...x })), it = arr[+i];
+  if (!it) return;
+  const cur = triV(it[k]);
+  it[k] = cur === null ? true : cur === true ? false : null; // not checked → confirmed → missing → not checked
+  // null (not deleted) so carryChecks doesn't bring the old value back; the server drops nulls when it saves.
+  it.checked = nowISO().slice(0, 10);
+  setDoc(s, { [list]: arr }, true);
+  toast(`${it.name}: ${CK[k][1].toLowerCase()} ${it[k] === true ? 'confirmed' : it[k] === false ? 'marked missing' : 'not checked'}`);
+}
+
 // Every 1Password item for a project gets the tag "Projects - <Name>".
 const opTag = (s) => `Projects - ${s.name}`;
 const opTagRow = (s) => `<div class="row"><div class="row-t"><b>1Password Tag</b><span>${ICON.lock}Add it to every item for this project</span></div><button class="pill-btn" data-act="copy-text" data-t="${esc(opTag(s))}" data-msg="Tag copied">${ICON.copy}${esc(opTag(s))}</button></div>`;
@@ -1777,6 +1836,8 @@ function setDoc(s, patch, quiet) {
   const d = { ...docOf(s), ...patch, updated_at: nowISO() };
   if ('now' in patch) delete d.summary; // v2 replaces the old paragraph
   if ('tools' in patch) d.tools = patch.tools;
+  if (patch.env) d.env = carryChecks(docOf(s).env, patch.env, ['vercel', 'op']);
+  if (patch.accounts) d.accounts = carryChecks(docOf(s).accounts, patch.accounts, ['op']);
   s.doc = d;
   renderContent();
   if (!quiet) toast('Saved');
@@ -2104,6 +2165,8 @@ function applySync() {
   for (const u of p.projUps) {
     const s = u.s, d = { ...docOf(s) }, pt = u.patch;
     for (const k of Object.keys(pt)) if (k !== 'sync') d[k] = pt[k];
+    if (pt.env) d.env = carryChecks(docOf(s).env, pt.env, ['vercel', 'op']);
+    if (pt.accounts) d.accounts = carryChecks(docOf(s).accounts, pt.accounts, ['op']);
     if ('now' in pt) delete d.summary;
     const old = d.sync && typeof d.sync === 'object' ? d.sync : {};
     const sy = { ...old, ...pt.sync };
@@ -2595,13 +2658,13 @@ function docFields(j) {
   }).filter((t) => t.name);
   if (Array.isArray(j.accounts)) patch.accounts = j.accounts.slice(0, 40).map((x) => {
     scan(x, ['name', 'item', 'vault', 'link']);
-    return { name: str(x?.name, 80), item: str(x?.item, 120), vault: str(x?.vault, 60), link: OP_OK(x?.link) ? str(x.link, 600) : '' };
+    return { name: str(x?.name, 80), item: str(x?.item, 120), vault: str(x?.vault, 60), link: OP_OK(x?.link) ? str(x.link, 600) : '', ...ckFields(x, ['op']) };
   }).filter((x) => x.name);
   if (Array.isArray(j.env)) patch.env = j.env.slice(0, 60).map((x) => {
     scan(x, ['name', 'where']);
     const n = String(x?.name ?? '');
     if (n.includes('=')) dropped++;
-    return { name: str(n.split('=')[0], 80), where: str(x?.where, 60) };
+    return { name: str(n.split('=')[0], 80), where: str(x?.where, 60), ...ckFields(x, ['vercel', 'op']) };
   }).filter((x) => x.name);
   if (Array.isArray(j.links)) patch.links = j.links.slice(0, 40).map((x) => ({ label: str(x?.label, 60), url: str(x?.url, 500) })).filter((x) => URL_OK(x.url));
   return { patch, dropped };
@@ -2877,6 +2940,8 @@ const A = {
     try { await navigator.clipboard.writeText(t); dismissed.add(t); toast('Context copied. Paste it at the start of a new chat.'); } catch { toast("Couldn't copy.", true); }
   },
   'next-chat': (el) => openNextChat(el.dataset.id),
+  ck: (el) => toggleCheck(el.dataset.id, el.dataset.l, el.dataset.i, el.dataset.k),
+  'ptab-setup': (el) => { if (wide()) { S.ptab = 'setup'; renderContent(); } else { S.openDet.add('setup'); renderContent(); setTimeout(() => $('[data-det="setup"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); } },
   'nc-wrap': (el) => ncWrap(el.dataset.id),
   'nc-start': (el) => ncStart(el.dataset.id),
   'deep-all': () => openDeepAll(),
