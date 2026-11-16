@@ -666,7 +666,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-18'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-19'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1853,7 +1853,7 @@ const EDIT = {
   accounts: { hint: 'One per line: Account | 1Password item | Vault | 1Password private link (optional). Never type the password.', ph: 'Supabase (Loop) | Supabase | Personal | https://start.1password.com/open/i?...',
     out: (d) => d.accounts.map((a) => [a.name, a.item, a.vault, a.link].filter((x, i) => x || i < 3).join(' | ')) },
   env: { hint: 'One per line: NAME | where it\'s set. Names only, never values.', ph: 'SUPABASE_URL | Vercel', out: (d) => d.env.map((e) => `${e.name} | ${e.where}`) },
-  links: { hint: 'One per line: Label | https://link. Label the live app "Live app" to get the Open app button.', ph: 'Live app | https://glance.vercel.app', out: (d) => d.links.map((l) => `${l.label} | ${l.url}`) },
+  links: { hint: 'One per line: Label | https://link. Label the live app "Live app" to get the Open app button.', ph: 'Live app | https://glance.zerogee.dev', out: (d) => d.links.map((l) => `${l.label} | ${l.url}`) },
   notes: { hint: 'One note per line.', ph: 'Env var changes need a manual Vercel redeploy', out: (d) => d.notes },
 };
 function openDocEdit(id, k) {

@@ -64,5 +64,18 @@
       "source": "/widget/:key",
       "destination": "/api/widget?key=:key"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/:path((?!api/|mcp/|widget/).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "threads-dun-two.vercel.app"
+        }
+      ],
+      "destination": "https://threads.zerogee.dev/:path",
+      "permanent": false
+    }
   ]
 }
