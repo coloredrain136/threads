@@ -78,6 +78,22 @@ code{font:600 13px ui-monospace,SFMono-Regular,Menlo,monospace}
 .tb.on{color:var(--dawn)}
 .tb i{position:absolute;top:0;left:calc(50% + 8px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--danger);color:#fff;font:700 10px/17px system-ui;font-style:normal}
 body.v-detail .tabbar{display:none}
+/* iPhone Duo (threads-20): the Duo's clock + signal pill sits at the top right, over the header buttons.
+   In Duo mode the tabs and header buttons move into a pill on the right edge below it, like the Duo's dock. */
+:root{--duo-rail:62px;--duo-top:176px}
+html[data-duo] .tabbar,html[data-duo] body.v-detail .tabbar{display:flex;flex-direction:column;justify-content:center;left:auto;bottom:calc(env(safe-area-inset-bottom) + 10px);
+  top:var(--duo-top);right:calc(env(safe-area-inset-right) + 8px);width:var(--duo-rail);padding:0;background:none;border:0;
+  -webkit-backdrop-filter:none;backdrop-filter:none;pointer-events:none}
+.duo-pill{display:grid;gap:2px;padding:8px 0;border-radius:31px;background:var(--bar);border:1px solid var(--line);pointer-events:auto;
+  max-height:100%;overflow-y:auto;scrollbar-width:none;-webkit-backdrop-filter:blur(24px) saturate(1.5);backdrop-filter:blur(24px) saturate(1.5);
+  box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.duo-pill::-webkit-scrollbar{display:none}
+html[data-duo] .tb{padding:7px 0 6px;font-size:10px;gap:3px}
+html[data-duo] .tb svg{width:22px;height:22px}
+html[data-duo] .tb i{left:calc(50% + 5px)}
+.tb-sep{height:1px;background:var(--line);margin:5px 14px}
+.tb.add{color:var(--dawn)}
+html[data-duo] .main,html[data-duo] body.v-detail .main{padding-right:calc(env(safe-area-inset-right) + var(--duo-rail) + 18px);padding-bottom:calc(env(safe-area-inset-bottom) + 28px)}
 body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
 
 /* ---------- sidebar (computer) ---------- */
@@ -666,7 +682,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-19'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-20'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1343,6 +1359,28 @@ function render() {
   }
   renderTop(); renderContent();
 }
+// ---------- iPhone Duo (threads-20) ----------
+// Duo screens: folded 466×678, unfolded 890×626 (points). Auto turns Duo mode on for those sizes;
+// Settings can force it on or off on this device.
+const DUO_SIZES = [[466, 678], [890, 626]];
+const near = (a, b) => Math.abs(a - b) <= 8;
+function isDuoScreen() {
+  const w = screen.width, h = screen.height;
+  return DUO_SIZES.some(([a, b]) => (near(w, a) && near(h, b)) || (near(w, b) && near(h, a)));
+}
+const duoPref = () => localStorage.getItem('threads.duo') || 'auto';
+const duoOn = () => !wide() && (duoPref() === 'on' || (duoPref() === 'auto' && isDuoScreen()));
+function applyDuo() { document.documentElement.toggleAttribute('data-duo', duoOn()); }
+// The phone header's buttons for this screen. In Duo mode they move into the right rail.
+function topActions() {
+  if (S.view === 'detail' || S.route === 'project' || S.route === 'archive') return [];
+  const a = [];
+  if (S.route === 'home') a.push(['sync', ICON.sync, 'Sync'], ['settings', ICON.gear, 'Settings']);
+  if (S.route === 'projects') a.push(['sec-new', ICON.folder, 'New Project']);
+  a.push(['add', ICON.plus, 'Add']);
+  return a;
+}
+
 // Phone header + search (the computer uses the sidebar instead).
 function renderTop() {
   const top = $('#mtop');
@@ -1352,12 +1390,14 @@ function renderTop() {
   if (S.view === 'detail') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1 class="sm"></h1>`;
   else if (S.route === 'project' && secById(S.pid)) top.innerHTML = back(S.back === 'projects' ? 'Projects' : S.back === 'triage' ? 'Triage' : S.back === 'shipped' ? 'Shipped' : 'Home');
   else if (S.route === 'archive') top.innerHTML = back('Archived Chats');
-  else if (S.route === 'group' && secById(S.gid)) top.innerHTML = `${back(esc(secById(S.gid).name))}<button class="add-btn" data-act="add" aria-label="Add">${ICON.plus}<span>Add</span></button>`;
+  else if (S.route === 'group' && secById(S.gid)) top.innerHTML = `${back(esc(secById(S.gid).name))}${duoOn() ? '' : `<button class="add-btn" data-act="add" aria-label="Add">${ICON.plus}<span>Add</span></button>`}`;
+  else if (duoOn()) top.innerHTML = `<h1>${{ home: 'Threads', projects: 'Projects', shipped: 'Shipped', triage: 'Triage' }[S.route] || 'Threads'}</h1>`;
   else {
     const t = { home: 'Threads', projects: 'Projects', shipped: 'Shipped', triage: 'Triage' }[S.route] || 'Threads';
     top.innerHTML = `<h1>${t}</h1>${S.route === 'home' ? `<button class="icon-btn" data-act="sync" aria-label="Sync">${ICON.sync}</button><button class="icon-btn" data-act="settings" aria-label="Settings">${ICON.gear}</button>` : ''}
       ${S.route === 'projects' ? `<button class="icon-btn" data-act="sec-new" aria-label="New project">${ICON.folder}</button>` : ''}<button class="add-btn" data-act="add" aria-label="Add">${ICON.plus}<span>Add</span></button>`;
   }
+  renderTabbar();
   const ms = $('#msearch'), showS = S.view !== 'detail' && (['home', 'projects'].includes(S.route) || S.filter);
   if (!showS) ms.innerHTML = '';
   else if (!$('#filter-m')) ms.innerHTML = `<label class="sfield">${ICON.search}<input class="filter-inp" id="filter-m" type="search" placeholder="Search projects and chats" autocomplete="off" enterkeyhint="search" value="${esc(S.filter)}"><button class="clear" data-act="filter-clear" aria-label="Clear"${S.filter ? '' : ' hidden'}>×</button></label>`;
@@ -1404,10 +1444,13 @@ function renderTabbar() {
   if (wide()) { el.innerHTML = ''; return; }
   const r = S.route === 'project' ? (S.back || 'home') : S.route === 'archive' ? 'home' : S.route === 'group' ? 'triage' : S.route;
   const nn = namingCount();
-  el.innerHTML = `<button class="tb${r === 'home' ? ' on' : ''}" data-act="go" data-r="home">${ICON.home}<span>Home</span></button>
+  const tabs = `<button class="tb${r === 'home' ? ' on' : ''}" data-act="go" data-r="home">${ICON.home}<span>Home</span></button>
     <button class="tb${r === 'projects' ? ' on' : ''}" data-act="go" data-r="projects">${ICON.stack}<span>Projects</span></button>
     <button class="tb${r === 'shipped' ? ' on' : ''}" data-act="go" data-r="shipped">${ICON.shipped}<span>Shipped</span></button>
     <button class="tb${r === 'triage' ? ' on' : ''}" data-act="go" data-r="triage">${ICON.tag}<span>Triage</span>${nn ? `<i>${nn}</i>` : ''}</button>`;
+  if (!duoOn()) { el.innerHTML = tabs; return; }
+  const acts = topActions();
+  el.innerHTML = `<div class="duo-pill">${tabs}${acts.length ? `<div class="tb-sep"></div>${acts.map(([act, ic, l]) => `<button class="tb${act === 'add' ? ' add' : ''}" data-act="${act}" aria-label="${l}">${ic}<span>${l === 'New Project' ? 'New' : l}</span></button>`).join('')}` : ''}</div>`;
 }
 
 function subline(c, showPath) {
@@ -2553,6 +2596,10 @@ function openSettings() {
       <p class="muted">This device only. Auto opens the Claude app (claude://). On iPhone it tries the app first and falls back to the website if the app doesn't open. App Link always uses claude://, Web Link always uses the website.</p>
       <div class="seg">${[['auto', 'Auto'], ['app', 'App link'], ['web', 'Web link']].map(([v, l]) => `<button class="${pref === v ? 'on' : ''}" data-act="link-set" data-v="${v}">${l}</button>`).join('')}</div>
     </section>
+    <section class="set"><h3>iPhone Duo Layout</h3>
+      <p class="muted">This device only. On the iPhone Duo the clock and signal pill covers the top right, so the tabs and the Sync, Settings and Add buttons move into a pill on the right edge, like the Duo's dock. Auto turns it on when the screen is Duo-sized${isDuoScreen() ? ' (this screen is)' : ''}.</p>
+      <div class="seg">${[['auto', 'Auto'], ['on', 'On'], ['off', 'Off']].map(([v, l]) => `<button class="${duoPref() === v ? 'on' : ''}" data-act="duo-set" data-v="${v}">${l}</button>`).join('')}</div>
+    </section>
     <section class="set"><h3>Sync</h3><p class="muted">The Sync button copies <b>sync threads</b> and opens a new chat in your Builds project. Last sync: ${S.settings.sync?.last_synced ? ago(S.settings.sync.last_synced) : 'never'}.</p>
       <label class="field"><span>Builds project link</span><input class="inp" id="bp-link" value="https://claude.ai/project/${esc(buildsProject())}" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
       <button class="btn ghost" data-act="bp-save">Save Link</button>
@@ -2985,6 +3032,7 @@ const A = {
     openSettings();
     push([{ op: 'upsert', table: 'settings', row: { id: 'theme', value: { preset: S.theme } } }]);
   },
+  'duo-set': (el) => { localStorage.setItem('threads.duo', el.dataset.v); applyDuo(); openSettings(); renderTop(); renderContent(); },
   'link-set': (el) => { localStorage.setItem('threads.link', el.dataset.v); openSettings(); renderContent(); },
   signout: () => signOut(),
   'filter-clear': (el, ev) => { ev.preventDefault(); clearFilter(); },
@@ -3203,11 +3251,17 @@ function fixViewport() {
   r.setProperty('--gap', (gap > 0 && gap < 120 ? Math.round(gap) : 0) + 'px');
 }
 window.addEventListener('resize', fixViewport);
+// Folding / unfolding the Duo changes the screen size: re-check Duo mode and redraw the header + rail.
+let duoWas = null;
+function duoCheck() { applyDuo(); const on = duoOn(); if (on !== duoWas) { duoWas = on; if (S.token && $('#mtop')) { renderTop(); renderContent(); } } }
+window.addEventListener('resize', duoCheck);
+WIDE.addEventListener('change', duoCheck);
 window.addEventListener('orientationchange', () => setTimeout(fixViewport, 300));
 
 // ---------- boot ----------
 applyTheme(S.theme);
 fixViewport();
+applyDuo();
 if (S.token) loadCache();
 if (S.route === 'projects' && wide()) S.route = 'home';
 render();
