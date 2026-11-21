@@ -707,7 +707,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-24'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-25'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -2023,6 +2023,11 @@ function openURL(url) {
 }
 // Sync: copy "sync threads" and open a new chat in the Builds project (a fresh chat every time).
 const buildsProject = () => S.settings.sync?.project_id || BUILDS_PROJECT;
+// threads-25: every Sync button asks first, so a stray tap doesn't throw you into Claude.
+function askSync() {
+  openSheet(`<h2>Sync Threads?</h2><p class="hint" style="margin-top:0">This copies "sync threads" and opens a new chat in your Builds project in Claude. Paste it there and Threads updates itself.</p>
+    <button class="btn" data-act="sync-go">${ICON.sync}Yes, Sync</button><button class="btn ghost" data-act="close">Cancel</button>`);
+}
 async function runSync() {
   try { await navigator.clipboard.writeText('sync threads'); dismissed.add('sync threads'); } catch { toast("Couldn't copy. Type sync threads in the new chat.", true); }
   awaitPaste('sync');
@@ -3047,7 +3052,8 @@ const A = {
       toast(h ? `Prompt copied. Paste it in ${s.name} · ${h.name}` : 'Prompt copied');
     } catch { toast("Couldn't copy.", true); }
   },
-  sync: () => runSync(),
+  sync: () => askSync(),
+  'sync-go': () => { closeSheet(); runSync(); },
   sys: (el) => { const g = ensureSys(el.dataset.k); flushSaves(); if (S.panel) closePanel(); if (S.route !== 'group') S.back = S.route; S.route = 'group'; S.gid = g.id; S.view = 'main';
     if (S.filter) { S.filter = ''; $$('.filter-inp').forEach((i) => { i.value = ''; }); }
     localStorage.setItem('threads.route', 'group'); localStorage.setItem('threads.gid', g.id); closeSheet(); renderTop(); renderContent(); scrollTo(0, 0); },
