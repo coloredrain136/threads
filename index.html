@@ -80,10 +80,10 @@ code{font:600 13px ui-monospace,SFMono-Regular,Menlo,monospace}
 body.v-detail .tabbar{display:none}
 /* iPhone Duo (threads-20): the Duo's clock + signal pill sits at the top right, over the header buttons.
    In Duo mode the tabs and header buttons move into a pill on the right edge below it, like the Duo's dock. */
-:root{--duo-rail:62px;--duo-top:176px;--sar:env(safe-area-inset-right,0px)}
+:root{--duo-rail:62px;--duo-top:172px;--sar:env(safe-area-inset-right,0px)}
 /* threads-21: iOS reserves a right-edge strip on the Duo (--sar, ~85pt) for the clock + signal. The rail sits centered in that strip
    under the clock (like the dock) and the content runs up to the strip instead of adding its own margin on top. */
-html[data-duo] .tabbar,html[data-duo] body.v-detail .tabbar{display:flex;flex-direction:column;justify-content:center;left:auto;bottom:calc(env(safe-area-inset-bottom) + 10px);
+html[data-duo] .tabbar,html[data-duo] body.v-detail .tabbar{display:flex;flex-direction:column;justify-content:flex-start;left:auto;bottom:calc(env(safe-area-inset-bottom) + 10px);
   top:var(--duo-top);right:max(6px,calc((var(--sar) - var(--duo-rail)) / 2));width:var(--duo-rail);padding:0;background:none;border:0;
   -webkit-backdrop-filter:none;backdrop-filter:none;pointer-events:none}
 .duo-pill{display:grid;gap:2px;padding:8px 0;border-radius:31px;background:var(--bar);border:1px solid var(--line);pointer-events:auto;
@@ -684,7 +684,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-21'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-22'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1373,7 +1373,7 @@ function isDuoScreen() {
 const duoPref = () => localStorage.getItem('threads.duo') || 'auto';
 const duoOn = () => !wide() && (duoPref() === 'on' || (duoPref() === 'auto' && isDuoScreen()));
 function applyDuo() { document.documentElement.toggleAttribute('data-duo', duoOn()); }
-// The phone header's buttons for this screen. In Duo mode they move into the right rail.
+// The phone header's buttons for this screen (normal iPhones; the Duo pill uses a fixed set, threads-22).
 function topActions() {
   if (S.view === 'detail' || S.route === 'project' || S.route === 'archive') return [];
   const a = [];
@@ -1451,8 +1451,10 @@ function renderTabbar() {
     <button class="tb${r === 'shipped' ? ' on' : ''}" data-act="go" data-r="shipped">${ICON.shipped}<span>Shipped</span></button>
     <button class="tb${r === 'triage' ? ' on' : ''}" data-act="go" data-r="triage">${ICON.tag}<span>Triage</span>${nn ? `<i>${nn}</i>` : ''}</button>`;
   if (!duoOn()) { el.innerHTML = tabs; return; }
-  const acts = topActions();
-  el.innerHTML = `<div class="duo-pill">${tabs}${acts.length ? `<div class="tb-sep"></div>${acts.map(([act, ic, l]) => `<button class="tb${act === 'add' ? ' add' : ''}" data-act="${act}" aria-label="${l}">${ic}<span>${l === 'New Project' ? 'New' : l}</span></button>`).join('')}` : ''}</div>`;
+  // threads-22: the same buttons on every screen, pinned under the clock, so the pill never changes size or moves
+  // (New Project lives at the bottom of the Projects page).
+  const acts = [['sync', ICON.sync, 'Sync'], ['settings', ICON.gear, 'Settings'], ['add', ICON.plus, 'Add']];
+  el.innerHTML = `<div class="duo-pill">${tabs}<div class="tb-sep"></div>${acts.map(([act, ic, l]) => `<button class="tb${act === 'add' ? ' add' : ''}" data-act="${act}" aria-label="${l}">${ic}<span>${l}</span></button>`).join('')}</div>`;
 }
 
 function subline(c, showPath) {
