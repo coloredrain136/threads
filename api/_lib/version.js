@@ -1,2 +1,2 @@
 // Bump every build, together with APP_VERSION in index.html and version.json.
-export const APP_VERSION = 'threads-23';
+export const APP_VERSION = 'threads-24';

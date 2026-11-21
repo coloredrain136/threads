@@ -75,12 +75,13 @@ code{font:600 13px ui-monospace,SFMono-Regular,Menlo,monospace}
   -webkit-backdrop-filter:blur(24px) saturate(1.5);backdrop-filter:blur(24px) saturate(1.5)}
 .tb{display:grid;justify-items:center;gap:2px;padding:4px 0;font-size:11px;font-weight:600;color:var(--ink-3);position:relative}
 .tb svg{width:23px;height:23px}
-.tb.on{color:var(--dawn)}
+.tb.on,.tb.hover{color:var(--dawn)}
+.duo-pill .tb[data-act="go"]{touch-action:none}
 .tb i{position:absolute;top:0;left:calc(50% + 8px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--danger);color:#fff;font:700 10px/17px system-ui;font-style:normal}
 body.v-detail .tabbar{display:none}
 /* iPhone Duo (threads-20): the Duo's clock + signal pill sits at the top right, over the header buttons.
    In Duo mode the tabs and header buttons move into a pill on the right edge below it, like the Duo's dock. */
-:root{--duo-rail:62px;--duo-top:172px;--sar:env(safe-area-inset-right,0px)}
+:root{--duo-rail:62px;--duo-top:246px;--sar:env(safe-area-inset-right,0px)}
 /* threads-21: iOS reserves a right-edge strip on the Duo (--sar, ~85pt) for the clock + signal. The rail sits centered in that strip
    under the clock (like the dock) and the content runs up to the strip instead of adding its own margin on top. */
 html[data-duo] .tabbar,html[data-duo] body.v-detail .tabbar{display:flex;flex-direction:column;justify-content:flex-start;left:auto;bottom:calc(env(safe-area-inset-bottom) + 10px);
@@ -90,7 +91,19 @@ html[data-duo] .tabbar,html[data-duo] body.v-detail .tabbar{display:flex;flex-di
   max-height:100%;overflow-y:auto;scrollbar-width:none;-webkit-backdrop-filter:blur(24px) saturate(1.5);backdrop-filter:blur(24px) saturate(1.5);
   box-shadow:0 10px 30px rgba(0,0,0,.35)}
 .duo-pill::-webkit-scrollbar{display:none}
-html[data-duo] .tb{padding:7px 0 6px;font-size:10px;gap:3px}
+/* threads-24: the pill starts below the Dynamic Island even when a Live Activity (timer, maps) stretches it down the strip,
+   and the buttons are a bit tighter so all 7 still fit. */
+html[data-duo] .tb{padding:5px 0 4px;font-size:10px;gap:2px;z-index:1;transition:color .25s}
+.duo-pill{position:relative}
+/* threads-24: liquid-glass bubble that slides to the tab you pick; press and drag along the tabs to scrub it */
+.duo-glass{position:absolute;left:5px;right:5px;top:0;height:0;border-radius:22px;pointer-events:none;z-index:0;opacity:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.06),0 6px 18px rgba(0,0,0,.28);
+  -webkit-backdrop-filter:blur(10px) saturate(1.8);backdrop-filter:blur(10px) saturate(1.8);
+  transition:transform .42s cubic-bezier(.3,1.35,.5,1),height .3s,opacity .2s,scale .25s}
+.duo-glass.live{opacity:1}
+.duo-glass.drag{transition:height .3s,opacity .2s,scale .2s;scale:1.12}
+.duo-pill.dragging .tb{pointer-events:none}
 html[data-duo] .tb svg{width:22px;height:22px}
 html[data-duo] .tb i{left:calc(50% + 5px)}
 .tb-sep{height:1px;background:var(--line);margin:5px 14px}
@@ -694,7 +707,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-23'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-24'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1466,7 +1479,52 @@ function renderTabbar() {
   // threads-22: the same buttons on every screen, pinned under the clock, so the pill never changes size or moves
   // (New Project lives at the bottom of the Projects page).
   const acts = [['sync', ICON.sync, 'Sync'], ['settings', ICON.gear, 'Settings'], ['add', ICON.plus, 'Add']];
-  el.innerHTML = `<div class="duo-pill">${tabs}<div class="tb-sep"></div>${acts.map(([act, ic, l]) => `<button class="tb${act === 'add' ? ' add' : ''}" data-act="${act}" aria-label="${l}">${ic}<span>${l}</span></button>`).join('')}</div>`;
+  el.innerHTML = `<div class="duo-pill"><div class="duo-glass"></div>${tabs}<div class="tb-sep"></div>${acts.map(([act, ic, l]) => `<button class="tb${act === 'add' ? ' add' : ''}" data-act="${act}" aria-label="${l}">${ic}<span>${l}</span></button>`).join('')}</div>`;
+  duoGlass(el.querySelector('.duo-pill'));
+}
+// threads-24: glass bubble behind the active Duo tab. It starts where it was before the redraw and slides to the new tab.
+let duoGlassY = null;
+function duoGlass(pill) {
+  const g = pill.querySelector('.duo-glass'), on = pill.querySelector('.tb.on[data-act="go"]');
+  if (!on) { duoGlassY = null; return; }
+  const y = on.offsetTop, h = on.offsetHeight;
+  g.style.height = h + 'px';
+  if (duoGlassY == null || matchMedia('(prefers-reduced-motion: reduce)').matches) { g.style.transition = 'none'; g.style.transform = `translateY(${y}px)`; g.offsetHeight; g.style.transition = ''; }
+  else { g.style.transition = 'none'; g.style.transform = `translateY(${duoGlassY}px)`; g.offsetHeight; g.style.transition = ''; requestAnimationFrame(() => { g.style.transform = `translateY(${y}px)`; }); }
+  g.classList.add('live'); duoGlassY = y;
+  duoDrag(pill, g);
+}
+// Press on a tab and slide up or down: the bubble follows your finger and lets go on the nearest tab.
+function duoDrag(pill, g) {
+  const tabs = [...pill.querySelectorAll('.tb[data-act="go"]')];
+  let start = null, moved = false;
+  const nearest = (y) => tabs.reduce((b, t) => Math.abs(t.offsetTop + t.offsetHeight / 2 - y) < Math.abs(b.offsetTop + b.offsetHeight / 2 - y) ? t : b);
+  const local = (e) => e.clientY - pill.getBoundingClientRect().top + pill.scrollTop;
+  pill.addEventListener('click', (c) => { if (Date.now() < +(pill.dataset.eat || 0)) { c.stopPropagation(); c.preventDefault(); } }, true);
+  pill.addEventListener('pointerdown', (e) => { const t = e.target.closest('.tb[data-act="go"]'); if (!t) return; start = { y: local(e), id: e.pointerId }; moved = false; });
+  pill.addEventListener('pointermove', (e) => {
+    if (!start || e.pointerId !== start.id) return;
+    const y = local(e);
+    if (!moved && Math.abs(y - start.y) < 8) return;
+    if (!moved) { moved = true; try { pill.setPointerCapture(e.pointerId); } catch {} pill.classList.add('dragging'); g.classList.add('drag'); }
+    const lo = tabs[0].offsetTop, hi = tabs[tabs.length - 1].offsetTop;
+    const top = Math.max(lo, Math.min(hi, y - g.offsetHeight / 2));
+    g.style.transform = `translateY(${top}px)`;
+    const n = nearest(y); tabs.forEach((t) => t.classList.toggle('hover', t === n));
+    e.preventDefault();
+  });
+  const end = (e) => {
+    if (!start) return;
+    const was = moved; start = null;
+    if (!was) return;
+    pill.classList.remove('dragging'); g.classList.remove('drag');
+    const n = nearest(local(e)); tabs.forEach((t) => t.classList.remove('hover'));
+    duoGlassY = parseFloat((g.style.transform.match(/translateY\(([-\d.]+)px\)/) || [])[1]) || duoGlassY;
+    pill.dataset.eat = Date.now() + 500; // swallow the click the browser sends after the drag
+    setTimeout(() => go(n.dataset.r), 0);
+  };
+  pill.addEventListener('pointerup', end);
+  pill.addEventListener('pointercancel', (e) => { if (!start) return; start = null; if (moved) { pill.classList.remove('dragging'); g.classList.remove('drag'); tabs.forEach((t) => t.classList.remove('hover')); duoGlass(pill); } });
 }
 
 function subline(c, showPath) {
