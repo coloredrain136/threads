@@ -173,6 +173,16 @@ body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
   body.rail .srow .ncount{position:absolute;top:1px;right:4px;min-width:16px;height:16px;font-size:10px;line-height:16px;padding:0 4px}
   body.rail .side-foot{padding-top:8px}
 }
+/* iPhone Duo unfolded (threads-23): the computer layout, kept clear of iOS's right-edge clock strip and the top blur.
+   The sidebar is pinned to the real screen height and scrolls on its own; the main column scrolls the page. */
+@media (min-width:900px){
+  html[data-duo-wide] .side{position:fixed;top:0;left:0;bottom:calc(-1 * var(--gap));height:auto;width:var(--side);z-index:20;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+    padding-top:calc(env(safe-area-inset-top) + var(--topgap) + 4px);padding-bottom:calc(env(safe-area-inset-bottom) + var(--gap) + 16px)}
+  html[data-duo-wide] .main{grid-column:2;padding:calc(env(safe-area-inset-top) + var(--topgap) + 16px) calc(var(--sar) + 24px) calc(env(safe-area-inset-bottom) + var(--gap) + 60px) 34px}
+  html[data-duo-wide] body.has-panel .main{padding-right:calc(min(400px,34vw) + var(--sar) + 40px)}
+  html[data-duo-wide] .panel{top:calc(env(safe-area-inset-top) + var(--topgap));right:calc(var(--sar) + 10px);bottom:calc(env(safe-area-inset-bottom) + 14px);width:min(400px,34vw)}
+  html[data-duo-wide] .toast{left:calc(50% + (var(--side) - var(--sar)) / 2)}
+}
 .spin{display:flex;align-items:center;gap:9px;min-height:30px;padding:0 8px;border-radius:var(--r-sm);font-size:13.5px;color:var(--ink-2);user-select:none;-webkit-user-select:none}
 .spin:hover{background:var(--field);color:var(--ink)}
 .spin .kic{width:20px;height:20px;border-radius:5px}
@@ -684,7 +694,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-22'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-23'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1362,17 +1372,19 @@ function render() {
   renderTop(); renderContent();
 }
 // ---------- iPhone Duo (threads-20) ----------
-// Duo screens: folded 466×678, unfolded 890×626 (points). Auto turns Duo mode on for those sizes;
-// Settings can force it on or off on this device.
-const DUO_SIZES = [[466, 678], [890, 626]];
-const near = (a, b) => Math.abs(a - b) <= 8;
+// Duo screens: folded 466×678, unfolded ~1148×808 (points; 890×626 kept from the first guess). Auto turns
+// Duo mode on for those sizes; Settings can force it on or off on this device.
+// Folded = phone layout with the right rail (data-duo). Unfolded = computer layout kept clear of the clock strip (data-duo-wide).
+const DUO_SIZES = [[466, 678], [890, 626], [1148, 808]];
+const near = (a, b) => Math.abs(a - b) <= 12;
 function isDuoScreen() {
   const w = screen.width, h = screen.height;
   return DUO_SIZES.some(([a, b]) => (near(w, a) && near(h, b)) || (near(w, b) && near(h, a)));
 }
 const duoPref = () => localStorage.getItem('threads.duo') || 'auto';
 const duoOn = () => !wide() && (duoPref() === 'on' || (duoPref() === 'auto' && isDuoScreen()));
-function applyDuo() { document.documentElement.toggleAttribute('data-duo', duoOn()); }
+const duoWideOn = () => wide() && (duoPref() === 'on' || (duoPref() === 'auto' && isDuoScreen()));
+function applyDuo() { const d = document.documentElement; d.toggleAttribute('data-duo', duoOn()); d.toggleAttribute('data-duo-wide', duoWideOn()); }
 // The phone header's buttons for this screen (normal iPhones; the Duo pill uses a fixed set, threads-22).
 function topActions() {
   if (S.view === 'detail' || S.route === 'project' || S.route === 'archive') return [];
