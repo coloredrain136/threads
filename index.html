@@ -171,6 +171,13 @@ body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
   .side-rz:hover::after,body.resizing .side-rz::after{background:var(--dawn)}
   body.resizing{cursor:col-resize;user-select:none;-webkit-user-select:none}
   body.resizing .side,body.resizing .main{pointer-events:none}
+  body.side-hidden #app.authed{grid-template-columns:minmax(0,1fr)}
+  body.side-hidden .side,body.side-hidden .side-rz{display:none!important}
+  body.side-hidden .main{grid-column:1!important;padding-left:78px!important}
+  body.side-hidden .side-show{display:grid;place-items:center;position:fixed;z-index:26;top:calc(env(safe-area-inset-top) + var(--topgap) + 16px);left:16px;width:44px;height:44px;border-radius:14px;
+    background:var(--bar);border:1px solid var(--line2);color:var(--ink);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 6px 18px var(--shadow)}
+  .side-show svg{width:22px;height:22px}
+  body.rail .side-tog{order:9}
   /* icon rail: drag the edge in past ~150px */
   body.rail .side{padding:12px 8px;align-items:stretch}
   body.rail .lbl,body.rail .side .sfield,body.rail .sh > *,body.rail .sproj b,body.rail .sproj .new,body.rail .spin > span:not(.kic),body.rail .srow small,body.rail .syncbtn small{display:none!important}
@@ -201,12 +208,13 @@ body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
    each scroll inside it, so nothing depends on position:fixed. */
 @media (min-width:900px){
   html[data-duo-wide],html[data-duo-wide] body{height:100%;overflow:hidden;overscroll-behavior:none}
-  html[data-duo-wide] #app.authed{height:calc(100dvh + var(--gap));min-height:0;overflow:hidden}
+  html[data-duo-wide] #app.authed{height:var(--app-h,calc(100dvh + var(--gap)));min-height:0;overflow:hidden}
   html[data-duo-wide] .side{position:relative;top:auto;bottom:auto;height:100%;min-height:0}
   html[data-duo-wide] .main{height:100%;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
   /* threads-34: use the strip under the clock. Only the top of each page (title row, project hero, banner) stays clear of it. */
   html[data-duo-wide] .main{padding-right:24px}
-  html[data-duo-wide] #banner,html[data-duo-wide] #content > .page > :first-child,html[data-duo-wide] #content .ph{margin-right:calc(var(--sar) + 4px)}
+  html[data-duo-wide] #banner,html[data-duo-wide] #content > .page > :first-child,html[data-duo-wide] #content > .page > .backbtn + *,html[data-duo-wide] #content .ph{margin-right:calc(var(--sar) + 4px)}
+  html[data-duo-wide] body.has-panel .main{padding-right:24px} /* threads-35: the item panel floats over the page instead of squeezing it */
 }
 .spin{display:flex;align-items:center;gap:9px;min-height:30px;padding:0 8px;border-radius:var(--r-sm);font-size:13.5px;color:var(--ink-2);user-select:none;-webkit-user-select:none}
 .spin:hover{background:var(--field);color:var(--ink)}
@@ -558,6 +566,17 @@ body.dragging{user-select:none;-webkit-user-select:none}
 .tag{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:6px;background:color-mix(in srgb,var(--c) 20%,transparent);color:var(--c)}
 .tag svg{width:13px;height:13px}
 .title-inp{width:100%;font-size:22px;font-weight:750;letter-spacing:-.02em;padding:4px 0;border-bottom:1px solid transparent}
+textarea.title-inp{display:block;resize:none;overflow:hidden;field-sizing:content;line-height:1.2;min-height:0} /* threads-35: long names wrap */
+/* threads-35: Back, sidebar modes, link rows that never spill out of their tile */
+.backbtn{justify-self:start;align-self:start;width:max-content;max-width:100%;display:inline-flex;align-items:center;gap:4px;height:32px;padding:0 12px 0 6px;margin:0 0 12px;border-radius:999px;font-size:14px;font-weight:650;color:var(--ink-2);background:var(--field)}
+.backbtn svg{width:18px;height:18px}
+.backbtn:hover{color:var(--ink);background:var(--hi)}
+.sheet .backbtn{margin:0 0 6px}
+.side-show{display:none}
+.tile{min-width:0}
+.tile > *{min-width:0} /* grid children otherwise grow to their longest line (long links spilled out, threads-35) */
+.tile .row{max-width:100%}
+.tile .row-t span{display:block}
 .title-inp:focus{border-bottom-color:var(--line)}
 .open-big{display:flex;align-items:center;justify-content:center;gap:8px;height:46px;border-radius:var(--r-md);background:var(--c);color:#111;font-weight:700;font-size:15px;margin-top:12px}
 .open-big svg{width:18px;height:18px}
@@ -896,7 +915,7 @@ html[data-duo] .act{height:36px}
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-34'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-35'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -904,6 +923,7 @@ const ICON = {
   search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
   gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
   archive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg>',
+  sidebar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>',
   back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
   more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>',
   grip: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>',
@@ -1100,6 +1120,7 @@ S.route = (localStorage.getItem('threads.route') || 'home').replace(/^naming$/, 
 if (!['home', 'projects', 'shipped', 'triage', 'archive', 'project', 'group'].includes(S.route)) S.route = 'home';
 S.gid = localStorage.getItem('threads.gid');
 S.bundle = new Set(); // Inbox chats picked for a bundle (threads-32)
+S.hist = []; // pages you came from, for Back (threads-35)
 S.pid = localStorage.getItem('threads.pid'); S.back = 'home'; S.ptab = 'overview'; S.hfilter = ''; S.openDet = new Set();
 const collapsed = new Set(JSON.parse(localStorage.getItem('threads.collapsed') || '[]'));
 const dismissed = new Set();
@@ -1593,7 +1614,8 @@ async function loadDocs() {
 }
 async function openDoc(path) {
   const meta = (S.docs || []).find((x) => x.path === path);
-  openSheet(`<div class="doc-view"><h2>${esc(meta?.title || path)}</h2><p class="hint" style="margin-top:0">${esc(path)}</p><div class="md" id="doc-body"><p class="muted">Loading…</p></div></div>`);
+  const from = S.route === 'project' ? secById(S.pid)?.name : S.route === 'docs' ? 'Docs' : S.route === 'triage' ? 'Inbox' : S.route === 'home' ? 'Home' : '';
+  openSheet(`<div class="doc-view">${from ? `<button class="backbtn" data-act="sheet-close">${ICON.back}<span>${esc(from)}</span></button>` : ''}<h2>${esc(meta?.title || path)}</h2><p class="hint" style="margin-top:0">${esc(path)}</p><div class="md" id="doc-body"><p class="muted">Loading…</p></div></div>`);
   $('#sheet')?.classList.add('wide-sheet');
   try {
     const j = await api(`/api/docs?path=${encodeURIComponent(path)}`);
@@ -1963,7 +1985,7 @@ function render() {
   if (!S.token) return renderLogin();
   if (!$('#content')) {
     $('#app').classList.add('authed');
-    $('#app').innerHTML = `<aside class="side" id="side"></aside><div class="side-rz" title="Drag to resize · drag far left for icons only · double-click to switch" aria-hidden="true"></div>
+    $('#app').innerHTML = `<button class="side-show" data-act="side-cycle" title="Show the sidebar" aria-label="Show the sidebar">${ICON.sidebar}</button><aside class="side" id="side"></aside><div class="side-rz" title="Drag to resize · drag far left for icons only · double-click to switch" aria-hidden="true"></div>
       <div class="main"><header class="mtop" id="mtop"></header><div class="msearch" id="msearch"></div><div id="banner"></div><main id="content"></main></div>
       <nav class="tabbar" id="tabbar"></nav>`;
   }
@@ -1984,7 +2006,7 @@ function isDuoScreen() {
 const duoPref = () => localStorage.getItem('threads.duo') || 'auto';
 const duoOn = () => !wide() && (duoPref() === 'on' || (duoPref() === 'auto' && isDuoScreen()));
 const duoWideOn = () => wide() && (duoPref() === 'on' || (duoPref() === 'auto' && isDuoScreen()));
-function applyDuo() { const d = document.documentElement; d.toggleAttribute('data-duo', duoOn()); d.toggleAttribute('data-duo-wide', duoWideOn()); }
+function applyDuo() { const d = document.documentElement; d.toggleAttribute('data-duo', duoOn()); d.toggleAttribute('data-duo-wide', duoWideOn()); if (duoWideOn() && (scrollY || scrollX)) scrollTo(0, 0); }
 // The phone header's buttons for this screen (normal iPhones; the Duo pill uses a fixed set, threads-22).
 function topActions() {
   if (S.view === 'detail' || S.route === 'project' || S.route === 'archive') return [];
@@ -2038,7 +2060,7 @@ function renderSide() {
     ${['general', 'shortcuts', 'sync'].map(sysRow).join('')}
     ${p.length ? `<div class="sh sub${folds.has('pins') ? ' closed' : ''}" data-act="fold" data-v="pins" role="button">${ICON.chev}<span>Pinned</span></div>${foldBox('pins', `<div id="spins">${p.map(pinRow).join('')}</div>`)}` : ''}
     ${tierFold('shipped', 'Shipped Projects')}${tierFold('hold', 'On Hold')}${tierFold('backlog', 'Backlog')}${tierFold('archived', 'Archived')}`;
-  el.innerHTML = `<div class="side-top"><button class="brand" data-act="go" data-r="home" title="Home"><i>🧵</i><span class="lbl">Threads</span></button><button class="icon-btn" data-act="add" title="Add a chat (N)" aria-label="Add a chat">${ICON.plus}</button></div>
+  el.innerHTML = `<div class="side-top"><button class="brand" data-act="go" data-r="home" title="Home"><i>🧵</i><span class="lbl">Threads</span></button><button class="icon-btn side-tog" data-act="side-cycle" title="Shrink the sidebar (icons only, then full screen)" aria-label="Shrink the sidebar">${ICON.sidebar}</button><button class="icon-btn" data-act="add" title="Add a chat (N)" aria-label="Add a chat">${ICON.plus}</button></div>
     <label class="sfield">${ICON.search}<input class="filter-inp" id="filter" type="search" placeholder="Search" autocomplete="off" value="${esc(S.filter)}">${S.filter ? '<button class="clear" data-act="filter-clear" aria-label="Clear">×</button>' : '<kbd>⌘K</kbd>'}</label>
     <button class="srow rail-only" data-act="rail-search" title="Search (⌘K)">${ICON.search}</button>
     <button class="syncbtn" data-act="sync" title="Copy &quot;sync threads&quot; and open a new Builds chat">${ICON.sync}<span class="lbl">Sync</span><small>${syncLabel()}</small></button>
@@ -2215,6 +2237,8 @@ function renderMain() {
   else if (S.route === 'shipped') el.innerHTML = shippedHTML();
   else if (S.route === 'projects' && !wide()) el.innerHTML = projectsHTML();
   else el.innerHTML = dashHTML();
+  const bb = S.filter ? '' : backBtn(); // threads-35
+  if (bb) el.querySelector('.page')?.insertAdjacentHTML('afterbegin', bb);
 }
 
 // ---------- dashboard ----------
@@ -2523,7 +2547,40 @@ function cfgCard(s, k, title, body) {
 }
 
 // ---------- navigation ----------
+// threads-35: Back returns to the page you came from (Home, a project, a folder, Docs…), not always Home.
+const snapNav = () => ({ route: S.route, pid: S.pid, gid: S.gid });
+function pushHist() {
+  if (S.noHist) return;
+  const c = snapNav(), l = S.hist[S.hist.length - 1];
+  if (l && l.route === c.route && l.pid === c.pid && l.gid === c.gid) return;
+  S.hist.push(c); if (S.hist.length > 30) S.hist.shift();
+}
+const ROUTE_NAME = { home: 'Home', projects: 'Projects', shipped: 'Shipped', triage: 'Inbox', docs: 'Docs', guide: 'Guide', archive: 'Archived Chats' };
+function histLabel(h) {
+  if (!h) return 'Home';
+  if (h.route === 'project') return secById(h.pid)?.name || 'Project';
+  if (h.route === 'group') return secById(h.gid)?.name || 'Folder';
+  return ROUTE_NAME[h.route] || 'Back';
+}
+const sameNav = (h) => h.route === S.route && (h.route !== 'project' || h.pid === S.pid) && (h.route !== 'group' || h.gid === S.gid);
+const liveHist = (h) => (h.route !== 'project' || secById(h.pid)) && (h.route !== 'group' || secById(h.gid));
+function prevHist() { for (let i = S.hist.length - 1; i >= 0; i--) { const h = S.hist[i]; if (liveHist(h) && !sameNav(h)) return h; } return null; }
+function backBtn() {
+  if (S.route === 'home' || !wide()) return '';
+  const h = prevHist();
+  return `<button class="backbtn" data-act="back">${ICON.back}<span>${esc(h ? histLabel(h) : 'Home')}</span></button>`;
+}
+function openGroupPage(id) {
+  const g = secById(id);
+  if (!g) return go('home');
+  flushSaves(); if (S.panel) closePanel(); closeSheet(); hideBanner();
+  pushHist();
+  S.route = 'group'; S.gid = g.id; S.view = 'main';
+  localStorage.setItem('threads.route', 'group'); localStorage.setItem('threads.gid', g.id);
+  renderTop(); renderContent(); toTop();
+}
 function go(r) {
+  if (r !== S.route || ['project', 'group'].includes(S.route)) pushHist();
   closeSheet();
   flushSaves();
   if (S.panel && r !== S.route) closePanel();
@@ -2539,6 +2596,7 @@ function openProject(id, tab) {
   flushSaves(); closeSheet(); hideBanner();
   if (S.panel) closePanel();
   if (S.route !== 'project') S.back = S.filter ? S.route : S.route;
+  if (!(S.route === 'project' && S.pid === id)) pushHist();
   S.route = 'project'; S.pid = id; S.view = 'main';
   if (tab) S.ptab = tab;
   if (S.filter) { S.filter = ''; $$('.filter-inp').forEach((i) => { i.value = ''; }); }
@@ -2547,8 +2605,16 @@ function openProject(id, tab) {
   renderTop(); renderContent(); toTop();
 }
 function goBack() {
-  if (['project', 'archive', 'group'].includes(S.route)) return go(S.back && !['project', 'group'].includes(S.back) ? S.back : 'home');
-  go('home');
+  const h = prevHist();
+  if (h) S.hist.length = S.hist.lastIndexOf(h); // drop it and anything after it
+  else S.hist.length = 0;
+  S.noHist = true;
+  try {
+    if (!h) go(['project', 'archive', 'group'].includes(S.route) && S.back && !['project', 'group'].includes(S.back) ? S.back : 'home');
+    else if (h.route === 'project') openProject(h.pid);
+    else if (h.route === 'group') openGroupPage(h.gid);
+    else go(h.route);
+  } finally { S.noHist = false; }
 }
 // Tier changes: from the sidebar (drag), the project header, or the ⋯ menu.
 function setTier(id, t) {
@@ -3042,7 +3108,7 @@ function renderDetail(target, inPanel) {
   (target || $('#content')).innerHTML = `${inPanel ? `<div class="panel-h" style="justify-content:flex-end"><button class="icon-btn" data-act="panel-close" aria-label="Close" style="font-size:24px">×</button></div>` : ''}
     <div class="hero glass${colorCls(colorOf(s))}">
       <div class="crumbs"><span class="tag">${kindIcon(c.kind)}${KIND[c.kind] || 'Chat'}</span><span>${esc(pathOf(s))}</span>${c.archived_at ? '<span class="tag">Archived</span>' : ''}</div>
-      <input class="title-inp" id="d-name" value="${esc(c.name)}" maxlength="80" autocomplete="off" aria-label="Name" enterkeyhint="done">
+      <textarea class="title-inp" id="d-name" rows="1" maxlength="80" autocomplete="off" aria-label="Name" enterkeyhint="done">${esc(c.name)}</textarea>
       ${href ? `<a class="open-big" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open in Claude</a>`
         : `<button class="open-big none" data-act="edit-link" data-id="${c.id}">${ICON.plus}Add a link</button>`}
       ${href ? `<div class="hero-actions"><button class="pill-btn" data-act="copy-link" data-id="${c.id}">Copy link</button><button class="pill-btn" data-act="edit-link" data-id="${c.id}">Change link</button></div>` : ''}
@@ -3860,7 +3926,7 @@ const A = {
   sync: () => askSync(),
   'sync-go': () => { closeSheet(); runSync(); },
   'sync-pick': (el) => syncPick(el.dataset.k),
-  sys: (el) => { const g = ensureSys(el.dataset.k); flushSaves(); if (S.panel) closePanel(); if (S.route !== 'group') S.back = S.route; S.route = 'group'; S.gid = g.id; S.view = 'main';
+  sys: (el) => { const g = ensureSys(el.dataset.k); flushSaves(); if (S.panel) closePanel(); if (S.route !== 'group') S.back = S.route; if (!(S.route === 'group' && S.gid === g.id)) pushHist(); S.route = 'group'; S.gid = g.id; S.view = 'main';
     if (S.filter) { S.filter = ''; $$('.filter-inp').forEach((i) => { i.value = ''; }); }
     localStorage.setItem('threads.route', 'group'); localStorage.setItem('threads.gid', g.id); closeSheet(); renderTop(); renderContent(); toTop(); },
   'file-sys': (el) => fileSys(el.dataset.id, el.dataset.k),
@@ -3899,6 +3965,8 @@ const A = {
     push([{ op: 'upsert', table: 'settings', row: { id: 'sync', value: S.settings.sync } }]);
     toast('Builds project link saved');
   },
+  'side-cycle': () => sideCycle(),
+  'sheet-close': () => closeSheet(),
   'rail-search': () => { setRail(false); setTimeout(() => { $('#filter')?.focus(); }, 30); },
   'sync-set': (el) => {
     S.settings.sync = { ...(S.settings.sync || {}), chat_id: el.dataset.id };
@@ -3960,7 +4028,8 @@ document.addEventListener('input', (ev) => {
   if (t.id === 'g-icon-custom' && t.value.trim()) $$('#g-icon .emo').forEach((b) => b.classList.remove('on'));
   const c = (S.view === 'detail' || S.panel) && chatById(S.detailId);
   if (!c) return;
-  if (t.id === 'd-name' && t.value.trim()) { c.name = t.value.trim().slice(0, 80); queueSave(c.id, { name: c.name }); }
+  if (t.id === 'd-name' && !CSS.supports?.('field-sizing', 'content')) { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
+  if (t.id === 'd-name' && t.value.trim()) { c.name = t.value.replace(/\s*\n\s*/g, ' ').trim().slice(0, 80); queueSave(c.id, { name: c.name }); }
   if (t.id === 'd-notes') { c.notes = t.value; autosize(); queueSave(c.id, { notes: c.notes }); }
   if (t.classList.contains('todo-text')) {
     const td = c.todos.find((x) => x.id === t.dataset.tid);
@@ -3987,6 +4056,7 @@ document.addEventListener('focusout', (ev) => {
   if (ev.target.id === 'd-name' && !ev.target.value.trim()) ev.target.value = chatById(S.detailId)?.name || '';
 });
 document.addEventListener('keydown', (ev) => {
+  if (ev.target?.id === 'd-name' && ev.key === 'Enter') { ev.preventDefault(); ev.target.blur(); return; } // one-line name, even though it wraps (threads-35)
   const mod = ev.metaKey || ev.ctrlKey;
   const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '');
   if (S.token && mod && ev.key.toLowerCase() === 'k') {
@@ -4111,7 +4181,20 @@ function showUpdate() {
 const SIDE_MIN = 210, SIDE_MAX = 420, RAIL_AT = 150, RAIL_W = 64;
 let sideW = Math.min(SIDE_MAX, Math.max(SIDE_MIN, +localStorage.getItem('threads.sideW') || 264));
 let rail = localStorage.getItem('threads.rail') === '1';
-function applySide() { document.documentElement.style.setProperty('--side', (rail ? RAIL_W : sideW) + 'px'); document.body.classList.toggle('rail', rail); }
+let sideHidden = localStorage.getItem('threads.sideHidden') === '1'; // threads-35: full-screen page, sidebar tucked away
+function applySide() {
+  document.documentElement.style.setProperty('--side', (sideHidden ? 0 : rail ? RAIL_W : sideW) + 'px');
+  document.body.classList.toggle('rail', rail && !sideHidden); document.body.classList.toggle('side-hidden', sideHidden);
+}
+// The sidebar button cycles: full sidebar → icons only → hidden (full screen) → full sidebar.
+function sideCycle() {
+  if (sideHidden) { sideHidden = false; rail = false; }
+  else if (rail) sideHidden = true;
+  else rail = true;
+  localStorage.setItem('threads.rail', rail ? '1' : ''); localStorage.setItem('threads.sideHidden', sideHidden ? '1' : '');
+  applySide();
+  toast(sideHidden ? 'Full screen. Tap the sidebar button at the top left to bring it back.' : rail ? 'Sidebar: icons only' : 'Sidebar: full');
+}
 function setRail(on) { rail = on; applySide(); localStorage.setItem('threads.rail', rail ? '1' : ''); }
 document.addEventListener('pointerdown', (e) => {
   if (!e.target.closest?.('.side-rz')) return;
@@ -4135,18 +4218,33 @@ applySide();
 const standalone = () => navigator.standalone || matchMedia('(display-mode: standalone)').matches;
 function fixViewport() {
   const r = document.documentElement.style;
-  if (!isIOS || !standalone()) { r.setProperty('--gap', '0px'); return; }
-  r.setProperty('--topgap', '26px'); // iOS 27 blurs the top edge
   const probe = document.createElement('div');
   probe.style.cssText = 'position:fixed;inset:0;visibility:hidden;pointer-events:none';
   document.body.appendChild(probe);
-  const land = innerWidth > innerHeight;
-  const sh = land ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height);
-  const gap = sh - probe.getBoundingClientRect().height;
+  const ph = probe.getBoundingClientRect().height;
   probe.remove();
-  r.setProperty('--gap', (gap > 0 && gap < 120 ? Math.round(gap) : 0) + 'px');
+  let gap = 0;
+  if (isIOS && standalone()) {
+    r.setProperty('--topgap', '26px'); // iOS 27 blurs the top edge
+    const land = innerWidth > innerHeight;
+    const sh = land ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height);
+    gap = sh - ph; gap = gap > 0 && gap < 120 ? Math.round(gap) : 0;
+  }
+  r.setProperty('--gap', gap + 'px');
+  r.setProperty('--app-h', Math.round(ph + gap) + 'px'); // threads-35: the unfolded frame's real height, measured after every rotation
+  // The unfolded Duo never scrolls the page (threads-33). If it was scrolled in another layout before a rotation, put it back.
+  if (document.documentElement.hasAttribute('data-duo-wide') && (scrollY || scrollX)) scrollTo(0, 0);
 }
-window.addEventListener('resize', fixViewport);
+// iOS reports the new size a moment after a rotation or fold, so measure again a few times (threads-35).
+let fixTimers = [];
+function fixSoon() {
+  fixViewport();
+  fixTimers.forEach(clearTimeout);
+  fixTimers = [120, 400, 900].map((t) => setTimeout(() => { duoCheck(); fixViewport(); }, t));
+}
+window.addEventListener('resize', fixSoon);
+window.addEventListener('orientationchange', fixSoon);
+window.visualViewport?.addEventListener('resize', fixSoon);
 // Folding / unfolding the Duo changes the screen size: re-check Duo mode and redraw the header + rail.
 let duoWas = null;
 function duoCheck() { applyDuo(); const on = duoOn(); if (on !== duoWas) { duoWas = on; if (S.token && $('#mtop')) { renderTop(); renderContent(); } } }
