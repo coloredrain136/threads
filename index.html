@@ -81,7 +81,7 @@ code{font:600 13px ui-monospace,SFMono-Regular,Menlo,monospace}
 body.v-detail .tabbar{display:none}
 /* iPhone Duo (threads-20): the Duo's clock + signal pill sits at the top right, over the header buttons.
    In Duo mode the tabs and header buttons move into a pill on the right edge below it, like the Duo's dock. */
-:root{--duo-rail:62px;--duo-top:246px;--sar:env(safe-area-inset-right,0px)}
+:root{--duo-rail:68px;--duo-top:246px;--sar:env(safe-area-inset-right,0px)}
 /* threads-21: iOS reserves a right-edge strip on the Duo (--sar, ~85pt) for the clock + signal. The rail sits centered in that strip
    under the clock (like the dock) and the content runs up to the strip instead of adding its own margin on top. */
 html[data-duo] .tabbar,html[data-duo] body.v-detail .tabbar{display:flex;flex-direction:column;justify-content:flex-start;left:auto;bottom:calc(env(safe-area-inset-bottom) + 10px);
@@ -93,14 +93,14 @@ html[data-duo] .tabbar,html[data-duo] body.v-detail .tabbar{display:flex;flex-di
 .duo-pill::-webkit-scrollbar{display:none}
 /* threads-24: the pill starts below the Dynamic Island even when a Live Activity (timer, maps) stretches it down the strip,
    and the buttons are a bit tighter so all 7 still fit. */
-html[data-duo] .tb{padding:5px 0 4px;font-size:10px;gap:2px;z-index:1;transition:color .25s}
+html[data-duo] .tb{padding:6px 0 5px;font-size:9.5px;letter-spacing:-.15px;gap:2px;z-index:1;transition:color .25s;white-space:nowrap}
 .duo-pill{position:relative}
 /* threads-24: liquid-glass bubble that slides to the tab you pick; press and drag along the tabs to scrub it */
-.duo-glass{position:absolute;left:5px;right:5px;top:0;height:0;border-radius:22px;pointer-events:none;z-index:0;opacity:0;
+.duo-glass{position:absolute;left:4px;right:4px;top:0;height:0;border-radius:22px;pointer-events:none;z-index:0;opacity:0;
   background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.18);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.06),0 6px 18px rgba(0,0,0,.28);
   -webkit-backdrop-filter:blur(10px) saturate(1.8);backdrop-filter:blur(10px) saturate(1.8);
-  transition:transform .42s cubic-bezier(.3,1.35,.5,1),height .3s,opacity .2s,scale .25s}
+  transition:transform .5s cubic-bezier(.32,1.3,.44,1),height .3s,opacity .2s,scale .25s}
 .duo-glass.live{opacity:1}
 .duo-glass.drag{transition:height .3s,opacity .2s,scale .2s;scale:1.12}
 .duo-pill.dragging .tb{pointer-events:none}
@@ -694,6 +694,22 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 /* project colors (last so they win) */
 .c-gold{--c:#f2c46d}.c-coral{--c:#ff8a65}.c-rose{--c:#f48fb1}.c-violet{--c:#b39ddb}
 .c-blue{--c:#64b5f6}.c-teal{--c:#4dd0e1}.c-green{--c:#81c784}.c-slate{--c:#90a4ae}
+.ios-group{background:var(--field);border:1px solid var(--line2);border-radius:14px;overflow:hidden;margin:0 0 16px}
+.ios-row{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;text-align:left;min-height:48px}
+.ios-row + .ios-row{border-top:1px solid var(--line2)}
+.ios-row:hover{background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.ios-row > svg{width:14px;height:14px;color:var(--ink-3);flex:none}
+.ios-ic{width:30px;height:30px;min-width:30px;border-radius:8px;display:grid;place-items:center;font-size:16px;color:#fff;background:var(--field)}
+.ios-ic svg{width:17px;height:17px}
+.ios-ic.big{width:40px;height:40px;min-width:40px;border-radius:11px;font-size:21px;background:color-mix(in srgb,var(--dawn) 16%,var(--field))}
+.ios-t{flex:1;min-width:0;display:grid;gap:2px}.ios-t b{font-size:15px;font-weight:600}.ios-t small{font-size:12.5px;color:var(--ink-3);line-height:1.35}
+.ios-v{font-size:14px;color:var(--ink-3);white-space:nowrap}
+.ios-row.tall{padding:13px 14px;align-items:flex-start}.ios-row.tall > svg{margin-top:12px}
+.ios-row.danger b{color:var(--danger);text-align:center;width:100%}
+.ios-back{display:inline-flex;align-items:center;gap:2px;color:var(--dawn);font-weight:600;font-size:15px;margin:-4px 0 6px -4px}
+.ios-back svg{width:20px;height:20px}
+.set.ios-page{background:none;border:0;padding:0}
+.g-pic.mini{padding:6px 0 0;background:none;border:0;gap:5px}.g-pic.mini .g-chip{font-size:11px;padding:3px 7px}
 /* threads-30: project page redesign, Guide, Docs */
 .pj2{--c:var(--dawn)}
 .hero2{position:relative;overflow:hidden;padding:20px 20px 16px;border-radius:var(--r-lg);display:grid;gap:12px}
@@ -809,7 +825,8 @@ html[data-duo] .act{height:36px}
 .ym-row{transition:opacity .22s,transform .24s}
 .ym-row.out{opacity:0;transform:translateX(28px)}
 .ym-age{font-size:12px;font-weight:650;color:var(--ink-3)}
-.ym-b{display:flex;gap:6px;flex:none}
+.ym-b{display:flex;gap:6px;flex:none;flex-wrap:wrap;justify-content:flex-end}
+@media (max-width:899px){.ym-b{flex:1 1 100%;justify-content:flex-start}}
 .tagx.tidy{background:color-mix(in srgb,#b39ddb 24%,transparent);color:color-mix(in srgb,#9b7fd4 85%,var(--ink))}
 .tagx.ct{background:color-mix(in srgb,#64a8ff 18%,transparent);color:color-mix(in srgb,#64a8ff 80%,var(--ink))}
 .ym-c .dn-row{padding-top:8px;padding-bottom:8px}
@@ -835,7 +852,7 @@ html[data-duo] .act{height:36px}
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-30'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-31'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1418,9 +1435,33 @@ function ymBtn(it) {
   const main = it.btn === 'app' ? `<a class="act" href="${esc(it.link.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : dnBtn(it).replace('class="act pri"', 'class="act"');
   const extra = it.kind === 'next' && it.mine ? `<button class="act pri done" data-act="ym-done" data-id="${it.s.id}" title="I did my part: hand ${esc(it.s.name)} back to Claude">${ICON.check}Done</button>`
     : it.kind === 'mismatch' ? `<button class="act" data-act="live-ignore" data-id="${it.s.id}" title="Hide this until the live version changes">Ignore</button>` : '';
-  return `<div class="ym-b">${main}${extra}</div>`;
+  const work = `<button class="act" data-act="work-on" data-id="${it.s.id}" data-k="${it.kind}" title="Copy a prompt to start a session on this and open the chat">${ICON.next}Work on It</button>`;
+  return `<div class="ym-b">${it.kind === 'nudge' ? main : main + work}${extra}</div>`;
 }
 const ymRow = (it, mine) => { it.mine = mine; return `<div class="dn-row ym-row${colorCls(colorOf(it.s))}" data-ym="${it.s.id}">${gIcon(it.s)}<div class="dn-t" data-act="proj" data-id="${it.s.id}" role="button"><div><b>${esc(it.s.name)}</b>${ymTag(it)}</div>${it.text ? `<p>${esc(it.text)}</p>` : ''}</div>${ymBtn(it)}</div>`; };
+// threads-31: Work on It = copy a session-starter prompt with what Threads knows, then open the project's chat.
+function workPrompt(s, kind) {
+  const sy = syncOf(s), d = normDoc(s), lv = liveOf(s), slug = slugOf(s), L = [];
+  L.push(`Let's work on ${s.name} (slug: ${slug}). Here's what Threads shows:`);
+  if (d.next) L.push(`- Next step: ${d.next}${sy.next_owner === 'joe' ? ` (waiting on me${nextSince(s) ? ` since ${ageTxt(nextSince(s))}` : ''})` : ''}`);
+  if (d.now) L.push(`- Now: ${d.now}`);
+  L.push(`- Tier: ${TIER_NAME[tierOf(s)]}${d.status ? `, status ${d.status}` : ''}${sy.build ? `, latest build ${sy.build}` : ''}${sy.deployed === false ? ' (marked not deployed)' : ''}`);
+  if (lv) L.push(`- Live check: ${LIVE_L[lv.state]?.[1] || lv.state} (${liveDetail(lv)})`);
+  if (kind === 'mismatch') L.push('- The live version and the build log disagree. Figure out which build is really live (some builds may have shipped from another project\'s chat) and fix the log or Threads.');
+  if (kind === 'down') L.push('- The site isn\'t answering. Find out why and fix it.');
+  const pl = plansOf(s); if (pl.length) L.push(`- Saved plans: ${pl.map((x) => x.text).join(' | ')}`);
+  L.push(`Read claude/builds-playbook.md and claude/${slug}-build-log.md first, then help me sort this out. Ask me what you need in pop-up rounds.`);
+  return L.join('\n');
+}
+async function workOn(id, kind) {
+  const s = secById(id);
+  if (!s) return;
+  try { await navigator.clipboard.writeText(workPrompt(s, kind)); } catch { return toast("Couldn't copy the prompt.", true); }
+  const cur = currentChat(s);
+  toast(`Prompt copied. Paste it in ${cur ? esc(shortName(cur)) : 'the new chat'}`);
+  if (cur) { const app = linkFor(cur, 'app'), web = linkFor(cur, 'web'); if (isIOS) openInApp(app, web); else if (linkMode() === 'app' && app) openAppDesktop(app, web); else window.open(web || app, '_blank', 'noopener'); }
+  else openBuilds();
+}
 function ymDone(id, el) {
   const s = secById(id);
   if (!s || !docOf(s).next) return;
@@ -1448,7 +1489,8 @@ const GUIDE = [
   ['setup', '🛠️', 'Setup', 'Stack, accounts, env var names (never values) and the playbook checklist. Tap a chip to confirm something is set in Vercel or saved in 1Password.', ['Vercel ✓', '1Password ✓']],
   ['tiers', '🗂️', 'Tiers', 'Building = working on it now. Shipped = live and done for now. On Hold = paused. Backlog = not started. Archived = not building it. Only Building and Shipped ever ask for anything.', ['Building', 'Shipped', 'On Hold']],
   ['nextchat', '➡️', 'Start Next Chat', 'At about 10 updates a chat gets long. Step 1 wraps up the current chat (writes the carryover); step 2 copies a handoff (with your saved plans) and opens a fresh Builds chat.', ['Wrap Up', 'Start Build N']],
-  ['sync', '🔄', 'Sync', 'Builds update Threads by themselves. Sync is for catching up: it copies "sync threads" and opens a new Builds chat after asking first.', ['Yes, Sync']],
+  ['new', '✨', 'New', 'Start something. Full Project: a scope chat, then build chats. Quick Build: one chat, no scope doc. Idea for Later: saved to Ideas, and Claude writes a prepped scope doc you can start from later. Or add a chat link.', ['Full Project', 'Quick Build', 'Idea for Later']],
+  ['sync', '🔄', 'Sync', 'Builds update Threads by themselves. Sync is for catching up: Sync Threads (chats + status), Sync Docs (your docs), Sync a Project (one card), Deep Sync (full cleanup of one project). Each copies its prompt and opens a new Builds chat.', ['Sync Threads', 'Sync Docs', 'Sync a Project', 'Deep Sync']],
   ['duo', '📱', 'On the Duo', 'Folded: the main buttons live in the strip on the right, under the clock. Unfolded: the sidebar layout, with cards in two columns.', ['Home', 'Projects', 'Shipped', 'Triage']],
 ];
 function guideCard(g) {
@@ -1556,8 +1598,9 @@ function planDone(id, pid) {
 function nudgeKeep(id, k) {
   const s = secById(id);
   if (!s) return;
-  setDoc(s, { nudge_snooze: { ...(docOf(s).nudge_snooze || {}), [k]: new Date(Date.now() + 30 * 864e5).toISOString() } }, true);
-  toast('Hidden for 30 days');
+  const prev = docOf(s).nudge_snooze || {};
+  setDoc(s, { nudge_snooze: { ...prev, [k]: new Date(Date.now() + 30 * 864e5).toISOString() } }, true);
+  toastUndo('Hidden for 30 days', () => setDoc(s, { nudge_snooze: prev }, true));
 }
 const pasteMsg = (c) => (c ? `Copied. Paste it in ${c.name}.` : 'Copied. Paste it in the project\'s current chat.');
 function dnBtn(it) {
@@ -1859,8 +1902,14 @@ function renderTabbar() {
   if (!duoOn()) { el.innerHTML = tabs; return; }
   // threads-22: the same buttons on every screen, pinned under the clock, so the pill never changes size or moves
   // (New Project lives at the bottom of the Projects page).
-  const acts = [['sync', ICON.sync, 'Sync'], ['settings', ICON.gear, 'Settings'], ['add', ICON.plus, 'Add']];
-  el.innerHTML = `<div class="duo-pill"><div class="duo-glass"></div>${tabs}<div class="tb-sep"></div>${acts.map(([act, ic, l]) => `<button class="tb${act === 'add' ? ' add' : ''}" data-act="${act}" aria-label="${l}">${ic}<span>${l}</span></button>`).join('')}</div>`;
+  const acts = [['sync', ICON.sync, 'Sync'], ['settings', ICON.gear, 'Settings'], ['add', ICON.plus, 'New']];
+  // threads-31: keep the same pill on screen and just move the highlight, so the bubble glides instead of redrawing
+  const old = el.querySelector('.duo-pill');
+  if (old && old.dataset.nn === String(nn)) {
+    old.querySelectorAll('.tb[data-act="go"]').forEach((b) => b.classList.toggle('on', b.dataset.r === r));
+    duoGlassMove(old); return;
+  }
+  el.innerHTML = `<div class="duo-pill" data-nn="${nn}"><div class="duo-glass"></div>${tabs}<div class="tb-sep"></div>${acts.map(([act, ic, l]) => `<button class="tb${act === 'add' ? ' add' : ''}" data-act="${act}" aria-label="${l}">${ic}<span>${l}</span></button>`).join('')}</div>`;
   duoGlass(el.querySelector('.duo-pill'));
 }
 // threads-24: glass bubble behind the active Duo tab. It starts where it was before the redraw and slides to the new tab.
@@ -1874,6 +1923,13 @@ function duoGlass(pill) {
   else { g.style.transition = 'none'; g.style.transform = `translateY(${duoGlassY}px)`; g.offsetHeight; g.style.transition = ''; requestAnimationFrame(() => { g.style.transform = `translateY(${y}px)`; }); }
   g.classList.add('live'); duoGlassY = y;
   duoDrag(pill, g);
+}
+function duoGlassMove(pill) {
+  const g = pill.querySelector('.duo-glass'), on = pill.querySelector('.tb.on[data-act="go"]');
+  if (!g || !on) return;
+  g.style.height = on.offsetHeight + 'px';
+  g.style.transform = `translateY(${on.offsetTop}px)`;
+  g.classList.add('live'); duoGlassY = on.offsetTop;
 }
 // Press on a tab and slide up or down: the bubble follows your finger and lets go on the nearest tab.
 function duoDrag(pill, g) {
@@ -2310,13 +2366,15 @@ function setTier(id, t) {
   if (!s || s.is_inbox || !TIER_NAME[t]) return;
   closeSheet();
   if (tierOf(s) === t) return;
+  const before = { id: s.id, status: s.status, position: s.position, activated_at: s.activated_at || null, archived_at: s.archived_at || null };
   const row = { id: s.id, status: t, position: Math.max(0, ...projects().map((x) => x.position || 0)) + 1 };
   row.activated_at = nowISO(); // when it entered this tier (Shipped shows it as the shipped date)
   Object.assign(s, row);
   if (s.archived_at) { s.archived_at = null; row.archived_at = null; }
   folds.delete(t); localStorage.setItem('threads.folds', JSON.stringify([...folds]));
   renderTop(); renderContent();
-  toast(`${s.name} moved to ${TIER_NAME[t]}`);
+  // threads-31: every move can be undone for a few seconds
+  toastUndo(`${s.name} moved to ${TIER_NAME[t]}`, () => { Object.assign(s, before); renderTop(); renderContent(); push([{ op: 'patch', table: 'sections', rows: [before] }]); toast(`${s.name} is back in ${TIER_NAME[tierOf(s)]}`); });
   if (t === 'archived') archiveFx();
   push([{ op: 'patch', table: 'sections', rows: [row] }]);
 }
@@ -2442,9 +2500,29 @@ function openURL(url) {
 // Sync: copy "sync threads" and open a new chat in the Builds project (a fresh chat every time).
 const buildsProject = () => S.settings.sync?.project_id || BUILDS_PROJECT;
 // threads-25: every Sync button asks first, so a stray tap doesn't throw you into Claude.
+// threads-31: Sync is a menu of every kind of sync, each with what it touches. Nothing is copied until you pick one.
+const SYNCS = [
+  ['threads', '🔄', 'Sync Threads', 'Chats and project status: files new chats, refreshes every card. Weekly-ish.', ['Chats', 'Projects', 'Health']],
+  ['docs', '📄', 'Sync Docs', 'Copies every Builds doc into Threads (Docs page + each project). After big doc changes.', ['Scopes', 'Build Logs', 'Playbook']],
+  ['project', '🎯', 'Sync a Project', 'One card looks off: refreshes just that project from its chats and docs.', ['One Project']],
+  ['deep', '🧹', 'Deep Sync', 'Full cleanup of one project: reads every chat, fixes its docs, asks you questions.', ['Every Chat', 'Docs', 'Questions']],
+];
 function askSync() {
-  openSheet(`<h2>Sync Threads?</h2><p class="hint" style="margin-top:0">This copies "sync threads" and opens a new chat in your Builds project in Claude. Paste it there and Threads updates itself.</p>
-    <button class="btn" data-act="sync-go">${ICON.sync}Yes, Sync</button><button class="btn ghost" data-act="close">Cancel</button>`);
+  const ps = projects().filter((x) => ['building', 'shipped'].includes(tierOf(x)));
+  openSheet(`<h2>Sync</h2><p class="hint" style="margin-top:0">Builds update Threads by themselves. These are for catching up. Each one copies a prompt and opens a new Builds chat.</p>
+    <div class="ios-group">${SYNCS.map(([k, ic, t, d, chips]) => `<button class="ios-row tall sync-row" data-act="sync-pick" data-k="${k}"><span class="ios-ic big">${ic}</span><span class="ios-t"><b>${t}</b><small>${d}</small><span class="g-pic mini">${chips.map((c, i) => `<span class="g-chip${i ? '' : ' on'}">${c}</span>`).join('')}</span></span>${ICON.chev}</button>`).join('')}</div>
+    <label class="field" id="sync-proj-f"><span>Project (for Sync a Project / Deep Sync)</span><select class="inp" id="sync-proj">${ps.map((x) => `<option value="${x.id}"${S.route === 'project' && S.pid === x.id ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
+    <p class="hint">Last sync: ${S.settings.sync?.last_synced ? ago(S.settings.sync.last_synced) : 'never'}.</p>`);
+}
+async function syncPick(k) {
+  const x = secById(val('sync-proj') || $('#sync-proj')?.value);
+  const text = k === 'threads' ? 'sync threads' : k === 'docs' ? 'sync docs' : x ? (k === 'deep' ? deepPhrase(x) : syncPhrase(x)) : '';
+  if (!text) return toast('Pick a project first.', true);
+  try { await navigator.clipboard.writeText(text); dismissed.add(text); } catch { toast(`Couldn't copy. Type ${text} in the new chat.`, true); }
+  if (k === 'threads') awaitPaste('sync');
+  closeSheet();
+  toast(`Copied "${text}". Paste it in the new chat. Threads updates itself`);
+  openBuilds();
 }
 async function runSync() {
   try { await navigator.clipboard.writeText('sync threads'); dismissed.add('sync threads'); } catch { toast("Couldn't copy. Type sync threads in the new chat.", true); }
@@ -2864,6 +2942,51 @@ function pickerHTML(id, selected, { top = false, skip = new Set() } = {}) {
 }
 
 // Add
+// New (threads-31): the + button starts something. Full project = scope chat then build chats; Quick build = one chat, no
+// scope doc; Idea for later = saved to Ideas + Claude writes a prepped scope doc; or add a chat link like before.
+const NEW_KINDS = {
+  full: ['🚀', 'Full Project', 'Scope chat first, then build chats. For anything you\'ll keep using or growing.'],
+  quick: ['⚡', 'Quick Build', 'One chat, no scope doc. For one-offs you want to make fast (like Tonight).'],
+  idea: ['💡', 'Idea for Later', 'Saved to Ideas, and Claude writes a prepped scope doc so the scope chat can start from it later.'],
+};
+function openNew() {
+  openSheet(`<h2>New</h2><div class="ios-group">${Object.entries(NEW_KINDS).map(([k, [ic, t, d]]) => `<button class="ios-row tall" data-act="new-kind" data-k="${k}"><span class="ios-ic big">${ic}</span><span class="ios-t"><b>${t}</b><small>${d}</small></span>${ICON.chev}</button>`).join('')}</div>
+    <div class="ios-group"><button class="ios-row" data-act="add-link"><span class="ios-ic" style="background:#5e5ce6">${ICON.clip}</span><span class="ios-t"><b>Add a Chat Link</b><small>Save a Claude chat or link to a project</small></span>${ICON.chev}</button></div>
+    <button class="btn ghost" data-act="guide" data-k="new">How this works</button>`);
+}
+function openNewForm(k) {
+  const [ic, t, d] = NEW_KINDS[k];
+  openSheet(`<h2>${ic} ${t}</h2><p class="hint" style="margin-top:0">${d}</p>
+    <label class="field"><span>Name</span><input class="inp" id="nw-name" maxlength="40" placeholder="${k === 'idea' ? 'Recipe Box' : k === 'quick' ? 'Tip Splitter' : 'Cedar Point'}" autocomplete="off"></label>
+    <label class="field"><span>${k === 'idea' ? 'The idea' : 'What you want to make'}</span><textarea class="inp" id="nw-idea" rows="5" maxlength="4000" placeholder="Talk it through: what it does, who it's for, anything you already know you want."></textarea></label>
+    <button class="btn" data-act="new-go" data-k="${k}">${ICON.copy}${k === 'idea' ? 'Save Idea and Copy Prompt' : 'Copy Prompt and Open Claude'}</button>
+    <p class="hint">Copies a ready prompt and opens a new chat in your Builds project. Paste it there.</p>`);
+  setTimeout(() => $('#nw-name')?.focus(), 350);
+}
+const slugify = (t) => String(t).toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+function newPrompt(k, name, idea) {
+  const body = idea || '(I\'ll describe it here.)';
+  if (k === 'full') return `new build: ${name}\n\nHere's the idea Joe wants to start a scope about:\n${body}`;
+  if (k === 'quick') return `quick build: ${name}\n\nHere's what Joe wants to make (one chat, no scope doc; see the playbook's quick build):\n${body}`;
+  return `idea for later: ${name}\n\nJoe isn't building this yet. Write a prepped scope doc for it (claude/${slugify(name)}-idea.md, see the playbook's Ideas for later) so the scope chat can start from it. Here's the idea:\n${body}`;
+}
+async function newGo(k) {
+  const name = String($('#nw-name')?.value || '').trim().slice(0, 40), idea = String($('#nw-idea')?.value || '').trim();
+  if (!name) return toast('Give it a name first.', true);
+  const text = newPrompt(k, name, idea);
+  if (k === 'idea') {
+    const ideas = sysSec('ideas');
+    if (ideas) {
+      const c = { id: uid(), section_id: ideas.id, name: name.slice(0, 80), chat_uuid: null, kind: 'other', url: null, notes: idea, todos: [], position: 0, pinned: false, pin_position: null, archived_at: null, last_opened_at: null, created_at: nowISO() };
+      S.chats.push(c);
+      push([{ op: 'upsert', table: 'chats', row: c }]);
+    }
+  }
+  try { await navigator.clipboard.writeText(text); } catch { toast("Couldn't copy. Type it in the new chat.", true); }
+  closeSheet(); renderContent();
+  toast(k === 'idea' ? `Saved ${name} to Ideas. Prompt copied: paste it in the new chat` : 'Prompt copied. Paste it in the new chat');
+  openBuilds();
+}
 function openAdd(prefill) {
   S.pending = null;
   openSheet(`<h2>Add</h2>
@@ -3092,9 +3215,34 @@ function deleteGroup(id, btn) {
 }
 
 // Settings
-function openSettings() {
+// threads-31: Settings looks like iPhone Settings: grouped rows with colored icons; each row opens its page.
+const SET_ROWS = [
+  [['theme', '🎨', '#5e5ce6', 'Theme'], ['links', '🔗', '#0a84ff', 'Open Items With'], ['duo', '📱', '#30b0c7', 'iPhone Duo Layout']],
+  [['sync', '🔄', '#34c759', 'Sync'], ['connector', '🔌', '#ff9f0a', 'Threads Connector'], ['widget', '🧩', '#ff375f', 'Home Screen Widget']],
+  [['health', '🩺', '#ff453a', 'Health'], ['tools', '🛠️', '#8e8e93', 'All Tools'], ['import', '📥', '#64d2ff', 'Import Chats']],
+];
+function setValue(k) {
+  if (k === 'theme') return THEMES[S.theme]?.name || '';
+  if (k === 'links') return { auto: 'Auto', app: 'App Link', web: 'Web Link' }[linkPref()];
+  if (k === 'duo') return { auto: 'Auto', on: 'On', off: 'Off' }[duoPref()];
+  if (k === 'sync') return S.settings.sync?.last_synced ? ago(S.settings.sync.last_synced) : 'Never';
+  if (k === 'health') return `${limits().building}d · ${nudgeAfter()}d`;
+  return '';
+}
+function openSettings(page) {
+  const all = settingsSections();
+  if (page && all[page]) {
+    openSheet(`<button class="ios-back" data-act="settings">${ICON.back || '‹'}Settings</button>${all[page]}`);
+    return;
+  }
+  openSheet(`<h2>Settings</h2>${SET_ROWS.map((g) => `<div class="ios-group">${g.map(([k, ic, col, t]) => `<button class="ios-row" data-act="set-page" data-k="${k}"><span class="ios-ic" style="background:${col}">${ic}</span><span class="ios-t"><b>${t}</b></span><span class="ios-v">${esc(setValue(k))}</span>${ICON.chev}</button>`).join('')}</div>`).join('')}
+    <div class="ios-group"><button class="ios-row" data-act="go" data-r="guide"><span class="ios-ic" style="background:#bf5af2">🧭</span><span class="ios-t"><b>Guide</b></span>${ICON.chev}</button></div>
+    <div class="ios-group"><button class="ios-row danger" data-act="signout"><span class="ios-t"><b>Sign Out on This Device</b></span></button></div>
+    <p class="meta">${APP_VERSION}</p>`);
+}
+function settingsSections() {
   const pref = linkPref();
-  openSheet(`<h2>Settings</h2>
+  const html = (`
     <section class="set"><h3>Theme</h3><p class="muted">Same themes as Launch. Follows you to every device.</p>
       <div class="theme-grid">${Object.entries(THEMES).map(([id, t]) => `<button class="th${id === S.theme ? ' on' : ''}" data-act="theme-set" data-v="${id}"><span class="swt" style="background:linear-gradient(135deg,${t.v.night},${t.v['night-2']})"><i style="background:${t.v.dawn}"></i></span>${t.name}</button>`).join('')}</div>
     </section>
@@ -3124,8 +3272,11 @@ function openSettings() {
       <button class="btn ghost" data-act="all-tools">${ICON.gear}See all tools</button></section>
     <section class="set"><h3>Import chats</h3><p class="muted">Paste a <b>sync threads</b> reply, a <b>sync &lt;project&gt;</b> reply, or an older chat list. Safe to import twice.</p>
       <button class="btn ghost" data-act="import-open">${ICON.clip}Import</button></section>
-    <button class="btn warn" data-act="signout">Sign out on this device</button>
-    <p class="meta">${APP_VERSION}</p>`);
+    `);
+  const keys = { 'Theme': 'theme', 'Open items with': 'links', 'iPhone Duo Layout': 'duo', 'Sync': 'sync', 'Threads Connector': 'connector', 'Home Screen Widget': 'widget', 'Health': 'health', 'All tools': 'tools', 'Import chats': 'import' };
+  const out = {};
+  html.replace(/<section class="set"><h3>(.*?)<\/h3>([\s\S]*?)<\/section>/g, (m, h, body) => { const k = keys[h]; if (k) out[k] = `<h2>${h.replace(/\b\w/g, (c) => c.toUpperCase())}</h2><section class="set ios-page">${body}</section>`; return m; });
+  return out;
 }
 
 // ---------- import ----------
@@ -3367,7 +3518,10 @@ const A = {
   detail: (el) => { if (S.dragging) return; openDetail(el.dataset.id); },
   main: () => backToMain(),
   'panel-close': () => closePanel(),
-  add: () => openAdd(),
+  add: () => openNew(),
+  'new-kind': (el) => openNewForm(el.dataset.k),
+  'new-go': (el) => newGo(el.dataset.k),
+  'add-link': () => openAdd(),
   paste: async () => {
     try { handleAddText(await navigator.clipboard.readText()); }
     catch { $('#add-err').textContent = "Couldn't read the clipboard. Paste into the box instead."; $('#add-text')?.focus(); }
@@ -3436,6 +3590,7 @@ const A = {
   hfilter: (el) => { S.hfilter = S.hfilter === el.dataset.v ? '' : el.dataset.v; renderContent(); },
   'all-move': () => { S.allMove = !S.allMove; renderContent(); },
   'pj-actions': (el) => openPjActions(el.dataset.id),
+  'work-on': (el) => workOn(el.dataset.id, el.dataset.k),
   guide: (el) => openGuide(el.dataset.k),
   'doc-open': (el) => openDoc(el.dataset.path),
   'plan-add': (el) => openPlanAdd(el.dataset.id),
@@ -3444,7 +3599,7 @@ const A = {
   'all-claude': () => { S.allClaude = !S.allClaude; renderContent(); },
   'ym-done': (el) => ymDone(el.dataset.id, el),
   'live-ignore': (el) => { const x = secById(el.dataset.id), v = liveOf(x)?.version; if (x && v) { setDoc(x, { live_ignore: v }, true); toast(`Hidden until ${x.name}'s live version changes`); } },
-  'toast-undo': () => { const f = S.undo; S.undo = null; $('#toast').classList.remove('on', 'has-btn'); if (f) { f(); toast('Undone'); } },
+  'toast-undo': () => { const f = S.undo; S.undo = null; $('#toast').classList.remove('on', 'has-btn'); if (f) { f(); if (!$('#toast').classList.contains('on')) toast('Undone'); } },
   'nudge-move': (el) => setTier(el.dataset.id, el.dataset.v),
   'nudge-keep': (el) => nudgeKeep(el.dataset.id, el.dataset.k),
   'live-recheck': (el) => { const x = secById(el.dataset.id); if (x) { toast('Checking…'); liveCheck(slugOf(x)); } },
@@ -3496,6 +3651,7 @@ const A = {
   },
   sync: () => askSync(),
   'sync-go': () => { closeSheet(); runSync(); },
+  'sync-pick': (el) => syncPick(el.dataset.k),
   sys: (el) => { const g = ensureSys(el.dataset.k); flushSaves(); if (S.panel) closePanel(); if (S.route !== 'group') S.back = S.route; S.route = 'group'; S.gid = g.id; S.view = 'main';
     if (S.filter) { S.filter = ''; $$('.filter-inp').forEach((i) => { i.value = ''; }); }
     localStorage.setItem('threads.route', 'group'); localStorage.setItem('threads.gid', g.id); closeSheet(); renderTop(); renderContent(); scrollTo(0, 0); },
@@ -3548,14 +3704,15 @@ const A = {
   'delete-group-forever': (el) => deleteGroupForever(el.dataset.id, el),
   archive: () => go('archive'),
   settings: () => openSettings(),
+  'set-page': (el) => openSettings(el.dataset.k),
   'theme-set': (el) => {
     applyTheme(el.dataset.v);
     S.settings.theme = { preset: S.theme };
-    openSettings();
+    openSettings('theme');
     push([{ op: 'upsert', table: 'settings', row: { id: 'theme', value: { preset: S.theme } } }]);
   },
-  'duo-set': (el) => { localStorage.setItem('threads.duo', el.dataset.v); applyDuo(); openSettings(); renderTop(); renderContent(); },
-  'link-set': (el) => { localStorage.setItem('threads.link', el.dataset.v); openSettings(); renderContent(); },
+  'duo-set': (el) => { localStorage.setItem('threads.duo', el.dataset.v); applyDuo(); openSettings('duo'); renderTop(); renderContent(); },
+  'link-set': (el) => { localStorage.setItem('threads.link', el.dataset.v); openSettings('links'); renderContent(); },
   signout: () => signOut(),
   'filter-clear': (el, ev) => { ev.preventDefault(); clearFilter(); },
   'banner-add': () => { const t = S.bannerText; openAdd(); handleAddText(t); },
