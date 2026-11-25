@@ -50,9 +50,11 @@ export async function checkOne(s, fetchImpl = fetch, now = Date.now()) {
   const url = liveUrl(s), build = syncOf(s).build || null;
   const page = await get(url, fetchImpl);
   const r = { url, up: page.ok, code: page.code, build, version: null, match: null, no_version_file: false, checked_at: new Date(now).toISOString() };
-  if (!page.ok) { r.state = 'down'; r.error = page.err || `Answered ${page.code}`; return r; }
-  let origin; try { origin = new URL(page.url).origin; } catch { origin = new URL(url).origin; }
+  let origin; try { origin = new URL(page.url || url).origin; } catch { origin = new URL(url).origin; }
   const vf = await get(`${origin}/version.json?t=${now}`, fetchImpl);
+  // API-only apps (Pocket) answer 404 on "/" but serve version.json: that's up (threads-26 fix).
+  if (!page.ok && !(page.code && page.code < 500 && vf.ok && versionFrom(vf.text))) { r.state = 'down'; r.error = page.err || `Answered ${page.code}`; return r; }
+  if (!page.ok) { r.up = true; r.api_only = true; }
   r.version = vf.ok ? versionFrom(vf.text) : null;
   r.no_version_file = !r.version;
   if (r.version && build) r.match = norm(r.version) === norm(build);
