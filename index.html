@@ -364,12 +364,16 @@ body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
 .sproj.sub{margin-left:18px;width:calc(100% - 18px);position:relative}
 .sproj.sub::before{content:'';position:absolute;left:-9px;top:-4px;height:calc(50% + 4px);width:7px;border-left:1.5px solid var(--line);border-bottom:1.5px solid var(--line);border-bottom-left-radius:5px}
 .prow.sub{padding-left:34px}
+.prow.sub2{padding-left:56px}
+.sproj.sub2{margin-left:36px;width:calc(100% - 36px)}
 .prow.sub .gicon{width:26px;height:26px;min-width:26px;font-size:14px}
 .subchips{display:flex;flex-wrap:wrap;gap:5px;margin:-2px 0 2px}
 .subchip{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 9px;border-radius:13px;font-size:12.5px;font-weight:600;background:var(--field);color:var(--ink-2)}
 .subchip:hover{background:var(--hi);color:var(--ink)}
 .subchip i{font-style:normal}
+.subchip.deep::before{content:'›';opacity:.5;margin-right:-1px}
 .subchip .dot{width:7px;height:7px;border-radius:50%;background:var(--danger)}
+.crumbs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.crumbs .crumb{margin:0}
 .crumb{display:inline-flex;align-items:center;gap:7px;margin:0 0 10px;padding:4px 10px 4px 5px;border-radius:999px;font-size:13px;font-weight:600;color:var(--ink-2);background:var(--field)}
 .crumb .gicon{width:22px;height:22px;min-width:22px;border-radius:6px;font-size:12px}
 .crumb svg{width:12px;height:12px}
@@ -902,6 +906,65 @@ html[data-duo] .act{height:36px}
 .toast.has-btn{pointer-events:auto;display:flex;align-items:center;gap:14px}
 .toast-undo{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--dawn);cursor:pointer}
 @media (max-width:899px){.ym-row{flex-wrap:wrap;row-gap:10px}.ym .ym-row .dn-t{flex:1 1 calc(100% - 60px)}.ym .ym-row > .act,.ym .ym-row > .ym-b{margin-left:51px}}
+/* ---------- threads-36: Building Now, Timeline, grouped Waiting on You, page animations ---------- */
+.nowgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:12px}
+.nowcard{--c:var(--dawn);position:relative;display:grid;gap:9px;padding:14px 15px;border-radius:var(--r-lg);cursor:pointer;overflow:hidden;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--c) 16%,transparent),transparent 70%),var(--card);border-color:color-mix(in srgb,var(--c) 34%,var(--line2))}
+.nowcard::after{content:'';position:absolute;inset:0 auto 0 0;width:3px;background:var(--c);opacity:.8}
+.nc-top{display:flex;align-items:center;gap:11px;min-width:0}
+.nc-top .gicon{width:42px;height:42px;min-width:42px;border-radius:12px;font-size:22px}
+.nc-n{flex:1;min-width:0;display:grid;gap:2px}
+.nc-n b{font-size:17px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nc-n small{font-size:12.5px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nc-x{width:28px;height:28px;flex:none;border-radius:8px;color:var(--ink-3);font-size:18px}.nc-x:hover{background:var(--hi);color:var(--ink)}
+.nc-next{font-size:14.5px;line-height:1.4;color:var(--ink)}
+.nc-a{display:flex;flex-wrap:wrap;gap:8px}
+.tagx.now{background:color-mix(in srgb,var(--dawn) 24%,transparent);color:color-mix(in srgb,var(--dawn) 80%,var(--ink))}
+.tlchip{display:inline-flex;align-items:center;gap:5px;max-width:100%;width:max-content;padding:3px 8px;border-radius:7px;font-size:12px;font-weight:600;
+  background:color-mix(in srgb,var(--dawn) 12%,transparent);color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tlchip.late{background:color-mix(in srgb,var(--danger) 14%,transparent);color:color-mix(in srgb,var(--danger) 80%,var(--ink))}
+.prow-t .tlchip{margin-top:3px;font-size:11.5px;padding:2px 7px}
+.pcard .tlchip{margin:-2px 0 2px}
+.pc-h .tierbtn,.prow .tierbtn{flex:none}
+div.prow{cursor:pointer}
+.msl{display:grid}
+.ms{display:flex;align-items:center;gap:10px;padding:8px 0}
+.ms + .ms{border-top:1px solid var(--line)}
+.ms-t{flex:1;min-width:0;display:grid;gap:1px}.ms-t p{font-size:14.5px;font-weight:600;overflow-wrap:anywhere}.ms-t small{font-size:12.5px;color:var(--ink-3)}
+.ms.late .ms-t small{color:var(--danger);font-weight:650}
+.ms.done .ms-t{opacity:.5}.ms.done .ms-t p{text-decoration:line-through}
+.ymck.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.ms .x{width:28px;height:28px;color:var(--ink-3);font-size:18px;flex:none;border-radius:7px}
+.tl-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ym-head{display:flex;align-items:center;gap:10px;padding:10px 14px 4px;cursor:pointer;color:var(--ink-2)}
+.ym-head .gicon{width:26px;height:26px;min-width:26px;border-radius:8px;font-size:14px}
+.ym-head b{font-size:13.5px;font-weight:700;color:var(--ink)}.ym-head small{flex:1;font-size:12px;color:var(--ink-3)}.ym-head svg{width:14px;height:14px;color:var(--ink-3)}
+.dn-row + .ym-head{border-top:1px solid var(--line)}
+.ym-head + .dn-row{border-top:0}
+.ym .dn-row.ym-sub{position:relative;padding-left:calc(14px + var(--ind))}
+.ym-sub.d1{--ind:22px}.ym-sub.d2{--ind:44px}
+.ym-sub::before{content:'';position:absolute;left:calc(var(--ind) - 6px);top:0;height:50%;width:8px;border-left:1.5px solid var(--line2);border-bottom:1.5px solid var(--line2);border-bottom-left-radius:6px}
+.ym-sub + .ym-sub{border-top-style:dashed}
+.ym-x{display:grid;gap:4px;margin-top:3px}
+.ym-xl{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-3)}
+.ym-xl > span{min-width:0;overflow-wrap:anywhere}
+.ym-xl .lnkbtn{font-size:12.5px}
+.ym-xb{display:inline-flex;gap:10px;white-space:nowrap}
+.blk-h .qbtn{margin-left:0}
+@keyframes pgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pgBack{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
+@keyframes heroIn{from{opacity:0;transform:scale(.975) translateY(6px)}to{opacity:1;transform:none}}
+@keyframes itemIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.page.enter{animation:pgIn .3s cubic-bezier(.2,.8,.2,1) both}
+.page.enter.back{animation-name:pgBack}
+.page.pj2.enter{animation:none}
+.pj2.enter .hero2{animation:heroIn .38s cubic-bezier(.2,.8,.2,1) both}
+.pj2.enter .tile,.page.enter .nowcard,.page.enter .pcard,.page.enter .ym > *,.page.enter .plist > *{animation:itemIn .36s cubic-bezier(.2,.8,.2,1) both}
+.pj2.enter .tile:nth-child(2),.page.enter :is(.nowcard,.pcard,.ym > *,.plist > *):nth-child(2){animation-delay:.035s}
+.pj2.enter .tile:nth-child(3),.page.enter :is(.nowcard,.pcard,.ym > *,.plist > *):nth-child(3){animation-delay:.07s}
+.pj2.enter .tile:nth-child(4),.page.enter :is(.nowcard,.pcard,.ym > *,.plist > *):nth-child(4){animation-delay:.1s}
+.pj2.enter .tile:nth-child(5),.page.enter :is(.nowcard,.pcard,.ym > *,.plist > *):nth-child(5){animation-delay:.13s}
+.pj2.enter .tile:nth-child(n+6),.page.enter :is(.nowcard,.pcard,.ym > *,.plist > *):nth-child(n+6){animation-delay:.16s}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -915,7 +978,7 @@ html[data-duo] .act{height:36px}
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-35'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-36'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1317,17 +1380,22 @@ function ensureSys(k) {
 }
 const projects = () => children(null).filter((s) => !s.is_inbox && !sysOf(s));
 const projectsIn = (t) => projects().filter((s) => tierOf(s) === t);
-// Sub-projects (threads-32): doc.parent = the parent project's slug. One level only; a child in another tier shows on its own.
-const parentProj = (s) => { const p = docOf(s).parent; if (!p) return null; const x = projects().find((y) => y !== s && slugOf(y) === p); return x && !docOf(x).parent ? x : null; };
+// Sub-projects (threads-32; two levels since threads-36): doc.parent = the parent project's slug.
+// Phone Setup › Build Screen › Pocket: a parent may have a parent, never a grandparent. A child in another tier shows on its own.
+const rawParent = (s) => { const p = docOf(s).parent; return p ? projects().find((y) => y !== s && slugOf(y) === p) || null : null; };
+const parentProj = (s) => { const x = rawParent(s); if (!x) return null; const gp = rawParent(x); return !gp || (gp !== s && !rawParent(gp)) ? x : null; };
+const chainOf = (s) => { const out = []; for (let x = parentProj(s); x && out.length < 2; x = parentProj(x)) out.unshift(x); return out; };
+const depthOf = (s) => chainOf(s).length;
+const rootProj = (s) => chainOf(s)[0] || s;
 const subsOf = (s) => projects().filter((x) => parentProj(x) === s).sort(bySort('position'));
+// Who can be s's parent (same rule as api/_lib/apply.js okParent): not itself or one of its own sub-projects, at most one level up,
+// and a project that has sub-projects can only go under a top-level project.
+const okParentFor = (s, x) => x !== s && !sysOf(x) && !x.is_inbox && !allSubs(s).includes(x) && (depthOf(x) === 0 || (depthOf(x) === 1 && !subsOf(s).length && rootProj(x) !== s));
+const allSubs = (s) => subsOf(s).flatMap((c) => [c, ...subsOf(c)]);
 function nestedIn(t) {
   const out = [];
-  for (const s of projectsIn(t)) {
-    const p = parentProj(s);
-    if (p && tierOf(p) === t) continue;
-    out.push([s, 0]);
-    for (const c of subsOf(s)) if (tierOf(c) === t) out.push([c, 1]);
-  }
+  const walk = (s, d) => { const on = tierOf(s) === t; if (on) out.push([s, d]); for (const c of subsOf(s)) walk(c, on ? d + 1 : d); };
+  for (const s of projects().slice().sort(bySort('position'))) if (!parentProj(s)) walk(s, 0);
   return out;
 }
 const topIn = (t) => nestedIn(t).filter(([, d]) => !d).map(([s]) => s);
@@ -1491,7 +1559,7 @@ function yourMove() {
     // Tier Nudges ("Tidy Up"): Move changes the tier, Keep snoozes that nudge for 30 days.
     const st = String(d.status || '').trim().toLowerCase(), days = h.la ? Math.floor((Date.now() - h.la) / 864e5) : null;
     if (tier === 'building' && /^(paused|blocked)$/.test(st)) { if (!snoozed(s, 'paused')) mine.push({ s, h, kind: 'nudge', nk: 'paused', to: 'hold', rank: 2, text: `${s.name} says ${d.status}. Move to On Hold?` }); }
-    else if (tier === 'building' && days !== null && days >= nudgeAfter() && !snoozed(s, 'idle')) mine.push({ s, h, kind: 'nudge', nk: 'idle', to: 'hold', rank: 2, t: h.la, text: `${s.name} untouched ${days}d. Move to On Hold?` });
+    else if (tier === 'building' && days !== null && days >= nudgeAfter() && !snoozed(s, 'idle') && !hasUpcoming(s) && !isNow(s)) mine.push({ s, h, kind: 'nudge', nk: 'idle', to: 'hold', rank: 2, t: h.la, text: `${s.name} untouched ${days}d. Move to On Hold?` });
     if (tier === 'shipped' && sy.next_owner === 'claude' && d.next && !snoozed(s, 'plan')) mine.push({ s, h, kind: 'nudge', nk: 'plan', to: 'building', rank: 2, text: `Planned: ${d.next}. Plan an Update?` });
     // Joe's next step
     if (d.next && sy.next_owner === 'joe') {
@@ -1522,14 +1590,51 @@ function ymTag(it) {
   return `${it.t ? `<span class="ym-age" title="Next step since ${esc(new Date(it.t).toLocaleDateString())}">${ageTxt(it.t)}</span>` : ''}`;
 }
 function ymBtn(it) {
-  if (it.kind === 'nudge') return `<div class="ym-b"><button class="act pri" data-act="nudge-move" data-id="${it.s.id}" data-v="${it.to}" title="${it.to === 'hold' ? 'Moves it to On Hold' : 'Moves it to Building'}">Move</button><button class="act" data-act="nudge-keep" data-id="${it.s.id}" data-k="${it.nk}" title="Hides this nudge for 30 days">Keep</button></div>`;
+  if (it.kind === 'nudge') return `<div class="ym-b"><button class="act pri" data-act="nudge-move" data-id="${it.s.id}" data-v="${it.to}" title="Pick where it goes">Move…</button><button class="act" data-act="nudge-keep" data-id="${it.s.id}" data-k="${it.nk}" title="Hides this nudge for 30 days">Keep</button></div>`;
   const main = it.btn === 'app' ? `<a class="act" href="${esc(it.link.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : dnBtn(it).replace('class="act pri"', 'class="act"');
   const extra = it.kind === 'next' && it.mine ? `<button class="act pri done" data-act="ym-done" data-id="${it.s.id}" title="I did my part: hand ${esc(it.s.name)} back to Claude">${ICON.check}Done</button>`
     : it.kind === 'mismatch' ? `<button class="act" data-act="live-ignore" data-id="${it.s.id}" title="Hide this until the live version changes">Ignore</button>` : '';
   const work = `<button class="act" data-act="work-on" data-id="${it.s.id}" data-k="${it.kind}" title="Copy a prompt to start a session on this and open the chat">${ICON.next}Work on It</button>`;
   return `<div class="ym-b">${it.kind === 'nudge' ? main : main + work}${extra}</div>`;
 }
-const ymRow = (it, mine) => { it.mine = mine; return `<div class="dn-row ym-row${colorCls(colorOf(it.s))}" data-ym="${it.s.id}">${gIcon(it.s)}<div class="dn-t" data-act="proj" data-id="${it.s.id}" role="button"><div><b>${esc(it.s.name)}</b>${ymTag(it)}</div>${it.text ? `<p>${esc(it.text)}</p>` : ''}</div>${ymBtn(it)}</div>`; };
+const ymRow = (it, mine, extra = '', depth = 0) => { it.mine = mine; return `<div class="dn-row ym-row${depth ? ` ym-sub d${depth}` : ''}${colorCls(colorOf(it.s))}" data-ym="${it.s.id}">${gIcon(it.s)}<div class="dn-t" data-act="proj" data-id="${it.s.id}" role="button"><div><b>${esc(it.s.name)}</b>${ymTag(it)}</div>${it.text ? `<p>${esc(it.text)}</p>` : ''}${extra}</div>${ymBtn(it)}</div>`; };
+// threads-36: one row per project (extra items become small lines under it), grouped parent → child.
+function ymTree(mine) {
+  const by = new Map();
+  for (const it of mine) { if (!by.has(it.s.id)) by.set(it.s.id, []); by.get(it.s.id).push(it); } // mine is sorted, so [0] is the main item
+  const groups = new Map();
+  // Main item: a Down site first, then Joe's own to-do; a version mismatch or a nudge becomes the small line.
+  const PREF = { down: 0, next: 1, mismatch: 2, nudge: 3 };
+  for (const l of by.values()) l.sort((a, b) => (PREF[a.kind] ?? 4) - (PREF[b.kind] ?? 4));
+  for (const list of by.values()) { const s = list[0].s, root = rootProj(s); if (!groups.has(root.id)) groups.set(root.id, { root, rows: [] }); groups.get(root.id).rows.push({ s, it: list[0], extra: list.slice(1) }); }
+  const out = [];
+  for (const g of groups.values()) {
+    const order = [g.root, ...allSubs(g.root)];
+    g.rows.sort((a, b) => order.indexOf(a.s) - order.indexOf(b.s));
+    if (g.rows[0].s !== g.root) out.push({ head: g.root, n: g.rows.length, g: g.root.id });
+    for (const r of g.rows) out.push({ ...r, depth: depthOf(r.s), g: g.root.id });
+  }
+  return out;
+}
+// Show whole groups until about n project rows are on screen.
+function ymCut(tree, n) {
+  const out = []; let rows = 0, g = null;
+  for (const r of tree) { if (r.g !== g) { if (rows >= n) break; g = r.g; } out.push(r); if (!r.head) rows++; }
+  return out;
+}
+function ymMini(x) {
+  const id = x.s.id;
+  if (x.kind === 'mismatch') return `<button class="lnkbtn" data-act="live-ignore" data-id="${id}">Ignore</button>`;
+  if (x.kind === 'nudge') return `<button class="lnkbtn" data-act="nudge-move" data-id="${id}" data-v="${x.to}">Move…</button><button class="lnkbtn" data-act="nudge-keep" data-id="${id}" data-k="${x.nk}">Keep</button>`;
+  if (x.kind === 'next') return `<button class="lnkbtn" data-act="ym-done" data-id="${id}">Done</button>`;
+  if (x.kind === 'down' && x.link) return `<a class="lnkbtn" href="${esc(x.link.url)}" target="_blank" rel="noopener" data-act="ext">Open App</a>`;
+  return '';
+}
+function ymTreeRow(r) {
+  if (r.head) return `<div class="ym-head${colorCls(colorOf(r.head))}" data-act="proj" data-id="${r.head.id}" role="button">${gIcon(r.head)}<b>${esc(r.head.name)}</b><small>${r.n} ${r.n > 1 ? 'parts' : 'part'} waiting</small>${ICON.go}</div>`;
+  const extra = r.extra.length ? `<div class="ym-x">${r.extra.map((x) => `<div class="ym-xl">${ymTag(x)}<span>${esc(x.text || '')}</span><span class="ym-xb">${ymMini(x)}</span></div>`).join('')}</div>` : '';
+  return ymRow(r.it, true, extra, r.depth);
+}
 // threads-31: Work on It = copy a session-starter prompt with what Threads knows, then open the project's chat.
 function workPrompt(s, kind) {
   const sy = syncOf(s), d = normDoc(s), lv = liveOf(s), slug = slugOf(s), L = [];
@@ -1568,8 +1673,10 @@ function ymDone(id, el) {
 // Guide (threads-30): how every part of Threads works, with a small picture of each. The ? on any section opens its part.
 const GUIDE = [
   ['home', '🏠', 'Home', 'Two lists: what\'s waiting on you, then everything you\'re building. If it isn\'t on Home, it doesn\'t need you right now.', ['Waiting on You', 'Building']],
-  ['waiting', '⏳', 'Waiting on You', 'Every next step that\'s yours, from Building and Shipped projects. Sites that are down come first, then Tidy Up suggestions, then your to-dos, oldest first. Tap Done when you\'ve done your part: it becomes Claude\'s turn.', ['Down', 'Tidy Up', 'Done']],
-  ['tidy', '🧹', 'Tidy Up', 'Gentle suggestions: a project marked Paused, untouched for 10+ days, or a shipped app with a planned update. Move does it; Keep hides it for 30 days.', ['Move', 'Keep']],
+  ['now', '🔨', 'Building Now', 'The top of Home: what you\'re actively building. A project shows up by itself when a build chat updated it in the last 12 hours, and you can pin anything else (⋯ → Pin to Building Now). × unpins it, or hides an automatic one until its next build.', ['Auto', 'Pinned', '×']],
+  ['waiting', '⏳', 'Waiting on You', 'Every next step that\'s yours, from Building and Shipped projects, one row per project (anything else on that project shows as a small line under it). Sub-projects sit under their parent. Sites that are down come first, then Tidy Up suggestions, then your to-dos, oldest first. Tap Done when you\'ve done your part: it becomes Claude\'s turn.', ['Down', 'Tidy Up', 'Done']],
+  ['tidy', '🧹', 'Tidy Up', 'Gentle suggestions: a project marked Paused, untouched for 10+ days, or a shipped app with a planned update. Move… lets you pick the tier; Keep hides it for 30 days. A project with an upcoming milestone, or on Building Now, never gets the untouched nudge.', ['Move…', 'Keep']],
+  ['time', '🗓️', 'Timeline', 'Optional dates for a project: milestones like "Phone fully set up, tonight". Add them on the project page, or a build chat adds them for you. The next one shows on the project\'s card; late ones turn red. ✓ marks one done.', ['Add', 'Tonight', '✓']],
   ['next', '🎯', 'Next Step', 'The one thing that happens next on this project, and whose turn it is. Builds and syncs set it; Done hands it to Claude.', ['Waiting on You', 'Done']],
   ['plans', '📌', 'Plans', 'Ideas saved for later. In any Builds chat, mention an idea and say it\'s for later: Claude saves it here. Start Next Chat puts them in the next build chat\'s first message.', ['Add', '✓ removes']],
   ['chats', '💬', 'Chats', 'Every Claude chat for this project. The current build chat is marked; tapping a chat opens it in the Claude app.', ['Open']],
@@ -1582,7 +1689,7 @@ const GUIDE = [
   ['nextchat', '➡️', 'Start Next Chat', 'At about 10 updates a chat gets long. Step 1 wraps up the current chat (writes the carryover); step 2 copies a handoff (with your saved plans) and opens a fresh Builds chat.', ['Wrap Up', 'Start Build N']],
   ['new', '✨', 'New', 'Start something. Full Project: a scope chat, then build chats. Quick Build: one chat, no scope doc. Idea for Later: saved to Ideas, and Claude writes a prepped scope doc you can start from later. Or add a chat link.', ['Full Project', 'Quick Build', 'Idea for Later']],
   ['sync', '🔄', 'Sync', 'Builds update Threads by themselves. Sync is for catching up: Sync Threads (chats + status), Sync Docs (your docs), Sync a Project (one card), Deep Sync (full cleanup of one project). Each copies its prompt and opens a new Builds chat.', ['Sync Threads', 'Sync Docs', 'Sync a Project', 'Deep Sync']],
-  ['subs', '🪆', 'Sub-projects', 'Some projects live under a bigger one (Pocket, Build Screen and Remember This are part of Phone Setup). Each keeps its own page, chats and builds; the parent shows them all here. Set a parent in ⋯ → Edit. When a sync spots a project that seems to belong under another, Claude asks you which is the parent.', ['Phone Setup', 'Pocket', 'Build Screen']],
+  ['subs', '🪆', 'Sub-projects', 'Some projects live under a bigger one, two levels at most: Phone Setup › Build Screen › Pocket and Remember This. Each keeps its own page, chats and builds; the parent shows them all here. Set a parent in ⋯ → Edit. When a sync spots a project that seems to belong under another, Claude asks you which is the parent.', ['Phone Setup', 'Build Screen', 'Pocket']],
   ['inbox', '📥', 'Inbox', 'Ideas on top, each with its prepped scope doc once Claude writes it (Start Scope begins from it). Then chats without a home: the arrow shows where each should go, so File It is one tap (File All does them all). Pick chats that belong together and Bundle them into one group, like a ticket.', ['Ideas', 'File It', 'Bundle']],
   ['duo', '📱', 'On the Duo', 'Folded: the main buttons live in the strip on the right, under the clock. Unfolded: the sidebar layout, with cards in two columns.', ['Home', 'Projects', 'Shipped', 'Inbox']],
 ];
@@ -1912,8 +2019,8 @@ function handoffFor(s) {
   const st = [d.now, sy.build ? `Latest build ${sy.build}${sy.deployed === true ? ' is deployed' : sy.deployed === false ? ' is built but not deployed yet' : ''}.` : null].filter(Boolean);
   if (st.length) L.push(`Where it stands: ${st.map((x) => x.trim().replace(/([^.!?])$/, '$1.')).join(' ')}`);
   L.push(`Goal for this chat: ${d.next || 'ask me what to build next'}${/[.!?]$/.test(d.next || '') ? '' : '.'}`);
-  const par = parentProj(s), subs = subsOf(s);
-  if (par) L.push(`${s.name} is a sub-project of ${par.name}. For the bigger picture, also skim claude/${slugOf(par)}-scope.md and claude/${slugOf(par)}-build-log.md.`);
+  const par = parentProj(s), chain = chainOf(s), subs = allSubs(s);
+  if (par) L.push(`${s.name} is a sub-project of ${chain.map((x) => x.name).join(' › ')}. For the bigger picture, also skim ${chain.map((x) => `claude/${slugOf(x)}-scope.md and claude/${slugOf(x)}-build-log.md`).join(', ')}.`);
   if (subs.length) L.push(`Sub-projects (their own docs and build chats): ${subs.map((x) => `${x.name} (claude/${slugOf(x)}-build-log.md)`).join(', ')}.`);
   const pl = plansOf(s);
   if (pl.length) { L.push('Saved plans for this chat (Threads → Plans; ask me which ones we\'re doing):'); pl.forEach((x) => L.push(`- ${x.text}`)); }
@@ -2076,7 +2183,7 @@ function renderSide() {
 }
 function sideProj(s, depth) {
   const sel = S.route === 'project' && S.pid === s.id && !S.filter, down = liveOf(s)?.state === 'down';
-  return `<button class="sproj${depth ? ' sub' : ''}${sel ? ' on' : ''}${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}" data-sid="${s.id}" title="${esc(s.name)}${down ? ' · site is down' : ''}">${gIcon(s)}<b>${esc(s.name)}</b>${syncOf(s).is_new ? '<i class="new">NEW</i>' : ''}${down ? '<i class="dot stuck" title="Down"></i>' : ''}</button>`;
+  return `<button class="sproj${depth ? ' sub' : ''}${depth > 1 ? ' sub2' : ''}${sel ? ' on' : ''}${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}" data-sid="${s.id}" title="${esc(s.name)}${down ? ' · site is down' : ''}">${gIcon(s)}<b>${esc(s.name)}</b>${syncOf(s).is_new ? '<i class="new">NEW</i>' : ''}${down ? '<i class="dot stuck" title="Down"></i>' : ''}</button>`;
 }
 function pinRow(c) {
   const href = linkFor(c), inner = `<span class="kic">${kindIcon(c.kind)}</span><span><em>${esc(topOf(secOf(c))?.name || '')}</em> ${esc(shortName(c))}</span>`;
@@ -2239,38 +2346,130 @@ function renderMain() {
   else el.innerHTML = dashHTML();
   const bb = S.filter ? '' : backBtn(); // threads-35
   if (bb) el.querySelector('.page')?.insertAdjacentHTML('afterbegin', bb);
+  // threads-36: animate only when the page itself changes (not on every re-render)
+  const key = `${S.filter ? 'search' : S.route}|${S.route === 'project' ? S.pid : S.route === 'group' ? S.gid : ''}`;
+  if (key !== S.pageKey) { const pg = el.querySelector('.page'); if (pg && S.pageKey) { pg.classList.add('enter'); if (S.navBack) pg.classList.add('back'); } S.pageKey = key; }
+  S.navBack = false;
 }
 
 // ---------- dashboard ----------
 // Cards (threads-27): icon, name, next step, links. Only a Down tag; plans count when there are any.
 const plansOf = (s) => (Array.isArray(docOf(s).plans) ? docOf(s).plans : []);
+// ---------- Timeline (threads-36): optional dated milestones per project ----------
+const tlOf = (s) => (Array.isArray(docOf(s).timeline) ? docOf(s).timeline : []);
+const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const todayStr = () => ymd(new Date());
+const tlKey = (m) => `${m.date || '9999-99-99'} ${m.time || '99:99'}`;
+const tlSorted = (s) => tlOf(s).slice().sort((a, b) => (!!a.done - !!b.done) || tlKey(a).localeCompare(tlKey(b)));
+const tlNext = (s) => tlSorted(s).find((m) => !m.done) || null;
+const hasUpcoming = (s) => tlOf(s).some((m) => !m.done && m.date && m.date >= todayStr());
+const tlLate = (m) => !m.done && m.date && m.date < todayStr();
+function tlTime(hm) { const [h, mi] = String(hm).split(':').map(Number); return `${((h + 11) % 12) + 1}${mi ? ':' + String(mi).padStart(2, '0') : ''}${h < 12 ? 'a' : 'p'}`; }
+function tlWhen(m) {
+  if (!m.date) return 'No date';
+  const [y, mo, d] = m.date.split('-').map(Number), day = new Date(y, mo - 1, d), t0 = new Date(); t0.setHours(0, 0, 0, 0);
+  const n = Math.round((day - t0) / 864e5), tm = m.time ? ` ${tlTime(m.time)}` : '';
+  if (n === 0) return (m.time && +m.time.slice(0, 2) >= 17 ? 'Tonight' : 'Today') + tm;
+  if (n === 1) return 'Tomorrow' + tm;
+  if (n === -1) return 'Yesterday' + tm;
+  if (n < -1) return `${-n}d late`;
+  if (n < 7) return day.toLocaleDateString(undefined, { weekday: 'long' }) + tm;
+  return fmtDate(m.date) + tm;
+}
+const tlChip = (s) => { const m = tlNext(s); return m ? `<span class="tlchip${tlLate(m) ? ' late' : ''}" title="Next milestone">🗓️ ${esc(m.text)} · ${esc(tlWhen(m))}</span>` : ''; };
+function tlBody(s) {
+  const list = tlSorted(s);
+  return list.length ? `<div class="msl">${list.map((m) => `<div class="ms${m.done ? ' done' : ''}${tlLate(m) ? ' late' : ''}"><button class="ymck${m.done ? ' on' : ''}" data-act="tl-done" data-id="${s.id}" data-mid="${esc(m.id)}" aria-label="${m.done ? 'Not done' : 'Done'}" title="${m.done ? 'Mark not done' : 'Mark done'}">${ICON.check}</button><div class="ms-t"><p>${esc(m.text)}</p><small>${esc(tlWhen(m))}${m.date && !/^\d+d late$/.test(tlWhen(m)) && tlWhen(m) !== fmtDate(m.date) ? ` · ${esc(fmtDate(m.date))}` : ''}</small></div><button class="x" data-act="tl-del" data-id="${s.id}" data-mid="${esc(m.id)}" aria-label="Remove" title="Remove">×</button></div>`).join('')}</div>`
+    : '<p class="muted">No dates. Add one when there\'s a deadline.</p>';
+}
+function openTlAdd(id) {
+  const s = secById(id);
+  if (!s) return;
+  openSheet(`<h2>Add a Milestone</h2><p class="hint" style="margin-top:0">${esc(s.name)}</p>
+    <label class="field"><span>What</span><input id="tl-text" maxlength="120" placeholder="Phone fully set up" autocomplete="off"></label>
+    <div class="tl-two"><label class="field"><span>Date</span><input id="tl-date" type="date" value="${todayStr()}"></label><label class="field"><span>Time (optional)</span><input id="tl-time" type="time"></label></div>
+    <button class="btn" data-act="tl-save" data-id="${s.id}">Add Milestone</button>`);
+  setTimeout(() => $('#tl-text')?.focus(), 350);
+}
+function tlSave(id) {
+  const s = secById(id), text = ($('#tl-text')?.value || '').trim().slice(0, 120);
+  if (!s) return;
+  if (!text) { toast('Give it a name'); return; }
+  const date = $('#tl-date')?.value || '', time = $('#tl-time')?.value || '';
+  closeSheet();
+  setDoc(s, { timeline: [...tlOf(s), { id: 'm' + Math.random().toString(36).slice(2, 10), text, date, ...(time ? { time } : {}) }] }, true);
+  toast('Milestone added');
+}
+function tlDone(id, mid) {
+  const s = secById(id); if (!s) return;
+  setDoc(s, { timeline: tlOf(s).map((m) => (m.id === mid ? { ...m, done: !m.done } : m)) }, true);
+}
+function tlDel(id, mid) {
+  const s = secById(id); if (!s) return;
+  const before = tlOf(s), m = before.find((x) => x.id === mid);
+  setDoc(s, { timeline: before.filter((x) => x.id !== mid) }, true);
+  toastUndo(`Removed ${m ? m.text : 'milestone'}`, () => setDoc(s, { timeline: before }, true));
+}
+// ---------- Building Now (threads-36): pinned, or a build chat updated it in the last 12h ----------
+const NOW_MS = 12 * 36e5;
+const buildAt = (s) => Date.parse(syncOf(s).build_at || '') || 0;
+const nowAuto = (s) => tierOf(s) === 'building' && buildAt(s) > Date.now() - NOW_MS && buildAt(s) > (Date.parse(docOf(s).now_hide || '') || 0);
+const isNow = (s) => !!docOf(s).now_pin || nowAuto(s);
+const nowList = () => projects().filter(isNow).sort((a, b) => !!docOf(b).now_pin - !!docOf(a).now_pin || buildAt(b) - buildAt(a));
+function nowCard(s) {
+  const d = normDoc(s), sy = syncOf(s), cur = currentChat(s), app = projLink(s, 'live'), pin = !!docOf(s).now_pin, chain = chainOf(s);
+  return `<article class="nowcard glass${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}">
+    <div class="nc-top">${gIcon(s)}<div class="nc-n"><b>${esc(s.name)}</b><small>${chain.length ? `${esc(chain.map((x) => x.name).join(' › '))} · ` : ''}${pin ? 'Pinned' : `updated ${esc(agoMs(buildAt(s)))}`}${sy.current_chat ? ` · ${esc(sy.current_chat)}${sy.updates_in_chat != null ? ` (${sy.updates_in_chat} of ~10)` : ''}` : ''}</small></div>
+      <button class="tierbtn" data-act="tier-menu" data-id="${s.id}" title="Move to another tier">${TIER_NAME[tierOf(s)]}${ICON.chev}</button>
+      <button class="x nc-x" data-act="now-off" data-id="${s.id}" aria-label="Take it off Building Now" title="${pin ? 'Unpin' : 'Hide until its next build'}">×</button></div>
+    ${d.next ? `<p class="nc-next">${esc(d.next)}</p>` : d.now ? `<p class="nc-next">${esc(d.now)}</p>` : ''}
+    ${tlChip(s)}
+    <div class="nc-a">${cur ? `<a class="act pri" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}">${ICON.k_chat}Open ${esc(shortName(cur))}</a>` : ''}${app ? `<a class="act" href="${esc(app.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : ''}</div></article>`;
+}
+function nowBlock() {
+  const list = nowList();
+  return list.length ? `<section class="blk"><div class="blk-h"><h2>Building Now</h2><span class="muted">${list.length}</span><button class="qbtn" data-act="guide" data-k="now" aria-label="How Building Now works" title="How this works">?</button></div><div class="nowgrid">${list.map(nowCard).join('')}</div></section>` : '';
+}
+function nowPin(id, on) {
+  const s = secById(id); if (!s) return;
+  const patch = on ? { now_pin: true } : { now_pin: false };
+  if (!on && nowAuto(s)) patch.now_hide = nowISO();
+  if (on) patch.now_hide = '';
+  closeSheet();
+  setDoc(s, patch, true);
+  toast(on ? `${s.name} pinned to Building Now` : `${s.name} is off Building Now${!docOf(s).now_pin && buildAt(s) ? ' until its next build' : ''}`);
+}
 const downChip = (s) => (liveOf(s)?.state === 'down' ? liveChip(s) : '');
 function pcard(s) {
   const d = normDoc(s), cur = currentChat(s), n = plansOf(s).length;
   const links = ARC.map(([k, label]) => { const l = projLink(s, k); return l ? `<a class="li" href="${esc(l.url)}" target="_blank" rel="noopener" data-act="ext" title="${label}" aria-label="${label}">${LINK_ICON[k]}</a>` : ''; }).join('');
   return `<article class="pcard${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}">
-    <div class="pc-h">${gIcon(s)}<b>${esc(s.name)}</b>${downChip(s)}</div>
-    <p class="pc-n">${d.next ? esc(d.next) : d.now ? esc(d.now) : '<span class="muted">No next step yet</span>'}</p>
+    <div class="pc-h">${gIcon(s)}<b>${esc(s.name)}</b>${downChip(s)}<button class="tierbtn" data-act="tier-menu" data-id="${s.id}" title="Move to another tier">${TIER_NAME[tierOf(s)]}${ICON.chev}</button></div>
+    <p class="pc-n">${d.next ? esc(d.next) : d.now ? esc(d.now) : '<span class="muted">No next step yet</span>'}</p>${tlChip(s)}
     ${subChips(s)}<div class="pc-f">${links}<span class="sp"></span>${n ? `<span class="tagx">${n} Plan${n > 1 ? 's' : ''}</span>` : ''}${cur ? `<a class="li" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}" title="Open ${esc(cur.name)}" aria-label="Open ${esc(cur.name)}">${ICON.k_chat}</a>` : ''}</div></article>`;
 }
 // Sub-projects on a parent's card (threads-32): tap one to open it.
 function subChips(s) {
-  const subs = subsOf(s).filter((x) => tierOf(x) === tierOf(s));
-  return subs.length ? `<div class="subchips">${subs.map((x) => `<button class="subchip${colorCls(colorOf(x))}" data-act="proj" data-id="${x.id}" title="${esc(normDoc(x).next || normDoc(x).now || x.name)}">${x.icon ? `<i>${esc(x.icon)}</i>` : ''}${esc(x.name)}${liveOf(x)?.state === 'down' ? '<i class="dot stuck"></i>' : ''}</button>`).join('')}</div>` : '';
+  const subs = allSubs(s).filter((x) => tierOf(x) === tierOf(s));
+  return subs.length ? `<div class="subchips">${subs.map((x) => `<button class="subchip${depthOf(x) - depthOf(s) > 1 ? ' deep' : ''}${colorCls(colorOf(x))}" data-act="proj" data-id="${x.id}" title="${esc(normDoc(x).next || normDoc(x).now || x.name)}">${x.icon ? `<i>${esc(x.icon)}</i>` : ''}${esc(x.name)}${liveOf(x)?.state === 'down' ? '<i class="dot stuck"></i>' : ''}</button>`).join('')}</div>` : '';
 }
-function prow(s, depth) {
-  const d = normDoc(s), line = d.next || d.now || syncOf(s).build || 'No next step yet';
-  return `<button class="prow${depth ? ' sub' : ''}${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}">${gIcon(s)}<span class="prow-t"><b>${esc(s.name)}</b><span>${esc(line)}</span></span>${downChip(s)}</button>`;
+function prow(s, depth, tierBtn) {
+  const d = normDoc(s), line = d.next || d.now || syncOf(s).build || 'No next step yet', cls = `prow${depth ? ' sub' : ''}${depth > 1 ? ' sub2' : ''}${colorCls(colorOf(s))}`;
+  const inner = `${gIcon(s)}<span class="prow-t"><b>${esc(s.name)}</b><span>${esc(line)}</span>${tlChip(s)}</span>${downChip(s)}`;
+  // threads-36: Home rows get a tier button, so the row can't be a <button> itself
+  return tierBtn ? `<div class="${cls}" data-act="proj" data-id="${s.id}" role="button" tabindex="0">${inner}<button class="tierbtn" data-act="tier-menu" data-id="${s.id}" title="Move to another tier">${TIER_NAME[tierOf(s)]}${ICON.chev}</button></div>`
+    : `<button class="${cls}" data-act="proj" data-id="${s.id}">${inner}</button>`;
 }
 // Home (threads-27, clean-up; threads-32 adds Ideas): Waiting on You, Building (sub-projects inside their parent), Ideas.
 function dashHTML() {
-  const list = projectsIn('building'), ym = yourMove(), shown = S.allMove ? ym.mine : ym.mine.slice(0, 6), p = pins();
-  const cardsHTML = list.length ? (wide() ? `<div class="pgrid">${topIn('building').map((s) => pcard(s)).join('')}</div>` : `<div class="plist glass">${nestedIn('building').map(([s, dp]) => prow(s, dp)).join('')}</div>`)
+  const list = projectsIn('building'), ym = yourMove(), tree = ymTree(ym.mine), nRows = tree.filter((r) => !r.head).length, shown = S.allMove ? tree : ymCut(tree, 6), p = pins();
+  const cardsHTML = list.length ? (wide() ? `<div class="pgrid">${topIn('building').map((s) => pcard(s)).join('')}</div>` : `<div class="plist glass">${nestedIn('building').map(([s, dp]) => prow(s, dp, true)).join('')}</div>`)
     : `<div class="empty-card">Nothing in Building. ${wide() ? 'Drag a project into Building in the sidebar, or Plan an Update on a shipped one.' : 'Move one to Building from Projects.'}</div>`;
   return `<div class="page">
     ${wide() ? `<header class="ph"><h1>Home</h1><span class="muted">${syncLabel()}</span><div class="ph-a"><button class="act" data-act="sync">${ICON.sync}Sync</button><button class="add-btn" data-act="add">${ICON.plus}Add</button></div></header>` : ''}
-    <section class="blk"><div class="blk-h"><h2>Waiting on You</h2><span class="muted">${ym.mine.length || ''}</span>${ym.mine.length > 6 ? `<button class="lnkbtn" data-act="all-move">${S.allMove ? 'Show less' : `Show all ${ym.mine.length}`}</button>` : ''}</div>
-      <div class="dn glass ym">${shown.length ? shown.map((it) => ymRow(it, true)).join('') : '<div class="dn-empty">Nothing on you right now.</div>'}</div></section>
+    ${nowBlock()}
+    <section class="blk"><div class="blk-h"><h2>Waiting on You</h2><span class="muted">${nRows || ''}</span>${shown.length < tree.length || S.allMove ? `<button class="lnkbtn" data-act="all-move">${S.allMove ? 'Show less' : `Show all ${nRows}`}</button>` : ''}</div>
+      <div class="dn glass ym">${shown.length ? shown.map(ymTreeRow).join('') : '<div class="dn-empty">Nothing on you right now.</div>'}</div></section>
     <section class="blk"><div class="blk-h"><h2>Building</h2><span class="muted">${list.length}</span></div>${cardsHTML}</section>
     ${ideasBlock()}
     ${!wide() && p.length ? `<section class="blk"><div class="blk-h"><h2>Pinned</h2></div><div class="dn glass ppins">${p.map(pinRow).join('')}</div></section>` : ''}
@@ -2370,16 +2569,16 @@ const CHECKS = [
 ];
 // Project page (threads-30, full redesign): a glass hero tinted with the project's color, one row of main actions
 // (the rest in ⋯), then tiles: Next Step, Plans, Chats, Docs, Links, Health, Builds, Setup. Every tile has a ? that opens the Guide.
-const TILE_I = { subs: '🪆', next: '🎯', plans: '📌', chats: '💬', docs: '📄', links: '🔗', health: '🩺', builds: '🧱', setup: '🛠️' };
+const TILE_I = { time: '🗓️', subs: '🪆', next: '🎯', plans: '📌', chats: '💬', docs: '📄', links: '🔗', health: '🩺', builds: '🧱', setup: '🛠️' };
 function tile(k, title, body, extra = '', cls = '') {
   return `<section class="tile glass${cls}" data-tile="${k}"><div class="tile-h"><span class="tile-i">${TILE_I[k] || ''}</span><h3>${title}</h3>${extra}<button class="qbtn" data-act="guide" data-k="${k}" aria-label="How ${title} works" title="How this works">?</button></div><div class="tile-b">${body}</div></section>`;
 }
 function projectHTML(s) {
   const h = health(s), sy = syncOf(s), d = normDoc(s), app = projLink(s, 'live'), cur = currentChat(s), tier = tierOf(s), gapsN = (sy.gaps || []).length;
   const hero = `<header class="hero2 glass${colorCls(colorOf(s))}">
-    ${parentProj(s) ? `<button class="crumb" data-act="proj" data-id="${parentProj(s).id}">${gIcon(parentProj(s))}Part of ${esc(parentProj(s).name)}${ICON.go}</button>` : ''}
+    ${chainOf(s).length ? `<div class="crumbs">${chainOf(s).map((x, i) => `<button class="crumb" data-act="proj" data-id="${x.id}">${gIcon(x)}${i ? '' : 'Part of '}${esc(x.name)}${ICON.go}</button>`).join('')}</div>` : ''}
     <div class="hero-top">${gIcon(s)}<div class="hero-t"><h1>${esc(s.name)}</h1>
-      <div class="pj-sub"><button class="tierbtn" data-act="tier-menu" data-id="${s.id}" title="Move to another tier">${TIER_NAME[tier]}${ICON.chev}</button>${sy.build ? `<code>${esc(sy.build)}</code>` : ''}${sy.deployed === false ? '<span class="tagx warn">Not deployed</span>' : ''}${liveChip(s)}${liveCheckable(s) ? `<button class="lnkbtn recheck" data-act="live-recheck" data-id="${s.id}" title="Check the live site now">${ICON.sync}Recheck</button>` : ''}</div></div>
+      <div class="pj-sub"><button class="tierbtn" data-act="tier-menu" data-id="${s.id}" title="Move to another tier">${TIER_NAME[tier]}${ICON.chev}</button>${isNow(s) ? '<span class="tagx now">Building Now</span>' : ''}${sy.build ? `<code>${esc(sy.build)}</code>` : ''}${sy.deployed === false ? '<span class="tagx warn">Not deployed</span>' : ''}${liveChip(s)}${liveCheckable(s) ? `<button class="lnkbtn recheck" data-act="live-recheck" data-id="${s.id}" title="Check the live site now">${ICON.sync}Recheck</button>` : ''}</div></div>
       <button class="more" data-act="pj-actions" data-id="${s.id}" aria-label="More actions for ${esc(s.name)}" title="More actions">${ICON.more}</button></div>
     ${d.now ? `<p class="hero-now">${esc(d.now)}</p>` : ''}
     <div class="hero-a">${app ? `<a class="act${tier === 'shipped' ? '' : ' pri'}" href="${esc(app.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : ''}
@@ -2391,6 +2590,8 @@ function projectHTML(s) {
   const next = tile('next', 'Next Step', d.next ? `<p class="next-big">${esc(d.next)}</p>
       <div class="next-m"><span class="tagx${mine ? ' warn' : ''}">${mine ? 'Waiting on You' : claudeTurn(s) ? "Claude's Turn" : sy.next_owner === 'claude' ? 'Claude Builds Next' : 'Next'}</span>${t ? `<span class="muted">since ${ageTxt(t)}</span>` : ''}${mine ? `<button class="act pri done" data-act="ym-done" data-id="${s.id}">${ICON.check}Done</button>` : ''}</div>`
     : '<p class="muted">No next step yet. A build or a sync fills this in.</p>', `<button class="more" data-act="doc-edit" data-id="${s.id}" data-k="overview" aria-label="Edit">${ICON.edit}</button>`);
+  const tlN = tlOf(s).filter((m) => !m.done).length;
+  const timeT = tile('time', 'Timeline', tlBody(s), `${tlN ? `<small class="muted">${tlN}</small>` : ''}<button class="act" data-act="tl-add" data-id="${s.id}">${ICON.plus}Add</button>`);
   const pl = plansOf(s);
   const plans = tile('plans', 'Plans', pl.length ? `<div class="plan-list">${pl.map((x) => `<div class="plan"><button class="ymck" data-act="plan-done" data-id="${s.id}" data-pid="${esc(x.id)}" title="Done or not doing it: remove" aria-label="Remove plan">${ICON.check}</button><div class="plan-t"><p>${esc(x.text)}</p><small>${x.added ? `Saved ${ago(x.added)}` : ''}${x.for ? ` · for ${esc(x.for)}` : ''}${x.from ? ` · <a href="${esc(x.from)}" target="_blank" rel="noopener" data-act="ext">from chat</a>` : ''}</small></div></div>`).join('')}</div>`
     : '<p class="muted">Ideas saved for later land here. Start Next Chat brings them into the next build chat.</p>', `<button class="act" data-act="plan-add" data-id="${s.id}">${ICON.plus}Add</button>`);
@@ -2407,10 +2608,10 @@ function projectHTML(s) {
   const builds = tile('builds', 'Builds', all.length ? `<div class="tl">${all.slice(0, 8).map((b) => `<div class="tl-r"><code>${b.n != null ? `${esc(slugOf(s))}-${b.n}` : '—'}</code><span>${esc(fmtDate(b.date))}</span><div>${esc(b.summary)}</div></div>`).join('')}</div>` : '<p class="muted">No builds synced yet.</p>', `<small class="muted">${all.length || ''}</small>`, ' t-wide'); // wide: the summary gets room (threads-34)
   const setup = tile('setup', 'Setup', `<details class="tile-more"${S.openDet.has('setup') ? ' open' : ''} data-det="setup"><summary>${ICON.chev}Stack, Accounts, Env Vars</summary>${TAB.setup(s)}</details>
     <details class="tile-more"${S.openDet.has('playbook') ? ' open' : ''} data-det="playbook"><summary>${ICON.chev}Playbook${gapsN ? ` <small class="tagx bad">${gapsN} to fix</small>` : ''}</summary>${TAB.playbook(s)}</details>`, '', ' t-wide');
-  const sub = subsOf(s);
+  const sub = allSubs(s);
   const subsT = sub.length ? tile('subs', 'Sub-projects', `<div class="plist">${sub.map((x) => { const dx = normDoc(x), sx = syncOf(x);
-    return `<button class="prow${colorCls(colorOf(x))}" data-act="proj" data-id="${x.id}">${gIcon(x)}<span class="prow-t"><b>${esc(x.name)}</b><span>${esc([TIER_NAME[tierOf(x)], sx.build, dx.next ? `Next: ${dx.next}` : dx.now].filter(Boolean).join(' · '))}</span></span>${downChip(x)}</button>`; }).join('')}</div>`, `<small class="muted">${sub.length}</small>`, ' t-wide') : '';
-  return `<div class="page pj2${colorCls(colorOf(s))}">${hero}${longBar(s, h)}<div class="tiles">${subsT}${next}${plans}${chats}${docs}${links}${healthT}${builds}${setup}</div></div>`;
+    return `<button class="prow${depthOf(x) - depthOf(s) > 1 ? ' sub' : ''}${colorCls(colorOf(x))}" data-act="proj" data-id="${x.id}">${gIcon(x)}<span class="prow-t"><b>${esc(x.name)}</b><span>${esc([TIER_NAME[tierOf(x)], sx.build, dx.next ? `Next: ${dx.next}` : dx.now].filter(Boolean).join(' · '))}</span></span>${downChip(x)}</button>`; }).join('')}</div>`, `<small class="muted">${sub.length}</small>`, ' t-wide') : '';
+  return `<div class="page pj2${colorCls(colorOf(s))}">${hero}${longBar(s, h)}<div class="tiles">${subsT}${next}${tlOf(s).length ? timeT : ''}${plans}${chats}${docs}${links}${tlOf(s).length ? '' : timeT}${healthT}${builds}${setup}</div></div>`;
 }
 function openPjActions(id) {
   const s = secById(id);
@@ -2421,6 +2622,7 @@ function openPjActions(id) {
     ${row('copy-text', 'Deep Sync', 'Copies the full catch-up prompt (reads every chat, fixes the docs)', ` data-t="${esc(deepPhrase(s))}" data-msg="${esc(pasteMsg(cur))}"`)}
     ${row('copy-context', 'Copy Context', 'A short brief of where it stands, for another chat')}
     ${row('tier-menu', 'Move to Another Tier', `Now: ${TIER_NAME[tierOf(s)]}`)}
+    ${isNow(s) ? row('now-off', 'Take Off Building Now', docOf(s).now_pin ? 'Unpins it from the top of Home' : 'Hides it until its next build') : row('now-pin', 'Pin to Building Now', 'Keeps it at the top of Home until you unpin it')}
     ${row('sec-menu', 'Edit Name, Icon, Color', 'Or delete the project')}</div>`);
 }
 const TAB = {
@@ -2608,7 +2810,7 @@ function goBack() {
   const h = prevHist();
   if (h) S.hist.length = S.hist.lastIndexOf(h); // drop it and anything after it
   else S.hist.length = 0;
-  S.noHist = true;
+  S.noHist = true; S.navBack = true;
   try {
     if (!h) go(['project', 'archive', 'group'].includes(S.route) && S.back && !['project', 'group'].includes(S.back) ? S.back : 'home');
     else if (h.route === 'project') openProject(h.pid);
@@ -2634,11 +2836,11 @@ function setTier(id, t) {
   if (t === 'archived') archiveFx();
   push([{ op: 'patch', table: 'sections', rows: [row] }]);
 }
-function openTierMenu(id) {
+function openTierMenu(id, suggest) {
   const s = secById(id);
   if (!s) return;
-  openSheet(`<h2>Move ${esc(s.name)}</h2><p class="hint" style="margin-top:0">Like your Arc folders. A sync never changes the tier.</p>
-    <div class="pick-list">${TIERS.map(([t, l]) => `<button class="pick-row${tierOf(s) === t ? ' on' : ''}" data-act="tier-set" data-id="${id}" data-v="${t}"><b>${l}</b><small>${TIER_HINT[t]}</small></button>`).join('')}</div>`);
+  openSheet(`<h2>Move ${esc(s.name)}</h2><p class="hint" style="margin-top:0">Now: ${TIER_NAME[tierOf(s)]}. A sync never changes the tier.</p>
+    <div class="pick-list">${TIERS.map(([t, l]) => `<button class="pick-row${tierOf(s) === t ? ' on' : ''}" data-act="tier-set" data-id="${id}" data-v="${t}"><b>${l}${suggest === t && tierOf(s) !== t ? ' <span class="tagx tidy">Suggested</span>' : ''}${tierOf(s) === t ? ' <span class="tagx">Now</span>' : ''}</b><small>${TIER_HINT[t]}</small></button>`).join('')}</div>`);
 }
 // ---------- prompt + editing ----------
 const PROMPT_GUIDE = {
@@ -2933,6 +3135,14 @@ function syncPatch(p, s, kind, at) {
   if ('now' in p) patch.now = str(p.now, 400);
   if ('next' in p) patch.next = str(p.next, 400);
   if ('parent' in p) patch.parent = p.parent == null ? '' : str(p.parent, 80); // resolved to a slug in parseSync (threads-32)
+  if (Array.isArray(p.timeline)) { // same merge as api/_lib/apply.js mergeTimeline (threads-36)
+    const out = tlOf(s).slice(), k = (x) => String(x.text || '').trim().toLowerCase();
+    for (const m of p.timeline.slice(0, 30)) { if (!m || typeof m !== 'object' || !str(m.text, 120)) continue; const i = out.findIndex((x) => (m.id && x.id === m.id) || k(x) === k(m));
+      if (m.remove) { if (i >= 0) out.splice(i, 1); continue; }
+      const c = { ...(i >= 0 ? out[i] : { id: 'm' + Math.random().toString(36).slice(2, 10) }), text: str(m.text, 120), ...(/^\d{4}-\d{2}-\d{2}$/.test(m.date || '') ? { date: m.date } : {}), ...(/^\d{2}:\d{2}$/.test(m.time || '') ? { time: m.time } : {}), ...('done' in m ? { done: !!m.done } : {}) };
+      if (i >= 0) out[i] = c; else out.push(c); }
+    patch.timeline = out.slice(0, 30);
+  }
   if (Array.isArray(p.details)) patch.details = p.details.map((x) => str(x, 200)).filter(Boolean).slice(0, 3);
   if (p.links && typeof p.links === 'object' && !Array.isArray(p.links)) patch.links = mergeLinks(normDoc(s).links, p.links);
   if (p.setup && typeof p.setup === 'object') { const r = docFields(p.setup); dropped += r.dropped; for (const k of ['tools', 'accounts', 'env', 'notes']) if (r.patch[k]) patch[k] = r.patch[k]; }
@@ -2988,7 +3198,7 @@ function parseSync(j) {
     if ('parent' in r.patch) { // same rule as api/_lib/apply.js: "" clears, unknown / itself / a sub-project leaves it alone
       const ps = r.patch.parent ? find(r.patch.parent, r.patch.parent) : null;
       if (!r.patch.parent) r.patch.parent = '';
-      else if (ps && ps !== s && !docOf(ps).parent) r.patch.parent = slugOf(ps);
+      else if (ps && okParentFor(s, ps)) r.patch.parent = slugOf(ps);
       else delete r.patch.parent;
     }
     plan.dropped += r.dropped;
@@ -3430,7 +3640,7 @@ function openGroupForm(id, parentId, tier) {
     <p class="err" id="g-err"></p>
     <button class="btn" data-act="g-save" data-id="${s?.id || ''}">${s ? 'Save group' : 'Create group'}</button>
     ${s ? `<button class="btn ghost" data-act="sec-new-sub" data-id="${s.id}">${ICON.plus}Add a group inside this one</button>` : ''}
-    ${s && !s.is_inbox && !s.parent_id && !sysOf(s) && !subsOf(s).length ? `<div class="field"><span>Parent Project (makes this a sub-project)</span><div class="picker" id="g-pparent"><button class="pick${!parentProj(s) ? ' on' : ''}" data-act="pick" data-v="">None: a project of its own</button>${projects().filter((x) => x !== s && !docOf(x).parent).map((x) => `<button class="pick${parentProj(s) === x ? ' on' : ''}" data-act="pick" data-v="${esc(slugOf(x))}">${x.icon ? esc(x.icon) + ' ' : ''}${esc(x.name)}</button>`).join('')}</div></div>` : ''}
+    ${s && !s.is_inbox && !s.parent_id && !sysOf(s) && !sysOf(s) ? `<div class="field"><span>Parent Project (makes this a sub-project; two levels at most)</span><div class="picker" id="g-pparent"><button class="pick${!parentProj(s) ? ' on' : ''}" data-act="pick" data-v="">None: a project of its own</button>${projects().filter((x) => okParentFor(s, x)).map((x) => `<button class="pick${parentProj(s) === x ? ' on' : ''}" data-act="pick" data-v="${esc(slugOf(x))}">${x.icon ? esc(x.icon) + ' ' : ''}${esc(x.name)}</button>`).join('')}</div></div>` : ''}
     ${s && !s.is_inbox && !s.parent_id ? `<button class="btn ghost" data-act="tier-menu" data-id="${s.id}">${ICON.stack}Tier: ${TIER_NAME[tierOf(s)]}</button>` : ''}
     ${s && !s.is_inbox && s.parent_id ? `<button class="btn ghost" data-act="sec-archive" data-id="${s.id}">${ICON.archive}Archive group</button>` : ''}${del}`);
   if (!s) setTimeout(() => $('#g-name')?.focus(), 350);
@@ -3874,7 +4084,13 @@ const A = {
   'ym-done': (el) => ymDone(el.dataset.id, el),
   'live-ignore': (el) => { const x = secById(el.dataset.id), v = liveOf(x)?.version; if (x && v) { setDoc(x, { live_ignore: v }, true); toast(`Hidden until ${x.name}'s live version changes`); } },
   'toast-undo': () => { const f = S.undo; S.undo = null; $('#toast').classList.remove('on', 'has-btn'); if (f) { f(); if (!$('#toast').classList.contains('on')) toast('Undone'); } },
-  'nudge-move': (el) => setTier(el.dataset.id, el.dataset.v),
+  'nudge-move': (el) => openTierMenu(el.dataset.id, el.dataset.v),
+  'tl-add': (el) => openTlAdd(el.dataset.id),
+  'tl-save': (el) => tlSave(el.dataset.id),
+  'tl-done': (el) => tlDone(el.dataset.id, el.dataset.mid),
+  'tl-del': (el) => tlDel(el.dataset.id, el.dataset.mid),
+  'now-pin': (el) => nowPin(el.dataset.id, true),
+  'now-off': (el) => nowPin(el.dataset.id, false),
   'nudge-keep': (el) => nudgeKeep(el.dataset.id, el.dataset.k),
   'live-recheck': (el) => { const x = secById(el.dataset.id); if (x) { toast('Checking…'); liveCheck(slugOf(x)); } },
   fold: (el) => {

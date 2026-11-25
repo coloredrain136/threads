@@ -14,7 +14,7 @@ const INSTRUCTIONS = `Threads is Joe's dashboard for his Builds projects. Keep i
 - Use threads_status to see where projects stand before suggesting what to work on.
 - When Joe says "sync docs", read every doc in the Builds project and send them with threads_sync_docs (full text; Threads files each under its project). After a build changes a project's docs, send just those docs.
 - Tiers (Building, Shipped, On Hold, Backlog, Archived): move a project with threads_update_project's "tier" ONLY when Joe asks ("move Bars to Shipped") or says yes when you offer (e.g. when a project is done: "Want me to move it to Shipped?"). Never move one on your own initiative, never in a sync. Say what moved; Threads shows Joe an Undo.
-- Sub-projects: a project can sit under a parent project (Pocket, Build Screen and Remember This are under Phone Setup). If a sync finds a project or chat that looks like it belongs under another project, ask Joe which project is the parent and recommend one; only after he confirms, send "parent" (the parent's slug) on that project.
+- Sub-projects: a project can sit under a parent project (two levels at most: Build Screen is under Phone Setup; Pocket and Remember This are under Build Screen). If a sync finds a project or chat that looks like it belongs under another project, ask Joe which project is the parent and recommend one; only after he confirms, send "parent" (the parent's slug) on that project.
 - Inbox: in a sync, a chat you're sure about gets "project" (or "folder": general / ideas / shortcuts) and is filed automatically. A chat you're unsure about gets "home" (a project name or folder) plus a short "home_why", so Joe can file it with one tap in Threads → Inbox. Only the naming is left to Joe.
 - When Joe brings up an idea for a project outside that project's current build chat, ask whether he's working on it now or saving it for later. For later, save it with threads_save_plan (it lands in the project's Plans and goes into the next build chat's handoff).
 Never send passwords, API keys, tokens or env var values. Env vars are names only.`;
@@ -39,7 +39,8 @@ const TOOLS = [
         next: s('One short line (under 90 characters): the single next step.'),
         next_owner: s('"joe" if the next step is Joe\'s (deploy, test, answer), "claude" if it\'s building.', { enum: ['joe', 'claude'] }),
         tier: s('Optional: move the project to this tier: Building, Shipped, On Hold, Backlog or Archived. ONLY when Joe asked for it ("move Bars to Shipped") or said yes when you offered. Never on your own. Tell him what moved.'),
-        parent: s('Optional: the parent project\'s name or slug when this is a sub-project (e.g. "phone-setup" for Pocket). "" makes it top level again. Only set it after Joe confirmed which project is the parent.'),
+        parent: s('Optional: the parent project\'s name or slug when this is a sub-project (e.g. "build-screen" for Pocket). Two levels at most. "" makes it top level again. Only set it after Joe confirmed which project is the parent.'),
+        timeline: { type: 'array', description: 'Optional: dated milestones for this project (Threads shows them in its Timeline tile). Merged with what Threads has by text: send only new or changed ones; {text, remove: true} drops one. Only dates Joe gave you.', items: { type: 'object', properties: { text: s('Short milestone, e.g. "Phone fully set up"'), date: s('YYYY-MM-DD'), time: s('Optional HH:MM (24h)'), done: { type: 'boolean' }, remove: { type: 'boolean' } }, required: ['text'] } },
         current_chat: s('Title of the current session chat, e.g. "Bracket - Build 2".'),
         updates_in_chat: { type: 'integer', description: 'How many updates this build chat has had (about 10 means time for the next session chat).' },
         links: { type: 'object', description: 'Only URLs actually in the docs.', properties: { live: s('Live app URL'), github: s('GitHub repo URL'), vercel: s('Vercel project URL'), supabase: s('Supabase dashboard URL') } },
@@ -118,6 +119,7 @@ async function callTool(name, args = {}) {
     if (!args.name) return text('name is required.', true);
     const p = { ...args };
     if (!p.last_activity) p.last_activity = new Date().toISOString();
+    p.build_at = new Date().toISOString(); // Building Now (threads-36): a build chat touched it
     const tier = p.tier; delete p.tier;
     const r = await applySync({ threads_sync: 2, kind: 'project', synced_at: new Date().toISOString(), projects: [p], chats: [] }, 'connector: build');
     if (tier) {

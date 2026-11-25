@@ -58,8 +58,21 @@ export function cleanDoc(d) {
     for: str(x?.for, 80), from: /^https:\/\/claude\.ai\/chat\/[0-9a-f-]{36}$/i.test(str(x?.from, 80)) ? str(x.from, 80) : '' })).filter((x) => x.id && x.text);
   // Sub-projects (threads-32): the parent project's slug ("" = top level).
   if ('parent' in d) { const p = str(d.parent, 40).toLowerCase().replace(/[^a-z0-9-]/g, ''); if (p) o.parent = p; }
+  // Timeline (threads-36): optional dated milestones. date YYYY-MM-DD, time HH:MM (optional), done.
+  if ('timeline' in d) o.timeline = cleanTimeline(d.timeline);
+  // Building Now (threads-36): pinned by Joe, or an auto entry hidden until the next build.
+  if ('now_pin' in d) { if (d.now_pin === true) o.now_pin = true; }
+  if ('now_hide' in d && iso(d.now_hide)) o.now_hide = iso(d.now_hide);
   if (['ideas', 'general', 'shortcuts', 'sync'].includes(d.system)) o.system = d.system; // system folders (threads-10)
   return o;
+}
+
+export function cleanTimeline(v) {
+  return list(v, 30).map((x) => {
+    const date = str(x?.date, 10), time = str(x?.time, 5);
+    return { id: str(x?.id, 40).replace(/[^a-z0-9-]/gi, '') || ('m' + Math.random().toString(36).slice(2, 10)), text: str(x?.text, 120),
+      date: /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : '', ...(/^\d{2}:\d{2}$/.test(time) ? { time } : {}), ...(x?.done ? { done: true } : {}) };
+  }).filter((x) => x.text);
 }
 
 // Data from `sync threads` / `sync <project>` (threads_sync v2). Text only, no secrets.
@@ -75,6 +88,7 @@ function cleanSync(x) {
   if ('next_owner' in x) o.next_owner = str(x.next_owner, 20).toLowerCase();
   if ('last_activity' in x) o.last_activity = iso(x.last_activity);
   if ('synced_at' in x) o.synced_at = iso(x.synced_at);
+  if ('build_at' in x) o.build_at = iso(x.build_at); // threads-36: last update from a build chat (Building Now)
   // Your Move (threads-26): when the current next step appeared, and the step Joe checked off.
   if ('next_since' in x) o.next_since = iso(x.next_since);
   if ('next_done_at' in x) o.next_done_at = iso(x.next_done_at);

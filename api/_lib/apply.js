@@ -4,7 +4,7 @@
 // builds merged, secrets stripped (by api/data.js cleanDoc on the way in).
 import crypto from 'node:crypto';
 import { db, q } from './db.js';
-import { cleanDocExport as cleanDoc, carryChecks } from './clean.js';
+import { cleanDocExport as cleanDoc, carryChecks, cleanTimeline } from './clean.js';
 import { normTier } from './tiers.js';
 
 const T = { sections: 'threads_sections', chats: 'threads_chats', settings: 'threads_settings' };
@@ -75,11 +75,27 @@ function syncPatch(p, kind, at) {
   if ('build_n' in p) sy.build_n = Number.isFinite(+p.build_n) ? Math.round(+p.build_n) : null;
   if ('deployed' in p) sy.deployed = p.deployed === null ? null : !!p.deployed;
   if ('last_activity' in p) sy.last_activity = isoOr(p.last_activity);
+  if ('build_at' in p) sy.build_at = isoOr(p.build_at); // threads-36: only the connector's update_project sends it
+  if (Array.isArray(p.timeline)) patch.timeline_in = p.timeline.slice(0, 30); // merged in applySync (threads-36)
   if ('updates_in_chat' in p) sy.updates_in_chat = Number.isFinite(+p.updates_in_chat) ? Math.max(0, Math.round(+p.updates_in_chat)) : null;
   if (p.docs && typeof p.docs === 'object') sy.docs = { scope: !!p.docs.scope, log: !!p.docs.log, carryover: !!p.docs.carryover };
   if (Array.isArray(p.gaps)) sy.gaps = p.gaps.slice(0, 30).map((g) => ({ check: str(g?.check, 30).toLowerCase(), text: str(g?.text, 200), fix: str(g?.fix, 1500) })).filter((g) => g.text);
   if (Array.isArray(p.builds)) sy.builds = p.builds.slice(0, kind === 'project' ? 60 : 12).map((b) => ({ n: Number.isFinite(+b?.n) && b?.n !== null && b?.n !== '' ? Math.round(+b.n) : null, date: str(b?.date, 10), summary: str(b?.summary, 200) })).filter((b) => b.summary || b.n != null);
   return { patch, sy };
+}
+
+// Timeline (threads-36): milestones from a chat merge into Joe's by id or text; {remove: true} drops one. Nothing else is touched.
+export function mergeTimeline(old, add) {
+  const out = cleanTimeline(old), key = (x) => String(x.text || '').trim().toLowerCase();
+  for (const raw of add) {
+    if (!raw || typeof raw !== 'object') continue;
+    const i = out.findIndex((x) => (raw.id && x.id === raw.id) || (raw.text && key(x) === key(raw)));
+    if (raw.remove) { if (i >= 0) out.splice(i, 1); continue; }
+    const [c] = cleanTimeline([{ ...(i >= 0 ? out[i] : {}), ...raw, id: i >= 0 ? out[i].id : raw.id }]);
+    if (!c) continue;
+    if (i >= 0) out[i] = c; else out.push(c);
+  }
+  return out.slice(0, 30);
 }
 
 // Your Move (threads-26): stamp when the next step changed, and keep a step Joe checked off on Claude's side
@@ -148,11 +164,20 @@ export async function applySync(j, source = 'connector') {
     if (isNew) s = create(name, p, p.last_activity);
     if (projUps.some((u) => u.s === s)) continue;
     const { patch, sy } = syncPatch(p, kind, at);
+    // Two levels (threads-36): Phone Setup › Build Screen › Pocket. A parent may itself have a parent, but not a grandparent,
+    // and a project with sub-projects can't go under a sub-project.
+    function okParent(child, par) {
+      if (par === child) return false;
+      const pp = docOf(par).parent ? find(docOf(par).parent, docOf(par).parent) : null;
+      if (!pp) return true;
+      if (pp === child || docOf(pp).parent) return false;
+      return !projects.some((x) => docOf(x).parent === slugOf(child));
+    }
     if ('parent' in patch) { // sub-projects (threads-32): name or slug → the parent's slug; "" clears; never itself, one level only
       const ps = patch.parent ? find(patch.parent, patch.parent) : null;
       if (!patch.parent) patch.parent = '';
-      else if (ps && ps !== s && !docOf(ps).parent) patch.parent = slugOf(ps);
-      else delete patch.parent; // unknown parent, itself, or a sub-project: leave it as it was
+      else if (ps && okParent(s, ps)) patch.parent = slugOf(ps);
+      else delete patch.parent; // unknown parent, itself, a loop or a third level: leave it as it was
     }
     const look = {};
     if (p.icon && !s.icon) look.icon = str(p.icon, 16);
@@ -207,7 +232,8 @@ export async function applySync(j, source = 'connector') {
   const secPatches = [];
   for (const u of projUps) {
     const d = { ...docOf(u.s) };
-    for (const k of Object.keys(u.patch)) d[k] = u.patch[k];
+    for (const k of Object.keys(u.patch)) if (k !== 'timeline_in') d[k] = u.patch[k];
+    if (u.patch.timeline_in) d.timeline = mergeTimeline(docOf(u.s).timeline, u.patch.timeline_in);
     if (u.patch.env) d.env = carryChecks(docOf(u.s).env, u.patch.env, ['vercel', 'op']); // keep Joe's setup checks (threads-18)
     if (u.patch.accounts) d.accounts = carryChecks(docOf(u.s).accounts, u.patch.accounts, ['op']);
     if ('now' in u.patch) delete d.summary;
@@ -304,7 +330,7 @@ export async function status(projectName) {
   if (projectName && !one) return { error: `No project called "${projectName}". Projects: ${projects.map((s) => s.name).join(', ')}` };
   if (one) {
     const d = docOf(one), ids = new Set([one.id, ...sections.filter((s) => s.parent_id === one.id).map((s) => s.id)]);
-    return { ...brief(one), plans: (d.plans || []).map((p) => ({ text: p.text, for: p.for, added: p.added })), links: d.links || [], recent_builds: (d.sync?.builds || []).slice(0, 10),
+    return { ...brief(one), plans: (d.plans || []).map((p) => ({ text: p.text, for: p.for, added: p.added })), ...(d.timeline?.length ? { timeline: d.timeline } : {}), ...(d.now_pin ? { building_now: 'pinned' } : {}), links: d.links || [], recent_builds: (d.sync?.builds || []).slice(0, 10),
       chats: chats.filter((c) => ids.has(c.section_id) && !c.archived_at).map((c) => ({ title: c.name, link: c.chat_uuid ? `https://claude.ai/chat/${c.chat_uuid}` : c.url })),
       stack: (d.tools || []).map((t) => t.name), env_names: (d.env || []).map((e) => e.name) };
   }
