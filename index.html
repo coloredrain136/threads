@@ -694,6 +694,25 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 /* project colors (last so they win) */
 .c-gold{--c:#f2c46d}.c-coral{--c:#ff8a65}.c-rose{--c:#f48fb1}.c-violet{--c:#b39ddb}
 .c-blue{--c:#64b5f6}.c-teal{--c:#4dd0e1}.c-green{--c:#81c784}.c-slate{--c:#90a4ae}
+/* threads-28: Bold Duo look (bigger icons + tap targets, warm accent) */
+:root{--r-lg:16px;--r-md:13px;--r-sm:10px}
+.act{height:34px;padding:0 13px;font-size:13.5px}
+.act.pri{background:var(--dawn);border-color:var(--dawn);color:var(--dawn-ink)}
+.act.pri:hover{background:color-mix(in srgb,var(--dawn) 88%,#fff)}
+.act.done svg{width:13px;height:13px}
+.dn-row > .gicon{width:38px;height:38px;min-width:38px;border-radius:11px;font-size:20px}
+.ym .dn-row{padding:13px 14px;gap:13px}
+.ym .dn-t b{font-size:15px}
+.pc-h .gicon{width:40px;height:40px;min-width:40px;border-radius:12px;font-size:21px}
+.pc-h b{font-size:17px}
+.pcard{padding:16px;gap:10px;background:var(--card);border-color:var(--line2)}
+.pcard:hover{border-color:color-mix(in srgb,var(--dawn) 40%,var(--line2))}
+.prow .gicon{width:36px;height:36px;min-width:36px;border-radius:10px;font-size:19px}
+.sproj .gicon{width:26px;height:26px;min-width:26px;border-radius:8px;font-size:15px}
+.add-btn{border-radius:var(--r-sm)}
+html[data-duo-wide] .pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+html[data-duo-wide]{--side:236px}
+html[data-duo] .act{height:36px}
 /* threads-27 clean-up */
 .sh.plain{cursor:default}.sh.plain .mini{opacity:.6}
 .sh.sub{padding-left:14px;font-size:11px}
@@ -722,7 +741,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 .lnkbtn.recheck svg{width:12px;height:12px}
 .toast.has-btn{pointer-events:auto;display:flex;align-items:center;gap:14px}
 .toast-undo{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--dawn);cursor:pointer}
-@media (max-width:899px){.ym-row{flex-wrap:wrap;row-gap:8px}.ym .ym-row .dn-t{flex:1 1 calc(100% - 80px)}.ym-c .ym-row .dn-t{flex:1 1 calc(100% - 40px)}.ym .ym-row > .act,.ym .ym-row > .ym-b{margin-left:80px}.ym-c .ym-row > .act{margin-left:36px}}
+@media (max-width:899px){.ym-row{flex-wrap:wrap;row-gap:10px}.ym .ym-row .dn-t{flex:1 1 calc(100% - 60px)}.ym .ym-row > .act,.ym .ym-row > .ym-b{margin-left:51px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -736,7 +755,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-27'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-28'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -782,6 +801,8 @@ const EMOJIS = ['📁', '🎮', '🎬', '🚀', '💪', '🧠', '💼', '🛠️
 
 // ---------- themes (same set as Launch) ----------
 const THEMES = {
+  duo: { name: 'Bold Duo', v: { night: '#0e0e0f', 'night-2': '#131314', ink: '#f6f6f6', 'ink-2': '#a9a9ab', 'ink-3': '#6e6e72', line: 'rgba(255,255,255,.08)', glass: 'rgba(255,255,255,.05)', sheet: 'rgba(30,30,32,.97)', bar: 'rgba(24,24,26,.86)', hi: 'rgba(255,255,255,.1)', field: 'rgba(255,255,255,.07)', shadow: 'rgba(0,0,0,.5)', dawn: '#f2c46d', 'dawn-ink': '#1d1606' },
+    skies: [['rgba(242,196,109,.05)', 'rgba(255,255,255,.02)'], ['rgba(242,196,109,.08)', 'rgba(255,170,90,.04)'], ['rgba(242,196,109,.06)', 'rgba(255,255,255,.03)'], ['rgba(255,150,80,.08)', 'rgba(242,196,109,.04)'], ['rgba(242,196,109,.05)', 'rgba(255,255,255,.02)']] },
   midnight: { name: 'Midnight', v: { night: '#0d1424', 'night-2': '#141d31', ink: '#eef2f8', 'ink-2': '#aab3c5', 'ink-3': '#6f7a91', line: 'rgba(255,255,255,.09)', glass: 'rgba(255,255,255,.055)', sheet: 'rgba(21,30,51,.9)', bar: 'rgba(22,31,52,.72)', hi: 'rgba(255,255,255,.12)', field: 'rgba(255,255,255,.07)', shadow: 'rgba(3,6,15,.32)', dawn: '#f2c46d', 'dawn-ink': '#1d1606' },
     skies: [['rgba(90,80,210,.20)', 'rgba(60,90,200,.10)'], ['rgba(242,170,90,.26)', 'rgba(255,120,150,.12)'], ['rgba(90,165,255,.20)', 'rgba(120,200,255,.10)'], ['rgba(255,125,90,.22)', 'rgba(190,90,220,.12)'], ['rgba(140,95,230,.20)', 'rgba(70,90,210,.10)']] },
   slate: { name: 'Slate', v: { night: '#14171c', 'night-2': '#1c2128', ink: '#f0f2f5', 'ink-2': '#a8b0bd', 'ink-3': '#6e7684', line: 'rgba(255,255,255,.1)', glass: 'rgba(255,255,255,.05)', sheet: 'rgba(28,33,40,.92)', bar: 'rgba(28,33,40,.75)', hi: 'rgba(255,255,255,.13)', field: 'rgba(255,255,255,.07)', shadow: 'rgba(0,0,0,.35)', dawn: '#7fd1e8', 'dawn-ink': '#04222b' },
@@ -803,6 +824,13 @@ function setSky() {
   const [a, b] = (THEMES[S.theme] || THEMES.midnight).skies[i];
   document.documentElement.style.setProperty('--sky', a);
   document.documentElement.style.setProperty('--sky2', b);
+}
+// threads-28: Joe picked the Bold Duo look; switch every device to it once (Settings → Theme still changes it).
+function lookOnce() {
+  if (localStorage.getItem('threads.look28')) return;
+  localStorage.setItem('threads.look28', '1');
+  applyTheme('duo');
+  if (S.token) push([{ op: 'upsert', table: 'settings', row: { id: 'theme', value: { preset: 'duo' } } }]);
 }
 function applyTheme(id) {
   const t = THEMES[id] || THEMES.midnight;
@@ -1017,7 +1045,8 @@ async function load() {
     saveCache();
     if (j.version && j.version !== APP_VERSION) showUpdate();
     const t = S.settings.theme?.preset;
-    if (t && THEMES[t] && t !== S.theme) applyTheme(t);
+    if (localStorage.getItem('threads.look28') && t && THEMES[t] && t !== S.theme) applyTheme(t);
+    lookOnce();
     if (S.view === 'detail') { renderTop(); return; } // don't clobber what you're typing
     renderTop(); renderContent();
     openDeepLink();
@@ -1265,7 +1294,7 @@ function yourMove() {
     const h = health(s), sy = syncOf(s), d = normDoc(s), cur = currentChat(s), app = projLink(s, 'live'), vercel = projLink(s, 'vercel'), lv = liveOf(s);
     const chatBtn = cur ? { btn: 'chat', chat: cur } : { btn: 'prompt', prompt: syncPhrase(s) };
     if (lv?.state === 'down') mine.push({ s, h, kind: 'down', rank: 0, text: `${s.name} is down: ${liveErr(lv)}`, ...(app ? { btn: 'app', link: app } : chatBtn) });
-    else if (lv?.state === 'mismatch') mine.push({ s, h, kind: 'mismatch', rank: 1, text: `Live shows ${lv.version}, log says ${lv.build}`, ...(vercel ? { btn: 'link', link: vercel } : chatBtn) });
+    else if (lv?.state === 'mismatch' && docOf(s).live_ignore !== lv.version) mine.push({ s, h, kind: 'mismatch', rank: 1, text: `Live shows ${lv.version}, log says ${lv.build}`, ...(vercel ? { btn: 'link', link: vercel } : chatBtn) });
     // Tier Nudges ("Tidy Up"): Move changes the tier, Keep snoozes that nudge for 30 days.
     const st = String(d.status || '').trim().toLowerCase(), days = h.la ? Math.floor((Date.now() - h.la) / 864e5) : null;
     if (tier === 'building' && /^(paused|blocked)$/.test(st)) { if (!snoozed(s, 'paused')) mine.push({ s, h, kind: 'nudge', nk: 'paused', to: 'hold', rank: 2, text: `${s.name} says ${d.status}. Move to On Hold?` }); }
@@ -1301,10 +1330,12 @@ function ymTag(it) {
 }
 function ymBtn(it) {
   if (it.kind === 'nudge') return `<div class="ym-b"><button class="act pri" data-act="nudge-move" data-id="${it.s.id}" data-v="${it.to}" title="${it.to === 'hold' ? 'Moves it to On Hold' : 'Moves it to Building'}">Move</button><button class="act" data-act="nudge-keep" data-id="${it.s.id}" data-k="${it.nk}" title="Hides this nudge for 30 days">Keep</button></div>`;
-  if (it.btn === 'app') return `<a class="act pri" href="${esc(it.link.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>`;
-  return dnBtn(it);
+  const main = it.btn === 'app' ? `<a class="act" href="${esc(it.link.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : dnBtn(it).replace('class="act pri"', 'class="act"');
+  const extra = it.kind === 'next' && it.mine ? `<button class="act pri done" data-act="ym-done" data-id="${it.s.id}" title="I did my part: hand ${esc(it.s.name)} back to Claude">${ICON.check}Done</button>`
+    : it.kind === 'mismatch' ? `<button class="act" data-act="live-ignore" data-id="${it.s.id}" title="Hide this until the live version changes">Ignore</button>` : '';
+  return `<div class="ym-b">${main}${extra}</div>`;
 }
-const ymRow = (it, mine) => `<div class="dn-row ym-row${colorCls(colorOf(it.s))}" data-ym="${it.s.id}">${mine ? (it.kind === 'next' ? `<button class="ymck" data-act="ym-done" data-id="${it.s.id}" aria-label="Done: hand ${esc(it.s.name)} to Claude" title="Done: it's Claude's turn">${ICON.check}</button>` : '<span class="ymck-sp"></span>') : ''}${gIcon(it.s)}<div class="dn-t" data-act="proj" data-id="${it.s.id}" role="button"><div><b>${esc(it.s.name)}</b>${ymTag(it)}</div>${it.text ? `<p>${esc(it.text)}</p>` : ''}</div>${ymBtn(it)}</div>`;
+const ymRow = (it, mine) => { it.mine = mine; return `<div class="dn-row ym-row${colorCls(colorOf(it.s))}" data-ym="${it.s.id}">${gIcon(it.s)}<div class="dn-t" data-act="proj" data-id="${it.s.id}" role="button"><div><b>${esc(it.s.name)}</b>${ymTag(it)}</div>${it.text ? `<p>${esc(it.text)}</p>` : ''}</div>${ymBtn(it)}</div>`; };
 function ymDone(id, el) {
   const s = secById(id);
   if (!s || !docOf(s).next) return;
@@ -2178,6 +2209,14 @@ function openInApp(appUrl, webUrl) {
   window.addEventListener('pagehide', gone, { once: true });
   location.href = appUrl;
   setTimeout(() => { if (!left && !document.hidden) location.href = webUrl; }, 1500);
+}
+function openAppDesktop(appUrl, webUrl) {
+  let left = false;
+  const gone = () => { left = true; };
+  window.addEventListener('blur', gone, { once: true });
+  document.addEventListener('visibilitychange', gone, { once: true });
+  location.href = appUrl;
+  setTimeout(() => { window.removeEventListener('blur', gone); if (!left && !document.hidden && webUrl) window.open(webUrl, '_blank', 'noopener'); }, 2500);
 }
 function openURL(url) {
   if (/^https:/i.test(url) && !isIOS) window.open(url, '_blank', 'noopener');
@@ -3104,6 +3143,8 @@ const A = {
     // iPhone home-screen apps load https links inside themselves, so try the Claude app first.
     const c = chatById(el.dataset.id);
     if (isIOS && linkPref() === 'auto' && c) { ev.preventDefault(); openInApp(linkFor(c, 'app'), linkFor(c, 'web')); }
+    // threads-28: on the computer, the Claude app link gets a website backup (Chrome sometimes drops claude:// links).
+    else if (!isIOS && c && linkMode() === 'app' && /^claude:/.test(linkFor(c, 'app') || '')) { ev.preventDefault(); openAppDesktop(linkFor(c, 'app'), linkFor(c, 'web')); }
   },
   detail: (el) => { if (S.dragging) return; openDetail(el.dataset.id); },
   main: () => backToMain(),
@@ -3181,6 +3222,7 @@ const A = {
   'plan-done': (el) => planDone(el.dataset.id, el.dataset.pid),
   'all-claude': () => { S.allClaude = !S.allClaude; renderContent(); },
   'ym-done': (el) => ymDone(el.dataset.id, el),
+  'live-ignore': (el) => { const x = secById(el.dataset.id), v = liveOf(x)?.version; if (x && v) { setDoc(x, { live_ignore: v }, true); toast(`Hidden until ${x.name}'s live version changes`); } },
   'toast-undo': () => { const f = S.undo; S.undo = null; $('#toast').classList.remove('on', 'has-btn'); if (f) { f(); toast('Undone'); } },
   'nudge-move': (el) => setTier(el.dataset.id, el.dataset.v),
   'nudge-keep': (el) => nudgeKeep(el.dataset.id, el.dataset.k),
