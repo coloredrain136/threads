@@ -11,6 +11,7 @@ export function kindOf(path) {
   if (/-build-log\.md$/.test(f)) return 'log';
   if (/-carryover\.md$/.test(f)) return 'carryover';
   if (/-plan\.md$|build\d+-plan\.md$/.test(f)) return 'plan';
+  if (/-idea\.md$/.test(f)) return 'idea'; // prepped scope doc for an idea (threads-32)
   return 'other';
 }
 export function titleOf(path) {

@@ -52,6 +52,8 @@ export function cleanDoc(d) {
   // Plans (threads-27): ideas saved for a project's next build chat. Text only.
   if ('plans' in d) o.plans = list(d.plans, 50).map((x) => ({ id: str(x?.id, 40), text: str(x?.text, 500), added: iso(x?.added) || null,
     for: str(x?.for, 80), from: /^https:\/\/claude\.ai\/chat\/[0-9a-f-]{36}$/i.test(str(x?.from, 80)) ? str(x.from, 80) : '' })).filter((x) => x.id && x.text);
+  // Sub-projects (threads-32): the parent project's slug ("" = top level).
+  if ('parent' in d) { const p = str(d.parent, 40).toLowerCase().replace(/[^a-z0-9-]/g, ''); if (p) o.parent = p; }
   if (['ideas', 'general', 'shortcuts', 'sync'].includes(d.system)) o.system = d.system; // system folders (threads-10)
   return o;
 }

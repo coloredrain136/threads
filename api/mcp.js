@@ -13,6 +13,8 @@ const INSTRUCTIONS = `Threads is Joe's dashboard for his Builds projects. Keep i
 - When Joe says "sync threads", "sync <project>" or "deep sync <project>", build the threads_sync v2 payload as the threads-sync skill describes and send it with threads_apply_sync instead of replying with a JSON block.
 - Use threads_status to see where projects stand before suggesting what to work on.
 - When Joe says "sync docs", read every doc in the Builds project and send them with threads_sync_docs (full text; Threads files each under its project). After a build changes a project's docs, send just those docs.
+- Sub-projects: a project can sit under a parent project (Pocket, Build Screen and Remember This are under Phone Setup). If a sync finds a project or chat that looks like it belongs under another project, ask Joe which project is the parent and recommend one; only after he confirms, send "parent" (the parent's slug) on that project.
+- Inbox: in a sync, a chat you're sure about gets "project" (or "folder": general / ideas / shortcuts) and is filed automatically. A chat you're unsure about gets "home" (a project name or folder) plus a short "home_why", so Joe can file it with one tap in Threads → Inbox. Only the naming is left to Joe.
 - When Joe brings up an idea for a project outside that project's current build chat, ask whether he's working on it now or saving it for later. For later, save it with threads_save_plan (it lands in the project's Plans and goes into the next build chat's handoff).
 Never send passwords, API keys, tokens or env var values. Env vars are names only.`;
 
@@ -35,6 +37,7 @@ const TOOLS = [
         now: s('One short line (under 90 characters): where the project stands.'),
         next: s('One short line (under 90 characters): the single next step.'),
         next_owner: s('"joe" if the next step is Joe\'s (deploy, test, answer), "claude" if it\'s building.', { enum: ['joe', 'claude'] }),
+        parent: s('Optional: the parent project\'s name or slug when this is a sub-project (e.g. "phone-setup" for Pocket). "" makes it top level again. Only set it after Joe confirmed which project is the parent.'),
         current_chat: s('Title of the current session chat, e.g. "Bracket - Build 2".'),
         updates_in_chat: { type: 'integer', description: 'How many updates this build chat has had (about 10 means time for the next session chat).' },
         links: { type: 'object', description: 'Only URLs actually in the docs.', properties: { live: s('Live app URL'), github: s('GitHub repo URL'), vercel: s('Vercel project URL'), supabase: s('Supabase dashboard URL') } },
@@ -53,7 +56,7 @@ const TOOLS = [
     inputSchema: {
       type: 'object',
       required: ['sync'],
-      properties: { sync: { type: 'object', description: 'The threads_sync v2 object: {"threads_sync":2,"kind":"all"|"project","synced_at":"ISO","chats":[…],"projects":[…]}' } },
+      properties: { sync: { type: 'object', description: 'The threads_sync v2 object: {"threads_sync":2,"kind":"all"|"project","synced_at":"ISO","chats":[…],"projects":[…]}. Chats you\'re unsure where to file can carry "home" (suggested project or folder) and "home_why"; projects can carry "parent" (parent project slug) once Joe confirmed it.' } },
     },
     annotations: { title: 'Apply a Threads Sync', readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   },

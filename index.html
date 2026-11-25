@@ -326,6 +326,34 @@ body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
 .nm-t span{font-size:13px;color:var(--ink-3);display:flex;align-items:center;gap:6px;min-width:0}
 .nm-t code{color:var(--ok);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nm-a{display:flex;gap:6px;flex-wrap:wrap}
+/* threads-32: Inbox (suggested homes, bundles, ideas) + sub-projects */
+.nm.uf{align-items:flex-start}
+.selbox{width:24px;height:24px;min-width:24px;margin-top:2px;border-radius:50%;border:1.5px solid var(--ink-3);display:grid;place-items:center;color:transparent;background:none}
+.selbox svg{width:13px;height:13px}
+.selbox.on{background:var(--dawn);border-color:var(--dawn);color:var(--dawn-ink,#111)}
+.nm.uf.sel{background:color-mix(in srgb,var(--dawn) 9%,transparent)}
+.home-sug{font-size:13px;color:var(--ink-2)!important;display:flex;flex-wrap:wrap;align-items:baseline;gap:5px!important}
+.home-sug b{font-weight:650;color:var(--ink)}
+.home-sug small{color:var(--ink-3);font-size:12px}
+.bundlebar{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 14px;margin-bottom:8px;border-radius:12px}
+.bundlebar .sp{flex:1}
+.bundle-list{display:grid;gap:4px;margin:0 0 12px;font-size:14px;color:var(--ink-2)}
+.inbox-hint{font-size:12.5px;margin:6px 4px 0}
+.nm.idea .nm-t span{flex-wrap:wrap}
+.nm.idea .tagx{font-style:normal}
+.sproj.sub{margin-left:18px;width:calc(100% - 18px);position:relative}
+.sproj.sub::before{content:'';position:absolute;left:-9px;top:-4px;height:calc(50% + 4px);width:7px;border-left:1.5px solid var(--line);border-bottom:1.5px solid var(--line);border-bottom-left-radius:5px}
+.prow.sub{padding-left:34px}
+.prow.sub .gicon{width:26px;height:26px;min-width:26px;font-size:14px}
+.subchips{display:flex;flex-wrap:wrap;gap:5px;margin:-2px 0 2px}
+.subchip{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 9px;border-radius:13px;font-size:12.5px;font-weight:600;background:var(--field);color:var(--ink-2)}
+.subchip:hover{background:var(--hi);color:var(--ink)}
+.subchip i{font-style:normal}
+.subchip .dot{width:7px;height:7px;border-radius:50%;background:var(--danger)}
+.crumb{display:inline-flex;align-items:center;gap:7px;margin:0 0 10px;padding:4px 10px 4px 5px;border-radius:999px;font-size:13px;font-weight:600;color:var(--ink-2);background:var(--field)}
+.crumb .gicon{width:22px;height:22px;min-width:22px;border-radius:6px;font-size:12px}
+.crumb svg{width:12px;height:12px}
+.crumb:hover{color:var(--ink);background:var(--hi)}
 
 /* ---------- project page ---------- */
 .pj-h{--c:var(--ink-3);display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 16px;border-radius:var(--r-lg);
@@ -852,7 +880,7 @@ html[data-duo] .act{height:36px}
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-31'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-32'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1055,6 +1083,7 @@ const S = {
 S.route = (localStorage.getItem('threads.route') || 'home').replace(/^naming$/, 'triage');
 if (!['home', 'projects', 'shipped', 'triage', 'archive', 'project', 'group'].includes(S.route)) S.route = 'home';
 S.gid = localStorage.getItem('threads.gid');
+S.bundle = new Set(); // Inbox chats picked for a bundle (threads-32)
 S.pid = localStorage.getItem('threads.pid'); S.back = 'home'; S.ptab = 'overview'; S.hfilter = ''; S.openDet = new Set();
 const collapsed = new Set(JSON.parse(localStorage.getItem('threads.collapsed') || '[]'));
 const dismissed = new Set();
@@ -1232,7 +1261,7 @@ const SYSTEM = {
   ideas: { name: 'Ideas', icon: '💡', color: 'gold', hint: "Ideas you're not building yet. Make one a project when it's ready." },
   general: { name: 'General', icon: '💬', color: 'blue', hint: 'Questions and ideas about how the Builds project itself works.' },
   shortcuts: { name: 'Apple Shortcuts', icon: '⚡', color: 'violet', hint: 'Apple Shortcuts builds and fixes.' },
-  sync: { name: 'Sync Chats', icon: '🔄', color: 'slate', hint: 'Every "sync threads" chat lands here on its own, so they never clutter Triage.' },
+  sync: { name: 'Sync Chats', icon: '🔄', color: 'slate', hint: 'Every "sync threads" chat lands here on its own, so they never clutter the Inbox.' },
 };
 const SYS_KEYS = ['ideas', 'general', 'shortcuts', 'sync'];
 const SHORTCUT_RE = /^(\[shortcut\]|shortcut\s*[-–:]|apple shortcut)/i;
@@ -1250,6 +1279,20 @@ function ensureSys(k) {
 }
 const projects = () => children(null).filter((s) => !s.is_inbox && !sysOf(s));
 const projectsIn = (t) => projects().filter((s) => tierOf(s) === t);
+// Sub-projects (threads-32): doc.parent = the parent project's slug. One level only; a child in another tier shows on its own.
+const parentProj = (s) => { const p = docOf(s).parent; if (!p) return null; const x = projects().find((y) => y !== s && slugOf(y) === p); return x && !docOf(x).parent ? x : null; };
+const subsOf = (s) => projects().filter((x) => parentProj(x) === s).sort(bySort('position'));
+function nestedIn(t) {
+  const out = [];
+  for (const s of projectsIn(t)) {
+    const p = parentProj(s);
+    if (p && tierOf(p) === t) continue;
+    out.push([s, 0]);
+    for (const c of subsOf(s)) if (tierOf(c) === t) out.push([c, 1]);
+  }
+  return out;
+}
+const topIn = (t) => nestedIn(t).filter(([, d]) => !d).map(([s]) => s);
 const syncOf = (s) => { const x = docOf(s).sync; return x && typeof x === 'object' ? x : {}; };
 const slugOf = (s) => syncOf(s).slug || String(s.name).toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 // "sync threads" already means every project, so the Threads project's own deep dive is "sync threads project".
@@ -1491,7 +1534,9 @@ const GUIDE = [
   ['nextchat', '➡️', 'Start Next Chat', 'At about 10 updates a chat gets long. Step 1 wraps up the current chat (writes the carryover); step 2 copies a handoff (with your saved plans) and opens a fresh Builds chat.', ['Wrap Up', 'Start Build N']],
   ['new', '✨', 'New', 'Start something. Full Project: a scope chat, then build chats. Quick Build: one chat, no scope doc. Idea for Later: saved to Ideas, and Claude writes a prepped scope doc you can start from later. Or add a chat link.', ['Full Project', 'Quick Build', 'Idea for Later']],
   ['sync', '🔄', 'Sync', 'Builds update Threads by themselves. Sync is for catching up: Sync Threads (chats + status), Sync Docs (your docs), Sync a Project (one card), Deep Sync (full cleanup of one project). Each copies its prompt and opens a new Builds chat.', ['Sync Threads', 'Sync Docs', 'Sync a Project', 'Deep Sync']],
-  ['duo', '📱', 'On the Duo', 'Folded: the main buttons live in the strip on the right, under the clock. Unfolded: the sidebar layout, with cards in two columns.', ['Home', 'Projects', 'Shipped', 'Triage']],
+  ['subs', '🪆', 'Sub-projects', 'Some projects live under a bigger one (Pocket, Build Screen and Remember This are part of Phone Setup). Each keeps its own page, chats and builds; the parent shows them all here. Set a parent in ⋯ → Edit. When a sync spots a project that seems to belong under another, Claude asks you which is the parent.', ['Phone Setup', 'Pocket', 'Build Screen']],
+  ['inbox', '📥', 'Inbox', 'Ideas on top, each with its prepped scope doc once Claude writes it (Start Scope begins from it). Then chats without a home: the arrow shows where each should go, so File It is one tap (File All does them all). Pick chats that belong together and Bundle them into one group, like a ticket.', ['Ideas', 'File It', 'Bundle']],
+  ['duo', '📱', 'On the Duo', 'Folded: the main buttons live in the strip on the right, under the clock. Unfolded: the sidebar layout, with cards in two columns.', ['Home', 'Projects', 'Shipped', 'Inbox']],
 ];
 function guideCard(g) {
   const [k, icon, title, text, chips] = g;
@@ -1509,8 +1554,8 @@ function openGuide(k) {
 // Docs (threads-30): Claude syncs the Builds project docs into Threads (connector threads_sync_docs); each doc is
 // filed under its project by its path (claude/<slug>-…). The list loads with the app; a doc's text loads when opened.
 const docsFor = (slug) => (S.docs || []).filter((x) => x.project === slug).sort((a, b) => DOC_ORDER(a) - DOC_ORDER(b) || a.title.localeCompare(b.title));
-const DOC_KIND = { scope: 'Scope', log: 'Build Log', carryover: 'Carryover', plan: 'Plan', code: 'Code', other: 'Doc' };
-const DOC_ORDER = (x) => ({ scope: 0, log: 1, carryover: 2, plan: 3, other: 4, code: 5 }[x.kind] ?? 6);
+const DOC_KIND = { scope: 'Scope', log: 'Build Log', carryover: 'Carryover', plan: 'Plan', idea: 'Idea Scope Doc', code: 'Code', other: 'Doc' };
+const DOC_ORDER = (x) => ({ scope: 0, log: 1, carryover: 2, plan: 3, idea: 4, other: 5, code: 6 }[x.kind] ?? 7);
 function docsList(slug, empty) {
   const list = docsFor(slug);
   if (!list.length) return `<p class="muted">${empty || 'No docs synced yet. Say <code>sync docs</code> in a Builds chat and they show up here.'}</p>`;
@@ -1619,10 +1664,106 @@ function nmRow(c) {
   return `<div class="nm"><div class="nm-t"><b>${esc(c.name)}</b><span>${s && !s.is_inbox ? `${esc(s.name)} · ` : ''}Rename to <code>${esc(c.suggest)}</code></span></div>
     <div class="nm-a"><button class="act" data-act="copy-text" data-t="${esc(c.suggest)}" data-msg="Name copied. Rename the chat in Claude, then sync.">${ICON.copy}Copy name</button>${href ? `<a class="act" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open</a>` : ''}</div></div>`;
 }
+// ---------- Inbox (threads-32): ideas up front, chats with a suggested home, bundles ----------
+const reEsc = (x) => String(x).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const triMap = () => (S.settings.triage && typeof S.settings.triage.chats === 'object' ? S.settings.triage.chats : {}) || {};
+function homeTarget(to) {
+  if (SYS_KEYS.includes(to)) return { sys: to, name: SYSTEM[to].name, icon: SYSTEM[to].icon };
+  const x = projects().find((y) => slugOf(y) === to);
+  return x ? { s: x, name: x.name, icon: x.icon || '📁' } : null;
+}
+// The app's own guess when a sync hasn't suggested anything: a project named in the title, a shortcut, an idea, else General.
+function guessHome(c) {
+  const name = String(c.name || ''), t = ` ${name.toLowerCase()} `;
+  if (SHORTCUT_RE.test(name)) return { to: 'shortcuts', why: 'Looks like an Apple Shortcut', guess: true };
+  if (/^\s*idea\b/i.test(name)) return { to: 'ideas', why: 'Starts with "idea"', guess: true };
+  const hit = projects().filter((x) => tierOf(x) !== 'archived' && new RegExp(`[^a-z0-9](${reEsc(x.name.toLowerCase())}|${reEsc(slugOf(x).replace(/-/g, ' '))})[^a-z0-9]`).test(t))
+    .sort((a, b) => b.name.length - a.name.length)[0];
+  if (hit) return { to: slugOf(hit), why: `Mentions ${hit.name}`, guess: true };
+  return { to: 'general', why: 'No project matches, so it looks like a one-off', guess: true };
+}
+const homeFor = (c) => { const m = triMap()[c.id]; return m && homeTarget(m.to) ? { to: m.to, why: m.why || 'Suggested by the last sync' } : guessHome(c); };
 function ufRow(c) {
-  const href = linkFor(c);
-  return `<div class="nm"><div class="nm-t" data-act="detail" data-id="${c.id}" role="button"><b>${esc(c.name)}</b><span>${subline(c)}</span></div>
-    <div class="nm-a"><button class="act pri" data-act="file-open" data-id="${c.id}">${ICON.folder}File</button><button class="act" data-act="file-sys" data-k="ideas" data-id="${c.id}">💡 Idea</button><button class="act" data-act="file-sys" data-k="general" data-id="${c.id}">💬 General</button>${href ? `<a class="act" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open</a>` : ''}</div></div>`;
+  const href = linkFor(c), h = homeFor(c), t = homeTarget(h.to), sel = S.bundle.has(c.id);
+  return `<div class="nm uf${sel ? ' sel' : ''}"><button class="selbox${sel ? ' on' : ''}" data-act="bundle-tog" data-id="${c.id}" aria-label="Select ${esc(c.name)} for a bundle" title="Select for a bundle">${ICON.check}</button>
+    <div class="nm-t" data-act="detail" data-id="${c.id}" role="button"><b>${esc(c.name)}</b><span>${subline(c)}</span>${t ? `<span class="home-sug">→ ${esc(t.icon)} <b>${esc(t.name)}</b><small>${esc(h.why)}${h.guess ? ' · guess' : ''}</small></span>` : ''}</div>
+    <div class="nm-a">${t ? `<button class="act pri" data-act="file-home" data-id="${c.id}">${ICON.check}File It</button>` : ''}<button class="act" data-act="file-open" data-id="${c.id}">${ICON.folder}Choose…</button>${href ? `<a class="act" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open</a>` : ''}</div></div>`;
+}
+function fileHome(id) {
+  const c = chatById(id), t = c && homeTarget(homeFor(c).to);
+  if (!t) return openFile(id);
+  S.bundle.delete(id);
+  return t.sys ? fileSys(id, t.sys) : fileToProject(id, t.s.id);
+}
+// File every loose chat where it's suggested to go, with Undo.
+function fileAll() {
+  const list = unfiled(), before = list.map((c) => ({ c, sid: c.section_id, pos: c.position })), rows = [];
+  for (const c of list) {
+    const t = homeTarget(homeFor(c).to);
+    if (!t) continue;
+    const sec = t.sys ? ensureSys(t.sys) : t.s;
+    c.section_id = sec.id; c.position = Math.min(0, ...chatsIn(sec.id).filter((x) => x.id !== c.id).map((x) => x.position ?? 0)) - 1;
+    rows.push({ id: c.id, section_id: c.section_id, position: c.position });
+  }
+  if (!rows.length) return;
+  S.bundle.clear(); renderContent();
+  push([{ op: 'patch', table: 'chats', rows }]);
+  toastUndo(`Filed ${rows.length} chat${rows.length > 1 ? 's' : ''}`, () => {
+    before.forEach(({ c, sid, pos }) => { c.section_id = sid; c.position = pos; });
+    renderContent(); push([{ op: 'patch', table: 'chats', rows: before.map(({ c }) => ({ id: c.id, section_id: c.section_id, position: c.position })) }]);
+  });
+}
+function bundleTog(id) { if (S.bundle.has(id)) S.bundle.delete(id); else S.bundle.add(id); renderContent(); }
+// Bundle (like a ticket): selected chats go into a new group inside a folder or project.
+function openBundle() {
+  const ids = [...S.bundle].filter((id) => chatById(id));
+  if (ids.length < 2) return toast('Select at least two chats to bundle.', true);
+  const first = homeFor(chatById(ids[0])).to, dest = homeTarget(first) ? first : 'general';
+  const opt = (v, ic, label, sub) => `<button class="pick${v === dest ? ' on' : ''}" data-act="pick" data-v="${esc(v)}">${ic ? esc(ic) + ' ' : ''}${esc(label)}${sub ? ` <small class="muted">${sub}</small>` : ''}</button>`;
+  openSheet(`<h2>Bundle ${ids.length} Chats</h2>
+    <div class="bundle-list">${ids.map((id) => `<div>🎫 ${esc(chatById(id).name)}</div>`).join('')}</div>
+    <label class="field"><span>Name</span><input class="inp" id="bd-name" maxlength="60" placeholder="e.g. Apple Watch Setup" autocomplete="off"></label>
+    <div class="field"><span>Where it lives</span><div class="picker" id="bd-dest">${['general', 'ideas', 'shortcuts'].map((k) => opt(k, SYSTEM[k].icon, SYSTEM[k].name, 'Folder')).join('')}${projects().filter((x) => tierOf(x) !== 'archived').map((x) => opt(slugOf(x), x.icon, x.name, TIER_NAME[tierOf(x)])).join('')}</div></div>
+    <p class="err" id="bd-err"></p><button class="btn" data-act="bundle-go">Make Bundle</button>`);
+  setTimeout(() => $('#bd-name')?.focus(), 350);
+}
+function makeBundle() {
+  const name = String($('#bd-name')?.value || '').trim().slice(0, 60), dest = homeTarget(val('bd-dest') || 'general');
+  if (!name) { $('#bd-err').textContent = 'Give the bundle a name.'; return; }
+  if (!dest) { $('#bd-err').textContent = 'Pick where it lives.'; return; }
+  const parent = dest.sys ? ensureSys(dest.sys) : dest.s, ids = [...S.bundle].filter((id) => chatById(id));
+  const row = { id: uid(), name, icon: '🎫', color: null, parent_id: parent.id, position: children(parent.id).length, is_inbox: false, status: 'hold', activated_at: null,
+    project_uuid: null, archived_at: null, home_chat_id: null, doc: {}, created_at: nowISO() };
+  S.sections.push(row);
+  const rows = ids.map((id, i) => { const c = chatById(id); c.section_id = row.id; c.position = i; return { id, section_id: row.id, position: i }; });
+  S.bundle.clear(); closeSheet(); renderContent();
+  toast(`Bundled ${rows.length} chats into ${name} (${dest.name})`);
+  push([{ op: 'upsert', table: 'sections', row }, { op: 'patch', table: 'chats', rows }]);
+}
+// Ideas (threads-32): each idea links to its prepped scope doc, claude/<slug>-idea.md, once Claude has written it.
+const ideaName = (c) => String(c.name || '').replace(/^idea\s*(for later)?\s*[-–:]\s*/i, '').trim();
+const ideaDoc = (c) => (S.docs || []).find((x) => x.path === `claude/${slugify(ideaName(c))}-idea.md`) || null;
+const ideasList = () => { const g = sysSec('ideas'); return g ? allChatsIn(g).sort(bySort('position')) : []; };
+function ideaRow(c) {
+  const doc = ideaDoc(c), href = linkFor(c), note = String(c.notes || '').split('\n').find((x) => x.trim()) || '';
+  return `<div class="nm idea"><div class="nm-t" data-act="detail" data-id="${c.id}" role="button"><b>💡 ${esc(ideaName(c))}</b><span>${doc ? '<i class="tagx ok">Scope Doc Ready</i>' : '<i class="tagx">No Scope Doc Yet</i>'}${note ? esc(note.slice(0, 90)) : ''}</span></div>
+    <div class="nm-a">${doc ? `<button class="act" data-act="doc-open" data-path="${esc(doc.path)}">📄 Scope Doc</button><button class="act pri" data-act="idea-start" data-id="${c.id}">${ICON.star}Start Scope</button>`
+      : `<button class="act" data-act="idea-prep" data-id="${c.id}" title="Copies a prompt that has Claude write the prepped scope doc">📝 Prep Scope Doc</button>`}${href ? `<a class="act" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open</a>` : ''}</div></div>`;
+}
+async function ideaGo(id, k) {
+  const c = chatById(id);
+  if (!c) return;
+  const name = ideaName(c), doc = ideaDoc(c), notes = String(c.notes || '').trim();
+  const text = k === 'start' ? `new build: ${name}\n\nThere's a prepped scope doc for this idea: ${doc ? doc.path : `claude/${slugify(name)}-idea.md`}. Read it first and start the scope from it.${notes ? `\n\nJoe's note on the idea:\n${notes}` : ''}`
+    : newPrompt('idea', name, notes || (c.chat_uuid ? `It came from this chat: https://claude.ai/chat/${c.chat_uuid}` : ''));
+  try { await navigator.clipboard.writeText(text); } catch { toast("Couldn't copy. Type it in the new chat.", true); }
+  toast('Prompt copied. Paste it in the new chat');
+  openBuilds();
+}
+function ideasBlock() {
+  const list = ideasList();
+  if (!list.length) return '';
+  return `<section class="blk"><div class="blk-h"><h2>Ideas</h2><span class="muted">${list.length}</span><button class="lnkbtn" data-act="go" data-r="triage">Open Inbox</button></div><div class="dn glass">${list.slice(0, 3).map(ideaRow).join('')}</div></section>`;
 }
 function openFile(id) {
   const c = chatById(id);
@@ -1722,6 +1863,9 @@ function handoffFor(s) {
   const st = [d.now, sy.build ? `Latest build ${sy.build}${sy.deployed === true ? ' is deployed' : sy.deployed === false ? ' is built but not deployed yet' : ''}.` : null].filter(Boolean);
   if (st.length) L.push(`Where it stands: ${st.map((x) => x.trim().replace(/([^.!?])$/, '$1.')).join(' ')}`);
   L.push(`Goal for this chat: ${d.next || 'ask me what to build next'}${/[.!?]$/.test(d.next || '') ? '' : '.'}`);
+  const par = parentProj(s), subs = subsOf(s);
+  if (par) L.push(`${s.name} is a sub-project of ${par.name}. For the bigger picture, also skim claude/${slugOf(par)}-scope.md and claude/${slugOf(par)}-build-log.md.`);
+  if (subs.length) L.push(`Sub-projects (their own docs and build chats): ${subs.map((x) => `${x.name} (claude/${slugOf(x)}-build-log.md)`).join(', ')}.`);
   const pl = plansOf(s);
   if (pl.length) { L.push('Saved plans for this chat (Threads → Plans; ask me which ones we\'re doing):'); pl.forEach((x) => L.push(`- ${x.text}`)); }
   if (sy.deployed === false && sy.build) L.push(`First ask me whether ${sy.build} got deployed.`);
@@ -1829,13 +1973,13 @@ function renderTop() {
   document.body.classList.toggle('v-detail', S.view === 'detail');
   const back = (label) => `<button class="icon-btn" data-act="back" aria-label="Back">${ICON.back}</button><h1 class="sm">${label}</h1>`;
   if (S.view === 'detail') top.innerHTML = `<button class="icon-btn" data-act="main" aria-label="Back">${ICON.back}</button><h1 class="sm"></h1>`;
-  else if (S.route === 'project' && secById(S.pid)) top.innerHTML = back(S.back === 'projects' ? 'Projects' : S.back === 'triage' ? 'Triage' : S.back === 'shipped' ? 'Shipped' : 'Home');
+  else if (S.route === 'project' && secById(S.pid)) top.innerHTML = back(S.back === 'projects' ? 'Projects' : S.back === 'triage' ? 'Inbox' : S.back === 'shipped' ? 'Shipped' : 'Home');
   else if (S.route === 'archive') top.innerHTML = back('Archived Chats');
   else if (S.route === 'group' && secById(S.gid)) top.innerHTML = `${back(esc(secById(S.gid).name))}${duoOn() ? '' : `<button class="add-btn" data-act="add" aria-label="Add">${ICON.plus}<span>Add</span></button>`}`;
   else if (S.route === 'docs' || S.route === 'guide') top.innerHTML = back(S.route === 'docs' ? 'Docs' : 'Guide');
-  else if (duoOn()) top.innerHTML = `<h1>${{ home: 'Threads', projects: 'Projects', shipped: 'Shipped', triage: 'Triage' }[S.route] || 'Threads'}</h1>`;
+  else if (duoOn()) top.innerHTML = `<h1>${{ home: 'Threads', projects: 'Projects', shipped: 'Shipped', triage: 'Inbox' }[S.route] || 'Threads'}</h1>`;
   else {
-    const t = { home: 'Threads', projects: 'Projects', shipped: 'Shipped', triage: 'Triage' }[S.route] || 'Threads';
+    const t = { home: 'Threads', projects: 'Projects', shipped: 'Shipped', triage: 'Inbox' }[S.route] || 'Threads';
     top.innerHTML = `<h1>${t}</h1>${S.route === 'home' ? `<button class="icon-btn" data-act="sync" aria-label="Sync">${ICON.sync}</button><button class="icon-btn" data-act="settings" aria-label="Settings">${ICON.gear}</button>` : ''}
       ${S.route === 'projects' ? `<button class="icon-btn" data-act="sec-new" aria-label="New project">${ICON.folder}</button>` : ''}<button class="add-btn" data-act="add" aria-label="Add">${ICON.plus}<span>Add</span></button>`;
   }
@@ -1857,12 +2001,11 @@ function renderSide() {
   const tierFold = (t, label) => {
     const list = projectsIn(t), closed = folds.has(t);
     return `<div class="sh sub${closed ? ' closed' : ''}" data-act="fold" data-v="${t}" role="button">${ICON.chev}<span>${label}</span><small>${list.length}</small></div>
-      ${foldBox(t, `<div class="slist" data-tier="${t}">${list.map(sideProj).join('')}</div>
+      ${foldBox(t, `<div class="slist" data-tier="${t}">${nestedIn(t).map(([x, d]) => sideProj(x, d)).join('')}</div>
       ${t === 'archived' ? `<button class="srow sub${on('archive')}" data-act="go" data-r="archive" title="Archived Chats">${ICON.archive}<span class="lbl">Archived Chats</span><small>${na || ''}</small></button>` : ''}`)}`;
   };
   const more = `<button class="srow${on('docs')}" data-act="go" data-r="docs" title="Docs"><span class="sic">📄</span><span class="lbl">Docs</span><small>${(S.docs || []).length || ''}</small></button>
     <button class="srow${on('guide')}" data-act="go" data-r="guide" title="Guide"><span class="sic">🧭</span><span class="lbl">Guide</span></button>
-    <button class="srow${on('triage')}" data-act="go" data-r="triage" title="Triage">${ICON.tag}<span class="lbl">Triage</span>${nn ? `<small>${nn}</small>` : ''}</button>
     ${['general', 'shortcuts', 'sync'].map(sysRow).join('')}
     ${p.length ? `<div class="sh sub${folds.has('pins') ? ' closed' : ''}" data-act="fold" data-v="pins" role="button">${ICON.chev}<span>Pinned</span></div>${foldBox('pins', `<div id="spins">${p.map(pinRow).join('')}</div>`)}` : ''}
     ${tierFold('shipped', 'Shipped Projects')}${tierFold('hold', 'On Hold')}${tierFold('backlog', 'Backlog')}${tierFold('archived', 'Archived')}`;
@@ -1872,17 +2015,17 @@ function renderSide() {
     <button class="syncbtn" data-act="sync" title="Copy &quot;sync threads&quot; and open a new Builds chat">${ICON.sync}<span class="lbl">Sync</span><small>${syncLabel()}</small></button>
     <button class="srow${on('home')}" data-act="go" data-r="home" title="Home">${ICON.home}<span class="lbl">Home</span></button>
     <div class="sh plain"><span>Building</span><small>${projectsIn('building').length}</small><button class="mini" data-act="sec-new" data-tier="building" title="New project in Building" aria-label="New project in Building">${ICON.plus}</button></div>
-    <div class="slist" data-tier="building">${projectsIn('building').map(sideProj).join('')}</div>
+    <div class="slist" data-tier="building">${nestedIn('building').map(([x, d]) => sideProj(x, d)).join('')}</div>
     <div class="sgap"></div>
     <button class="srow${on('shipped')}" data-act="go" data-r="shipped" title="Shipped">${ICON.shipped}<span class="lbl">Shipped</span><small>${projectsIn('shipped').length || ''}</small></button>
-    <button class="srow${ideas ? on('group', ideas.id) : ''}" data-act="sys" data-k="ideas" title="Ideas"><span class="sic">💡</span><span class="lbl">Ideas</span><small>${sysCount('ideas') || ''}</small></button>
-    <div class="sh${folds.has('more') ? ' closed' : ''}" data-act="fold" data-v="more" role="button">${ICON.chev}<span>More</span>${nn ? `<i class="ncount">${nn}</i>` : ''}</div>
+    <button class="srow${on('triage')}${ideas && S.route === 'group' && S.gid === ideas.id && !S.filter ? ' on' : ''}" data-act="go" data-r="triage" title="Inbox: ideas and chats to file">${ICON.tag}<span class="lbl">Inbox</span>${nn ? `<i class="ncount">${nn}</i>` : sysCount('ideas') ? `<small>${sysCount('ideas')}</small>` : ''}</button>
+    <div class="sh${folds.has('more') ? ' closed' : ''}" data-act="fold" data-v="more" role="button">${ICON.chev}<span>More</span></div>
     ${foldBox('more', more)}
     <div class="side-foot"><button class="srow" data-act="settings" title="Settings">${ICON.gear}<span class="lbl">Settings</span></button></div>`;
 }
-function sideProj(s) {
+function sideProj(s, depth) {
   const sel = S.route === 'project' && S.pid === s.id && !S.filter, down = liveOf(s)?.state === 'down';
-  return `<button class="sproj${sel ? ' on' : ''}${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}" data-sid="${s.id}" title="${esc(s.name)}${down ? ' · site is down' : ''}">${gIcon(s)}<b>${esc(s.name)}</b>${syncOf(s).is_new ? '<i class="new">NEW</i>' : ''}${down ? '<i class="dot stuck" title="Down"></i>' : ''}</button>`;
+  return `<button class="sproj${depth ? ' sub' : ''}${sel ? ' on' : ''}${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}" data-sid="${s.id}" title="${esc(s.name)}${down ? ' · site is down' : ''}">${gIcon(s)}<b>${esc(s.name)}</b>${syncOf(s).is_new ? '<i class="new">NEW</i>' : ''}${down ? '<i class="dot stuck" title="Down"></i>' : ''}</button>`;
 }
 function pinRow(c) {
   const href = linkFor(c), inner = `<span class="kic">${kindIcon(c.kind)}</span><span><em>${esc(topOf(secOf(c))?.name || '')}</em> ${esc(shortName(c))}</span>`;
@@ -1898,7 +2041,7 @@ function renderTabbar() {
   const tabs = `<button class="tb${r === 'home' ? ' on' : ''}" data-act="go" data-r="home">${ICON.home}<span>Home</span></button>
     <button class="tb${r === 'projects' ? ' on' : ''}" data-act="go" data-r="projects">${ICON.stack}<span>Projects</span></button>
     <button class="tb${r === 'shipped' ? ' on' : ''}" data-act="go" data-r="shipped">${ICON.shipped}<span>Shipped</span></button>
-    <button class="tb${r === 'triage' ? ' on' : ''}" data-act="go" data-r="triage">${ICON.tag}<span>Triage</span>${nn ? `<i>${nn}</i>` : ''}</button>`;
+    <button class="tb${r === 'triage' ? ' on' : ''}" data-act="go" data-r="triage">${ICON.tag}<span>Inbox</span>${nn ? `<i>${nn}</i>` : ''}</button>`;
   if (!duoOn()) { el.innerHTML = tabs; return; }
   // threads-22: the same buttons on every screen, pinned under the clock, so the pill never changes size or moves
   // (New Project lives at the bottom of the Projects page).
@@ -2055,22 +2198,28 @@ function pcard(s) {
   return `<article class="pcard${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}">
     <div class="pc-h">${gIcon(s)}<b>${esc(s.name)}</b>${downChip(s)}</div>
     <p class="pc-n">${d.next ? esc(d.next) : d.now ? esc(d.now) : '<span class="muted">No next step yet</span>'}</p>
-    <div class="pc-f">${links}<span class="sp"></span>${n ? `<span class="tagx">${n} Plan${n > 1 ? 's' : ''}</span>` : ''}${cur ? `<a class="li" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}" title="Open ${esc(cur.name)}" aria-label="Open ${esc(cur.name)}">${ICON.k_chat}</a>` : ''}</div></article>`;
+    ${subChips(s)}<div class="pc-f">${links}<span class="sp"></span>${n ? `<span class="tagx">${n} Plan${n > 1 ? 's' : ''}</span>` : ''}${cur ? `<a class="li" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}" title="Open ${esc(cur.name)}" aria-label="Open ${esc(cur.name)}">${ICON.k_chat}</a>` : ''}</div></article>`;
 }
-function prow(s) {
+// Sub-projects on a parent's card (threads-32): tap one to open it.
+function subChips(s) {
+  const subs = subsOf(s).filter((x) => tierOf(x) === tierOf(s));
+  return subs.length ? `<div class="subchips">${subs.map((x) => `<button class="subchip${colorCls(colorOf(x))}" data-act="proj" data-id="${x.id}" title="${esc(normDoc(x).next || normDoc(x).now || x.name)}">${x.icon ? `<i>${esc(x.icon)}</i>` : ''}${esc(x.name)}${liveOf(x)?.state === 'down' ? '<i class="dot stuck"></i>' : ''}</button>`).join('')}</div>` : '';
+}
+function prow(s, depth) {
   const d = normDoc(s), line = d.next || d.now || syncOf(s).build || 'No next step yet';
-  return `<button class="prow${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}">${gIcon(s)}<span class="prow-t"><b>${esc(s.name)}</b><span>${esc(line)}</span></span>${downChip(s)}</button>`;
+  return `<button class="prow${depth ? ' sub' : ''}${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}">${gIcon(s)}<span class="prow-t"><b>${esc(s.name)}</b><span>${esc(line)}</span></span>${downChip(s)}</button>`;
 }
-// Home (threads-27, clean-up): just Waiting on You and the Building projects. Everything else lives in More / Triage.
+// Home (threads-27, clean-up; threads-32 adds Ideas): Waiting on You, Building (sub-projects inside their parent), Ideas.
 function dashHTML() {
   const list = projectsIn('building'), ym = yourMove(), shown = S.allMove ? ym.mine : ym.mine.slice(0, 6), p = pins();
-  const cardsHTML = list.length ? (wide() ? `<div class="pgrid">${list.map((s) => pcard(s)).join('')}</div>` : `<div class="plist glass">${list.map((s) => prow(s)).join('')}</div>`)
+  const cardsHTML = list.length ? (wide() ? `<div class="pgrid">${topIn('building').map((s) => pcard(s)).join('')}</div>` : `<div class="plist glass">${nestedIn('building').map(([s, dp]) => prow(s, dp)).join('')}</div>`)
     : `<div class="empty-card">Nothing in Building. ${wide() ? 'Drag a project into Building in the sidebar, or Plan an Update on a shipped one.' : 'Move one to Building from Projects.'}</div>`;
   return `<div class="page">
     ${wide() ? `<header class="ph"><h1>Home</h1><span class="muted">${syncLabel()}</span><div class="ph-a"><button class="act" data-act="sync">${ICON.sync}Sync</button><button class="add-btn" data-act="add">${ICON.plus}Add</button></div></header>` : ''}
     <section class="blk"><div class="blk-h"><h2>Waiting on You</h2><span class="muted">${ym.mine.length || ''}</span>${ym.mine.length > 6 ? `<button class="lnkbtn" data-act="all-move">${S.allMove ? 'Show less' : `Show all ${ym.mine.length}`}</button>` : ''}</div>
       <div class="dn glass ym">${shown.length ? shown.map((it) => ymRow(it, true)).join('') : '<div class="dn-empty">Nothing on you right now.</div>'}</div></section>
     <section class="blk"><div class="blk-h"><h2>Building</h2><span class="muted">${list.length}</span></div>${cardsHTML}</section>
+    ${ideasBlock()}
     ${!wide() && p.length ? `<section class="blk"><div class="blk-h"><h2>Pinned</h2></div><div class="dn glass ppins">${p.map(pinRow).join('')}</div></section>` : ''}
     ${!active().length && !projects().length ? `<div class="empty glass"><h2>Start with a sync</h2><p>Type <code>sync threads</code> in any Builds chat in Claude, copy the reply, and paste it here. Or add a chat link by hand.</p><button class="add-btn" data-act="import-open">${ICON.clip}Paste a sync</button></div>` : ''}
   </div>`;
@@ -2101,30 +2250,38 @@ function shippedHTML() {
 function projectsHTML() {
   return `<div class="page"><div class="plist glass pg-links"><button class="prow" data-act="go" data-r="docs"><span class="gicon">📄</span><span class="prow-t"><b>Docs</b><span>${(S.docs || []).length} files from your Builds project</span></span></button><button class="prow" data-act="go" data-r="guide"><span class="gicon">🧭</span><span class="prow-t"><b>Guide</b><span>How every part of Threads works</span></span></button></div>${TIERS.map(([t, label]) => {
     const list = projectsIn(t);
-    return `<section class="blk"><div class="blk-h"><h2>${label}</h2><span class="muted">${list.length}</span></div><div class="plist glass"><div class="slist" data-tier="${t}">${list.map((s) => {
+    return `<section class="blk"><div class="blk-h"><h2>${label}</h2><span class="muted">${list.length}</span></div><div class="plist glass"><div class="slist" data-tier="${t}">${nestedIn(t).map(([s, dp]) => {
       const h = health(s), d = normDoc(s), line = d.next ? `Next: ${d.next}` : d.now || syncOf(s).build || TIER_HINT[t];
-      return `<div class="sproj${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}" data-sid="${s.id}" role="button">${gIcon(s)}<span class="prow-t"><b>${esc(s.name)}</b><span>${esc(line)}</span></span>${hbadge(h)}</div>`;
+      return `<div class="sproj${dp ? ' sub' : ''}${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}" data-sid="${s.id}" role="button">${gIcon(s)}<span class="prow-t"><b>${esc(s.name)}</b><span>${esc(line)}</span></span>${hbadge(h)}</div>`;
     }).join('')}</div></div></section>`;
   }).join('')}<p class="muted" style="text-align:center">Press and hold a project to drag it between tiers.</p>
     <button class="btn ghost" data-act="sec-new">${ICON.plus}New project</button></div>`;
 }
 function triageHTML() {
-  const nm = needsNaming(), uf = unfiled();
-  const sys = (k) => { const n = sysCount(k); return `<button class="sysrow c-${SYSTEM[k].color}" data-act="sys" data-k="${k}"><span class="gicon">${SYSTEM[k].icon}</span><span class="prow-t"><b>${SYSTEM[k].name}</b><span>${esc(SYSTEM[k].hint)}</span></span><small>${n}</small></button>`; };
-  return `<div class="page"><header class="ph"><h1>Triage</h1><span class="muted">Keep the Builds project tidy</span></header>
-    <section class="blk"><div class="blk-h"><h2>Folders</h2></div><div class="dn glass">${SYS_KEYS.map(sys).join('')}</div></section>
-    <section class="blk"><div class="blk-h"><h2>Not in a Project</h2><span class="muted">${uf.length}</span></div>${uf.length ? `<div class="dn glass">${uf.map(ufRow).join('')}</div>` : '<div class="empty-card">Nothing unfiled.</div>'}</section>
+  const nm = needsNaming(), uf = unfiled(), ideas = ideasList();
+  for (const id of [...S.bundle]) if (!uf.some((c) => c.id === id)) S.bundle.delete(id);
+  const n = S.bundle.size;
+  const sys = (k) => { const c = sysCount(k); return `<button class="sysrow c-${SYSTEM[k].color}" data-act="sys" data-k="${k}"><span class="gicon">${SYSTEM[k].icon}</span><span class="prow-t"><b>${SYSTEM[k].name}</b><span>${esc(SYSTEM[k].hint)}</span></span><small>${c}</small></button>`; };
+  return `<div class="page"><header class="ph"><h1>Inbox</h1><span class="muted">Ideas, and chats that need a home</span><div class="ph-a"><button class="add-btn" data-act="new-idea">${ICON.plus}Add Idea</button></div></header>
+    <section class="blk"><div class="blk-h"><h2>Ideas</h2><span class="muted">${ideas.length}</span>${ideas.length ? '<button class="lnkbtn" data-act="sys" data-k="ideas">All Ideas</button>' : ''}</div>
+      ${ideas.length ? `<div class="dn glass">${ideas.map(ideaRow).join('')}</div>` : '<div class="empty-card">No ideas yet. Add Idea (or New → Idea for Later) saves one here, and Claude preps a scope doc for it.</div>'}</section>
+    <section class="blk"><div class="blk-h"><h2>Needs a Home</h2><span class="muted">${uf.length}</span>${uf.length > 1 ? `<button class="lnkbtn" data-act="file-all">File All ${uf.length}</button>` : ''}</div>
+      ${n ? `<div class="bundlebar glass"><b>${n} selected</b><span class="sp"></span><button class="act pri" data-act="bundle-open"${n < 2 ? ' disabled' : ''}>🎫 Bundle</button><button class="act" data-act="bundle-clear">Clear</button></div>` : ''}
+      ${uf.length ? `<div class="dn glass">${uf.map(ufRow).join('')}</div><p class="muted inbox-hint">File It sends a chat where the arrow points. Tap the circles to pick chats that belong together, then Bundle them.</p>` : '<div class="empty-card">Every chat has a home.</div>'}</section>
     <section class="blk"><div class="blk-h"><h2>Rename in Claude</h2><span class="muted">${nm.length}</span></div>
       <p class="muted" style="font-size:13px;margin:-4px 2px 2px">Titles should be <code>Name - Scope</code> or <code>Name - Build N</code> (N = which build chat). Rename in Claude and the next sync picks it up.</p>
-      ${nm.length ? `<div class="dn glass">${nm.map(nmRow).join('')}</div>` : '<div class="empty-card">Every synced chat has a proper name.</div>'}</section></div>`;
+      ${nm.length ? `<div class="dn glass">${nm.map(nmRow).join('')}</div>` : '<div class="empty-card">Every synced chat has a proper name.</div>'}</section>
+    <section class="blk"><div class="blk-h"><h2>Folders</h2></div><div class="dn glass">${SYS_KEYS.map(sys).join('')}</div></section></div>`;
 }
 function sysPageHTML(g) {
-  const k = sysOf(g), list = allChatsIn(g).sort(bySort('position'));
+  const k = sysOf(g), list = chatsIn(g.id), bundles = children(g.id), total = allChatsIn(g).length;
   const row = (c) => { const href = linkFor(c); return `<div class="nm"><div class="nm-t" data-act="detail" data-id="${c.id}" role="button"><b>${esc(c.name)}</b><span>${subline(c)}</span></div>
     <div class="nm-a">${k === 'ideas' ? `<button class="act pri" data-act="make-proj" data-id="${c.id}">${ICON.star}Make Project</button>` : ''}<button class="act" data-act="file-open" data-id="${c.id}">${ICON.folder}Move</button>${href ? `<a class="act" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open</a>` : ''}</div></div>`; };
-  return `<div class="page"><header class="ph"><h1>${esc(g.name)}</h1><span class="muted">${list.length}</span><div class="ph-a"><button class="add-btn" data-act="add">${ICON.plus}${k === 'ideas' ? 'Add Idea' : 'Add'}</button></div></header>
+  const bundleHTML = bundles.map((b) => { const bl = allChatsIn(b).sort(bySort('position'));
+    return `<section class="blk"><div class="blk-h"><h2>${esc(b.icon || '🎫')} ${esc(b.name)}</h2><span class="muted">${bl.length}</span><button class="lnkbtn" data-act="sec-menu" data-id="${b.id}">Edit</button></div>${bl.length ? `<div class="dn glass">${bl.map(row).join('')}</div>` : '<div class="empty-card">Empty bundle.</div>'}</section>`; }).join('');
+  return `<div class="page"><header class="ph"><h1>${esc(g.name)}</h1><span class="muted">${total}</span><div class="ph-a"><button class="add-btn" data-act="add">${ICON.plus}${k === 'ideas' ? 'Add Idea' : 'Add'}</button></div></header>
     <p class="muted" style="font-size:14px;margin-top:-8px">${esc(SYSTEM[k]?.hint || '')}${k === 'ideas' ? ' No link? Add it as a notes card.' : ''}</p>
-    ${list.length ? `<div class="dn glass">${list.map(row).join('')}</div>` : `<div class="empty-card">${k === 'ideas' ? 'No ideas yet. Hit Add Idea, or file a chat here from Triage.' : 'Sync chats show up here after your next sync.'}</div>`}</div>`;
+    ${list.length ? `<div class="dn glass">${list.map(row).join('')}</div>` : bundles.length ? '' : `<div class="empty-card">${k === 'ideas' ? 'No ideas yet. Hit Add Idea, or file a chat here from the Inbox.' : 'Chats show up here once they\'re filed.'}</div>`}${bundleHTML}</div>`;
 }
 function searchHTML() {
   const q = S.filter.toLowerCase();
@@ -2160,13 +2317,14 @@ const CHECKS = [
 ];
 // Project page (threads-30, full redesign): a glass hero tinted with the project's color, one row of main actions
 // (the rest in ⋯), then tiles: Next Step, Plans, Chats, Docs, Links, Health, Builds, Setup. Every tile has a ? that opens the Guide.
-const TILE_I = { next: '🎯', plans: '📌', chats: '💬', docs: '📄', links: '🔗', health: '🩺', builds: '🧱', setup: '🛠️' };
+const TILE_I = { subs: '🪆', next: '🎯', plans: '📌', chats: '💬', docs: '📄', links: '🔗', health: '🩺', builds: '🧱', setup: '🛠️' };
 function tile(k, title, body, extra = '', cls = '') {
   return `<section class="tile glass${cls}" data-tile="${k}"><div class="tile-h"><span class="tile-i">${TILE_I[k] || ''}</span><h3>${title}</h3>${extra}<button class="qbtn" data-act="guide" data-k="${k}" aria-label="How ${title} works" title="How this works">?</button></div><div class="tile-b">${body}</div></section>`;
 }
 function projectHTML(s) {
   const h = health(s), sy = syncOf(s), d = normDoc(s), app = projLink(s, 'live'), cur = currentChat(s), tier = tierOf(s), gapsN = (sy.gaps || []).length;
   const hero = `<header class="hero2 glass${colorCls(colorOf(s))}">
+    ${parentProj(s) ? `<button class="crumb" data-act="proj" data-id="${parentProj(s).id}">${gIcon(parentProj(s))}Part of ${esc(parentProj(s).name)}${ICON.go}</button>` : ''}
     <div class="hero-top">${gIcon(s)}<div class="hero-t"><h1>${esc(s.name)}</h1>
       <div class="pj-sub"><button class="tierbtn" data-act="tier-menu" data-id="${s.id}" title="Move to another tier">${TIER_NAME[tier]}${ICON.chev}</button>${sy.build ? `<code>${esc(sy.build)}</code>` : ''}${sy.deployed === false ? '<span class="tagx warn">Not deployed</span>' : ''}${liveChip(s)}${liveCheckable(s) ? `<button class="lnkbtn recheck" data-act="live-recheck" data-id="${s.id}" title="Check the live site now">${ICON.sync}Recheck</button>` : ''}</div></div>
       <button class="more" data-act="pj-actions" data-id="${s.id}" aria-label="More actions for ${esc(s.name)}" title="More actions">${ICON.more}</button></div>
@@ -2196,7 +2354,10 @@ function projectHTML(s) {
   const builds = tile('builds', 'Builds', all.length ? `<div class="tl">${all.slice(0, 8).map((b) => `<div class="tl-r"><code>${b.n != null ? `${esc(slugOf(s))}-${b.n}` : '—'}</code><span>${esc(fmtDate(b.date))}</span><div>${esc(b.summary)}</div></div>`).join('')}</div>` : '<p class="muted">No builds synced yet.</p>', `<small class="muted">${all.length || ''}</small>`);
   const setup = tile('setup', 'Setup', `<details class="tile-more"${S.openDet.has('setup') ? ' open' : ''} data-det="setup"><summary>${ICON.chev}Stack, Accounts, Env Vars</summary>${TAB.setup(s)}</details>
     <details class="tile-more"${S.openDet.has('playbook') ? ' open' : ''} data-det="playbook"><summary>${ICON.chev}Playbook${gapsN ? ` <small class="tagx bad">${gapsN} to fix</small>` : ''}</summary>${TAB.playbook(s)}</details>`, '', ' t-wide');
-  return `<div class="page pj2${colorCls(colorOf(s))}">${hero}${longBar(s, h)}<div class="tiles">${next}${plans}${chats}${docs}${links}${healthT}${builds}${setup}</div></div>`;
+  const sub = subsOf(s);
+  const subsT = sub.length ? tile('subs', 'Sub-projects', `<div class="plist">${sub.map((x) => { const dx = normDoc(x), sx = syncOf(x);
+    return `<button class="prow${colorCls(colorOf(x))}" data-act="proj" data-id="${x.id}">${gIcon(x)}<span class="prow-t"><b>${esc(x.name)}</b><span>${esc([TIER_NAME[tierOf(x)], sx.build, dx.next ? `Next: ${dx.next}` : dx.now].filter(Boolean).join(' · '))}</span></span>${downChip(x)}</button>`; }).join('')}</div>`, `<small class="muted">${sub.length}</small>`, ' t-wide') : '';
+  return `<div class="page pj2${colorCls(colorOf(s))}">${hero}${longBar(s, h)}<div class="tiles">${subsT}${next}${plans}${chats}${docs}${links}${healthT}${builds}${setup}</div></div>`;
 }
 function openPjActions(id) {
   const s = secById(id);
@@ -2676,6 +2837,7 @@ function syncPatch(p, s, kind, at) {
   if ('status' in p) patch.status = str(p.status, 24);
   if ('now' in p) patch.now = str(p.now, 400);
   if ('next' in p) patch.next = str(p.next, 400);
+  if ('parent' in p) patch.parent = p.parent == null ? '' : str(p.parent, 80); // resolved to a slug in parseSync (threads-32)
   if (Array.isArray(p.details)) patch.details = p.details.map((x) => str(x, 200)).filter(Boolean).slice(0, 3);
   if (p.links && typeof p.links === 'object' && !Array.isArray(p.links)) patch.links = mergeLinks(normDoc(s).links, p.links);
   if (p.setup && typeof p.setup === 'object') { const r = docFields(p.setup); dropped += r.dropped; for (const k of ['tools', 'accounts', 'env', 'notes']) if (r.patch[k]) patch[k] = r.patch[k]; }
@@ -2702,13 +2864,15 @@ function parseSync(j) {
   const kind = j.kind === 'project' ? 'project' : 'all';
   const at = isoOr(j.synced_at) || nowISO();
   const str = (v, n) => String(v ?? '').trim().slice(0, n);
-  const plan = { kind, at, newSecs: [], projUps: [], newChats: [], chatUps: [], renamed: 0, moved: 0, bad: 0, dropped: 0 };
+  const plan = { kind, at, newSecs: [], projUps: [], newChats: [], chatUps: [], renamed: 0, moved: 0, bad: 0, dropped: 0, tri: {} };
   const reg = new Map();
   const add = (k, s) => { k = String(k || '').trim().toLowerCase(); if (k && !reg.has(k)) reg.set(k, s); };
   for (const s of projects()) { add(syncOf(s).slug, s); add(s.name, s); }
   for (const s of projects()) add(slugOf(s), s);
   const find = (name, slug) => reg.get(String(slug || '').trim().toLowerCase()) || reg.get(String(name || '').trim().toLowerCase())
     || reg.get(String(name || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''));
+  const homeKey = (h) => { const k = String(h || '').trim().toLowerCase(); if (!k) return null; if (SYS_KEYS.includes(k)) return k;
+    const sk = SYS_KEYS.find((x) => SYSTEM[x].name.toLowerCase() === k); if (sk) return sk; const ps = find(h, h); return ps ? slugOf(ps) : null; };
   let colorIdx = projects().length;
   const create = (name, p, act) => {
     const recent = act && Date.now() - Date.parse(act) < 7 * 864e5; // new projects: Active if touched in the last 7 days
@@ -2726,6 +2890,12 @@ function parseSync(j) {
     if (isNew) s = create(name, p, p.last_activity);
     if (plan.projUps.some((u) => u.s === s)) continue;
     const r = syncPatch(p, s, kind, at);
+    if ('parent' in r.patch) { // same rule as api/_lib/apply.js: "" clears, unknown / itself / a sub-project leaves it alone
+      const ps = r.patch.parent ? find(r.patch.parent, r.patch.parent) : null;
+      if (!r.patch.parent) r.patch.parent = '';
+      else if (ps && ps !== s && !docOf(ps).parent) r.patch.parent = slugOf(ps);
+      else delete r.patch.parent;
+    }
     plan.dropped += r.dropped;
     plan.projUps.push({ s, isNew: isNew || plan.newSecs.includes(s), patch: r.patch, look: r.look });
   }
@@ -2754,9 +2924,12 @@ function parseSync(j) {
       if (!ex.archived_at && target && curTop?.id !== target.id && (cur?.is_inbox || c.proper === true || isSync)) { up.section_id = target.id; plan.moved++; }
       if (fk && sug === null && ex.suggest) up.suggest = null;
       if (Object.keys(up).length > 1) plan.chatUps.push({ c: ex, up });
+      const home = !up.section_id && cur?.is_inbox ? homeKey(c.home) : null;
+      if (home) plan.tri[ex.id] = { to: home, why: str(c.home_why, 140) };
     } else {
-      const sec = target || inbox();
-      plan.newChats.push({ id: uid(), section_id: sec.id, name: title, chat_uuid: lp.chat_uuid, kind: 'chat', url: null, notes: str(c.notes, 2000), todos: [],
+      const sec = target || inbox(), nid = uid(), home = !target ? homeKey(c.home) : null;
+      if (home) plan.tri[nid] = { to: home, why: str(c.home_why, 140) };
+      plan.newChats.push({ id: nid, section_id: sec.id, name: title, chat_uuid: lp.chat_uuid, kind: 'chat', url: null, notes: str(c.notes, 2000), todos: [],
         position: 0, pinned: false, pin_position: null, archived_at: null, last_opened_at: null, created_at: nowISO(), claude_updated_at: upd, suggest: sug || null });
     }
   }
@@ -2820,6 +2993,10 @@ function applySync() {
     return up;
   });
   for (let i = 0; i < ups.length; i += 250) ops.push({ op: 'patch', table: 'chats', rows: ups.slice(i, i + 250) });
+  if (Object.keys(p.tri).length) {
+    S.settings.triage = { ...(S.settings.triage || {}), chats: { ...triMap(), ...p.tri } };
+    ops.push({ op: 'upsert', table: 'settings', row: { id: 'triage', value: S.settings.triage } });
+  }
   S.settings.sync = { ...(S.settings.sync || {}), last_synced: p.at };
   ops.push({ op: 'upsert', table: 'settings', row: { id: 'sync', value: S.settings.sync } });
   closeSheet(); renderTop(); renderContent();
@@ -3158,6 +3335,7 @@ function openGroupForm(id, parentId, tier) {
     <p class="err" id="g-err"></p>
     <button class="btn" data-act="g-save" data-id="${s?.id || ''}">${s ? 'Save group' : 'Create group'}</button>
     ${s ? `<button class="btn ghost" data-act="sec-new-sub" data-id="${s.id}">${ICON.plus}Add a group inside this one</button>` : ''}
+    ${s && !s.is_inbox && !s.parent_id && !sysOf(s) && !subsOf(s).length ? `<div class="field"><span>Parent Project (makes this a sub-project)</span><div class="picker" id="g-pparent"><button class="pick${!parentProj(s) ? ' on' : ''}" data-act="pick" data-v="">None: a project of its own</button>${projects().filter((x) => x !== s && !docOf(x).parent).map((x) => `<button class="pick${parentProj(s) === x ? ' on' : ''}" data-act="pick" data-v="${esc(slugOf(x))}">${x.icon ? esc(x.icon) + ' ' : ''}${esc(x.name)}</button>`).join('')}</div></div>` : ''}
     ${s && !s.is_inbox && !s.parent_id ? `<button class="btn ghost" data-act="tier-menu" data-id="${s.id}">${ICON.stack}Tier: ${TIER_NAME[tierOf(s)]}</button>` : ''}
     ${s && !s.is_inbox && s.parent_id ? `<button class="btn ghost" data-act="sec-archive" data-id="${s.id}">${ICON.archive}Archive group</button>` : ''}${del}`);
   if (!s) setTimeout(() => $('#g-name')?.focus(), 350);
@@ -3185,6 +3363,7 @@ function saveGroup(id) {
   }
   const patch = { id: s.id, name: name.slice(0, 80), icon, color, project_uuid };
   if ($('#g-home')) patch.home_chat_id = val('g-home') || null;
+  if ($('#g-pparent')) { const pp = val('g-pparent') || ''; if ((docOf(s).parent || '') !== pp) { const d = { ...docOf(s) }; if (pp) d.parent = pp; else delete d.parent; patch.doc = d; } }
   const rows = [];
   if ((s.parent_id || null) !== parent_id && !s.is_inbox) {
     const oldParent = parentOf(s)?.id || null;
@@ -3656,6 +3835,15 @@ const A = {
     if (S.filter) { S.filter = ''; $$('.filter-inp').forEach((i) => { i.value = ''; }); }
     localStorage.setItem('threads.route', 'group'); localStorage.setItem('threads.gid', g.id); closeSheet(); renderTop(); renderContent(); scrollTo(0, 0); },
   'file-sys': (el) => fileSys(el.dataset.id, el.dataset.k),
+  'file-home': (el) => fileHome(el.dataset.id),
+  'file-all': () => fileAll(),
+  'bundle-tog': (el) => bundleTog(el.dataset.id),
+  'bundle-open': () => openBundle(),
+  'bundle-go': () => makeBundle(),
+  'bundle-clear': () => { S.bundle.clear(); renderContent(); },
+  'idea-start': (el) => ideaGo(el.dataset.id, 'start'),
+  'idea-prep': (el) => ideaGo(el.dataset.id, 'prep'),
+  'new-idea': () => openNewForm('idea'),
   'file-open': (el) => openFile(el.dataset.id),
   'file-proj': (el) => fileToProject(el.dataset.id, el.dataset.sid),
   'make-proj': (el) => openMakeProject(el.dataset.id),

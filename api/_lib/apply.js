@@ -65,6 +65,7 @@ function syncPatch(p, kind, at) {
   if ('status' in p) patch.status = str(p.status, 24);
   if ('now' in p) patch.now = str(p.now, 400);
   if ('next' in p) patch.next = str(p.next, 400);
+  if ('parent' in p) patch.parent = p.parent == null ? '' : str(p.parent, 80); // resolved to a slug in applySync (threads-32)
   if (Array.isArray(p.details)) patch.details = p.details.map((x) => str(x, 200)).filter(Boolean).slice(0, 3);
   if (p.setup && typeof p.setup === 'object') for (const k of ['tools', 'accounts', 'env', 'notes']) if (Array.isArray(p.setup[k])) patch[k] = p.setup[k];
   const sy = { synced_at: at };
@@ -147,6 +148,12 @@ export async function applySync(j, source = 'connector') {
     if (isNew) s = create(name, p, p.last_activity);
     if (projUps.some((u) => u.s === s)) continue;
     const { patch, sy } = syncPatch(p, kind, at);
+    if ('parent' in patch) { // sub-projects (threads-32): name or slug → the parent's slug; "" clears; never itself, one level only
+      const ps = patch.parent ? find(patch.parent, patch.parent) : null;
+      if (!patch.parent) patch.parent = '';
+      else if (ps && ps !== s && !docOf(ps).parent) patch.parent = slugOf(ps);
+      else delete patch.parent; // unknown parent, itself, or a sub-project: leave it as it was
+    }
     const look = {};
     if (p.icon && !s.icon) look.icon = str(p.icon, 16);
     if (COLORS.includes(p.color) && !s.color) look.color = p.color;
@@ -154,6 +161,11 @@ export async function applySync(j, source = 'connector') {
     projUps.push({ s, isNew, patch, sy, look });
   }
 
+  // Inbox suggestions (threads-32): settings.triage.chats = {chat row id: {to: project slug | folder key, why}}.
+  const tri = { ...(settings.triage?.chats || {}) };
+  let triChanged = false;
+  const homeOf = (h) => { const k = String(h || '').trim().toLowerCase(); if (!k) return null; if (SYS_KEYS.includes(k)) return k;
+    const sk = SYS_KEYS.find((x) => SYSTEM[x].name.toLowerCase() === k); if (sk) return sk; const ps = find(h, h); return ps ? slugOf(ps) : null; };
   const seen = new Set();
   const minPos = (sid) => Math.min(0, ...chats.filter((c) => c.section_id === sid).map((c) => c.position ?? 0), ...newChats.filter((c) => c.section_id === sid).map((c) => c.position ?? 0));
   for (const c of (Array.isArray(j.chats) ? j.chats : []).slice(0, 500)) {
@@ -178,10 +190,15 @@ export async function applySync(j, source = 'connector') {
       if (!ex.archived_at && target && curTop?.id !== target.id && (cur?.is_inbox || c.proper === true || isSync)) { up.section_id = target.id; up.position = minPos(target.id) - 1; moved++; }
       if (fk && sug === null && ex.suggest) up.suggest = null;
       if (Object.keys(up).length > 1) chatUps.push(up);
+      const home = !up.section_id && cur?.is_inbox ? homeOf(c.home) : null;
+      if (home) { tri[ex.id] = { to: home, why: str(c.home_why, 140) }; triChanged = true; }
+      else if (up.section_id && tri[ex.id]) { delete tri[ex.id]; triChanged = true; }
     } else {
       const sec = target || inbox;
       if (!sec) continue;
-      newChats.push({ id: uid(), section_id: sec.id, name: title, chat_uuid: id, kind: 'chat', url: null, notes: str(c.notes, 2000), todos: [],
+      const nid = uid(), home = !target ? homeOf(c.home) : null;
+      if (home) { tri[nid] = { to: home, why: str(c.home_why, 140) }; triChanged = true; }
+      newChats.push({ id: nid, section_id: sec.id, name: title, chat_uuid: id, kind: 'chat', url: null, notes: str(c.notes, 2000), todos: [],
         position: minPos(sec.id) - 1, pinned: false, pin_position: null, archived_at: null, last_opened_at: null, created_at: nowISO(), claude_updated_at: upd, suggest: sug || null });
     }
   }
@@ -210,6 +227,11 @@ export async function applySync(j, source = 'connector') {
   for (const r of secPatches) { const { id, ...rest } = r; await q(db().from(T.sections).update(rest).eq('id', id)); }
   for (let i = 0; i < newChats.length; i += 150) await q(db().from(T.chats).upsert(newChats.slice(i, i + 150)));
   for (const r of chatUps) { const { id, ...rest } = r; await q(db().from(T.chats).update(rest).eq('id', id)); }
+  if (triChanged) {
+    const live = new Set([...chats.map((c) => c.id), ...newChats.map((c) => c.id)]);
+    for (const k of Object.keys(tri)) if (!live.has(k)) delete tri[k];
+    await q(db().from(T.settings).upsert({ id: 'triage', value: { ...(settings.triage || {}), chats: tri } }));
+  }
   const syncSet = { ...(settings.sync || {}), last_synced: at, last_source: source };
   await q(db().from(T.settings).upsert({ id: 'sync', value: syncSet }));
 
@@ -218,6 +240,7 @@ export async function applySync(j, source = 'connector') {
     projects_updated: projUps.filter((u) => !u.isNew).map((u) => u.s.name),
     projects_new: projUps.filter((u) => u.isNew).map((u) => `${u.s.name} (${u.s.status})`).concat(newSecs.filter((r) => !sysOf(r) && !projUps.some((u) => u.s === r)).map((r) => `${r.name} (${r.status})`)),
     chats_new: newChats.length, chats_renamed: renamed, chats_moved: moved, chats_with_bad_links: badLinks,
+    inbox_suggestions: Object.keys(tri).length,
   };
 }
 
@@ -255,7 +278,8 @@ export async function status(projectName) {
     const d = docOf(s), sy = d.sync || {};
     return { name: s.name, slug: slugOf(s), tier: normTier(s.status), status: d.status || null, build: sy.build || null, deployed: sy.deployed ?? null,
       now: d.now || null, next: d.next || null, next_owner: sy.next_owner || null, current_chat: sy.current_chat || null, updates_in_chat: sy.updates_in_chat ?? null,
-      synced_at: sy.synced_at || null, gaps: (sy.gaps || []).map((g) => g.text), plans: (d.plans || []).length };
+      synced_at: sy.synced_at || null, gaps: (sy.gaps || []).map((g) => g.text), plans: (d.plans || []).length,
+      ...(d.parent ? { parent: d.parent } : {}), ...(projects.some((x) => docOf(x).parent === slugOf(s)) ? { sub_projects: projects.filter((x) => docOf(x).parent === slugOf(s)).map((x) => x.name) } : {}) };
   };
   if (projectName && !one) return { error: `No project called "${projectName}". Projects: ${projects.map((s) => s.name).join(', ')}` };
   if (one) {
@@ -264,5 +288,7 @@ export async function status(projectName) {
       chats: chats.filter((c) => ids.has(c.section_id) && !c.archived_at).map((c) => ({ title: c.name, link: c.chat_uuid ? `https://claude.ai/chat/${c.chat_uuid}` : c.url })),
       stack: (d.tools || []).map((t) => t.name), env_names: (d.env || []).map((e) => e.name) };
   }
-  return { last_synced: settings.sync?.last_synced || null, projects: projects.sort((a, b) => (a.position ?? 0) - (b.position ?? 0)).map(brief) };
+  const inboxSec = sections.find((s) => s.is_inbox), triMap = settings.triage?.chats || {};
+  const inboxChats = inboxSec ? chats.filter((c) => c.section_id === inboxSec.id && !c.archived_at).map((c) => ({ title: c.name, link: c.chat_uuid ? `https://claude.ai/chat/${c.chat_uuid}` : c.url, suggested_home: triMap[c.id]?.to || null })) : [];
+  return { last_synced: settings.sync?.last_synced || null, inbox: inboxChats, projects: projects.sort((a, b) => (a.position ?? 0) - (b.position ?? 0)).map(brief) };
 }
