@@ -119,7 +119,8 @@ async function callTool(name, args = {}) {
     if (!args.name) return text('name is required.', true);
     const p = { ...args };
     if (!p.last_activity) p.last_activity = new Date().toISOString();
-    p.build_at = new Date().toISOString(); // Building Now (threads-36): a build chat touched it
+    // Building Now (threads-36): only real build progress counts, not a tier move, a parent or a date.
+    if (['build', 'build_n', 'deployed', 'now', 'next', 'current_chat', 'updates_in_chat', 'builds'].some((k) => k in args)) p.build_at = new Date().toISOString();
     const tier = p.tier; delete p.tier;
     const r = await applySync({ threads_sync: 2, kind: 'project', synced_at: new Date().toISOString(), projects: [p], chats: [] }, 'connector: build');
     if (tier) {
