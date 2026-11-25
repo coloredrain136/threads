@@ -13,6 +13,8 @@ import { normTier } from './_lib/tiers.js';
 const docOf = (s) => (s?.doc && typeof s.doc === 'object' ? s.doc : {});
 const syncOf = (s) => { const x = docOf(s).sync; return x && typeof x === 'object' ? x : {}; };
 const slugOf = (s) => syncOf(s).slug || String(s.name).toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+// Live Check result for the feed: "up" | "down" | "mismatch" (no version file counts as up). Added field; old scripts ignore it.
+const liveOf = (settings, slug) => { const r = settings.live?.results?.[slug]; return !r ? null : r.state === 'down' ? 'down' : r.state === 'mismatch' ? 'mismatch' : 'up'; };
 const iso = (t) => (t ? new Date(t).toISOString() : null);
 
 export function buildFeed({ sections, chats, settings }, now = Date.now()) {
@@ -25,21 +27,24 @@ export function buildFeed({ sections, chats, settings }, now = Date.now()) {
     const ids = new Set([s.id, ...kids(s.id)]);
     let la = Date.parse(sy.last_activity || '') || 0;
     for (const c of chats) if (ids.has(c.section_id) && !c.archived_at && c.claude_updated_at) la = Math.max(la, Date.parse(c.claude_updated_at) || 0);
+    const lv = (stage === 'building' || stage === 'shipped') ? liveOf(settings, slugOf(s)) : null; // Live Check (threads-26)
     let health = 'ok';
-    if (stage !== 'building') health = stage === 'shipped' && sy.deployed === false ? 'waiting' : 'ok';
+    if (stage !== 'building') health = stage === 'shipped' && (sy.deployed === false || lv === 'down') ? 'waiting' : 'ok';
     else if (!sy.synced_at) health = 'unknown';
     else {
       const days = la ? Math.floor((now - la) / 864e5) : null;
       if (days === null || days >= lim) health = 'stuck';
-      else if (sy.deployed === false || sy.next_owner === 'joe') health = 'waiting';
+      else if (sy.deployed === false || sy.next_owner === 'joe' || lv === 'down') health = 'waiting';
     }
-    return {
+    const row = {
       name: s.name, slug: slugOf(s), icon: s.icon || null, tier, stage, health,
       status: d.status || null, build: sy.build || null, deployed: sy.deployed ?? null,
       now: d.now || null, next: d.next || null, next_owner: sy.next_owner || null,
       current_chat: sy.current_chat || null, last_activity: iso(la), gaps: (sy.gaps || []).length,
       position: s.position ?? 0,
     };
+    if (lv) row.live = lv;
+    return row;
   });
   out.sort((a, b) => (Date.parse(b.last_activity || 0) || 0) - (Date.parse(a.last_activity || 0) || 0) || a.position - b.position);
   out.forEach((p) => delete p.position);

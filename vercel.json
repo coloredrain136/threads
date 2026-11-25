@@ -77,5 +77,11 @@
       "destination": "https://threads.zerogee.dev/:path",
       "permanent": false
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/live",
+      "schedule": "17 8 * * *"
+    }
   ]
 }

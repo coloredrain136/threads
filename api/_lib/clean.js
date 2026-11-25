@@ -44,6 +44,10 @@ export function cleanDoc(d) {
   if ('links' in d) o.links = list(d.links, 40).map((l) => ({ label: str(l?.label, 60), url: str(l?.url, 500) })).filter((l) => URLRE.test(l.url));
   if ('updated_at' in d) o.updated_at = str(d.updated_at, 40);
   if ('sync' in d) o.sync = cleanSync(d.sync);
+  if ('nudge_snooze' in d && d.nudge_snooze && typeof d.nudge_snooze === 'object') { // Tier Nudge "Keep" (threads-26): {kind: until ISO}
+    o.nudge_snooze = {};
+    for (const k of ['paused', 'idle', 'plan']) if (iso(d.nudge_snooze[k])) o.nudge_snooze[k] = iso(d.nudge_snooze[k]);
+  }
   if (['ideas', 'general', 'shortcuts', 'sync'].includes(d.system)) o.system = d.system; // system folders (threads-10)
   return o;
 }
@@ -61,6 +65,10 @@ function cleanSync(x) {
   if ('next_owner' in x) o.next_owner = str(x.next_owner, 20).toLowerCase();
   if ('last_activity' in x) o.last_activity = iso(x.last_activity);
   if ('synced_at' in x) o.synced_at = iso(x.synced_at);
+  // Your Move (threads-26): when the current next step appeared, and the step Joe checked off.
+  if ('next_since' in x) o.next_since = iso(x.next_since);
+  if ('next_done_at' in x) o.next_done_at = iso(x.next_done_at);
+  if ('next_done_text' in x) o.next_done_text = str(x.next_done_text, 400);
   if ('current_chat' in x) o.current_chat = str(x.current_chat, 80);
   if ('updates_in_chat' in x) o.updates_in_chat = int(x.updates_in_chat, 99);
   if ('is_new' in x) o.is_new = !!x.is_new;

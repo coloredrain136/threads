@@ -694,6 +694,28 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 /* project colors (last so they win) */
 .c-gold{--c:#f2c46d}.c-coral{--c:#ff8a65}.c-rose{--c:#f48fb1}.c-violet{--c:#b39ddb}
 .c-blue{--c:#64b5f6}.c-teal{--c:#4dd0e1}.c-green{--c:#81c784}.c-slate{--c:#90a4ae}
+/* Your Move + Live Check (threads-26) */
+.ymck{width:26px;height:26px;min-width:26px;border-radius:50%;border:2px solid color-mix(in srgb,var(--ink-3) 70%,transparent);display:grid;place-items:center;color:transparent;background:none;cursor:pointer;padding:0;transition:border-color .15s,background .15s,color .15s}
+.ymck svg{width:13px;height:13px}
+.ymck:hover{border-color:var(--ok);color:color-mix(in srgb,var(--ok) 70%,transparent)}
+.ymck.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.ymck-sp{width:26px;min-width:26px}
+.ym-row{transition:opacity .22s,transform .24s}
+.ym-row.out{opacity:0;transform:translateX(28px)}
+.ym-age{font-size:12px;font-weight:650;color:var(--ink-3)}
+.ym-b{display:flex;gap:6px;flex:none}
+.tagx.tidy{background:color-mix(in srgb,#b39ddb 24%,transparent);color:color-mix(in srgb,#9b7fd4 85%,var(--ink))}
+.tagx.ct{background:color-mix(in srgb,#64a8ff 18%,transparent);color:color-mix(in srgb,#64a8ff 80%,var(--ink))}
+.ym-c .dn-row{padding-top:8px;padding-bottom:8px}
+.ym-c .dn-row > .gicon{width:24px;height:24px;min-width:24px;font-size:13px;border-radius:6px}
+.ym-c .dn-t p{font-size:13px;-webkit-line-clamp:1}
+.lchip .ldot{width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block}
+.lchip:not(.ok):not(.bad):not(.warn){color:var(--ink-3)}
+.lnkbtn.recheck{display:inline-flex;align-items:center;gap:4px;font-size:12px}
+.lnkbtn.recheck svg{width:12px;height:12px}
+.toast.has-btn{pointer-events:auto;display:flex;align-items:center;gap:14px}
+.toast-undo{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--dawn);cursor:pointer}
+@media (max-width:899px){.ym-row{flex-wrap:wrap;row-gap:8px}.ym .ym-row .dn-t{flex:1 1 calc(100% - 80px)}.ym-c .ym-row .dn-t{flex:1 1 calc(100% - 40px)}.ym .ym-row > .act,.ym .ym-row > .ym-b{margin-left:80px}.ym-c .ym-row > .act{margin-left:36px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -707,7 +729,7 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-25'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-26'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -821,6 +843,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }));
 const nowISO = () => new Date().toISOString();
+const reduceMotion = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 function ago(iso) {
   if (!iso) return '';
   const m = Math.round((Date.now() - new Date(iso)) / 6e4);
@@ -834,8 +857,17 @@ function ago(iso) {
 let toastT;
 function toast(msg, bad) {
   const t = $('#toast');
+  S.undo = null; t.classList.remove('has-btn');
   t.textContent = msg; t.classList.toggle('bad', !!bad); t.classList.add('on');
   clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), bad ? 4200 : 2200);
+}
+// A toast with an Undo button (threads-26: Your Move check-off). Undo works for ~5s.
+function toastUndo(msg, undo) {
+  const t = $('#toast');
+  t.innerHTML = `<span>${esc(msg)}</span><button class="toast-undo" data-act="toast-undo">Undo</button>`;
+  t.classList.remove('bad'); t.classList.add('on', 'has-btn');
+  S.undo = undo;
+  clearTimeout(toastT); toastT = setTimeout(() => { t.classList.remove('on', 'has-btn'); S.undo = null; }, 5500);
 }
 
 // ---------- links ----------
@@ -982,6 +1014,7 @@ async function load() {
     if (S.view === 'detail') { renderTop(); return; } // don't clobber what you're typing
     renderTop(); renderContent();
     openDeepLink();
+    liveMaybe(); // Live Check on open (threads-26)
   } catch (err) {
     if (S.token) toast(S.loaded ? 'Offline. Showing your saved list.' : err.message, true);
   }
@@ -1140,16 +1173,18 @@ function health(s) {
     // Quiet: playbook gaps are notes, not warnings. Only an undeployed build flags it.
     h.key = 'live'; h.long = false;
     if (sy.deployed === false) { h.key = 'waiting'; h.why.push(`${sy.build || 'The latest build'} is built but not deployed`); }
+    if (liveOf(s)?.state === 'down') { h.key = 'waiting'; h.why.unshift(`The live site is down (${liveErr(liveOf(s))})`); }
     return h;
   }
   if (!sy.synced_at) { h.key = 'unknown'; h.why.push(`Not synced yet. Run "${deepPhrase(s)}" (or "${syncPhrase(s)}") in its chat.`); return h; }
   const lim = limits()[tier];
   h.days = h.la ? Math.floor((Date.now() - h.la) / 864e5) : null;
   if (h.days === null || h.days >= lim) { h.key = 'stuck'; h.why.push(h.days === null ? 'No Claude activity recorded' : `No activity in ${h.days} days (the limit is ${lim})`); }
-  const notDeployed = sy.deployed === false, onJoe = sy.next_owner === 'joe';
+  const notDeployed = sy.deployed === false, onJoe = sy.next_owner === 'joe', down = liveOf(s)?.state === 'down';
+  if (down) h.why.push(`The live site is down (${liveErr(liveOf(s))})`);
   if (notDeployed) h.why.push(`${sy.build || 'The latest build'} is built but not deployed`);
   if (onJoe) h.why.push('The next step is on you');
-  if (h.key === 'ok' && (notDeployed || onJoe)) h.key = 'waiting';
+  if (h.key === 'ok' && (notDeployed || onJoe || down)) h.key = 'waiting';
   if (h.long) h.why.push(`${sy.current_chat || 'The current chat'} is at ${sy.updates_in_chat} updates. About 10 means it's time for the next session chat.`);
   if (h.gaps) h.why.push(`${h.gaps} playbook gap${h.gaps > 1 ? 's' : ''}`);
   return h;
@@ -1165,30 +1200,121 @@ const hbadge = (h) => (h.key === 'archived' || h.key === 'hold' || h.key === 'ba
 // Sidebar marker: a dot for Building, a small check for Shipped, nothing for On Hold / Backlog / Archived.
 const hdot = (h) => (h.key === 'live' ? `<i class="shipck" title="Live">${ICON.check}</i>` : QUIET.has(h.key) ? '' : `<i class="dot ${h.key}" title="${HL[h.key]}"></i>`);
 
-// "Do this next": text always comes from the sync (next, gaps), never made up here.
-function nextItems() {
-  const out = [];
+// ---------- Live Check (threads-26) ----------
+// Results come from /api/live (saved in settings "live"). Up = the site answers, not that the app works.
+const LIVE_STALE = 30 * 60e3;
+const liveOf = (s) => (['building', 'shipped'].includes(tierOf(s)) ? S.settings.live?.results?.[slugOf(s)] || null : null);
+const liveErr = (r) => r?.error || (r?.code ? `answered ${r.code}` : 'no answer');
+const liveCheckable = (s) => ['building', 'shipped'].includes(tierOf(s)) && (() => { const l = projLink(s, 'live'); try { return l && !/(^|\.)claude\.ai$/i.test(new URL(l.url).hostname); } catch { return false; } })();
+const LIVE_L = { up: ['ok', 'Up'], down: ['bad', 'Down'], mismatch: ['warn', 'Version Mismatch'], no_version: ['', 'No Version File'] };
+function liveTip(r) {
+  const when = r.checked_at ? ` · checked ${ago(r.checked_at)}` : '';
+  if (r.state === 'down') return `Down: ${liveErr(r)}${when}`;
+  if (r.state === 'mismatch') return `Live shows ${r.version}, log says ${r.build}${when}`;
+  if (r.state === 'no_version') return `The site answers, but has no version.json${when}`;
+  return `The site answers${r.version ? ` · ${r.version}` : ''}${when}. Up means the site loads, not that every part of the app works.`;
+}
+const liveDetail = (r) => (r.state === 'down' ? liveErr(r) : r.state === 'mismatch' ? `live shows ${r.version}, log says ${r.build}` : r.state === 'no_version' ? 'no version.json on the site' : `the site answers${r.version ? ` (${r.version})` : ''}`);
+function liveChip(s, onlyBad) {
+  const r = liveOf(s);
+  if (!r || !LIVE_L[r.state] || (onlyBad && (r.state === 'up' || r.state === 'no_version'))) return '';
+  const [c, l] = LIVE_L[r.state];
+  return `<span class="tagx lchip ${c}" title="${esc(liveTip(r))}"><i class="ldot"></i>${l}</span>`;
+}
+async function liveCheck(slug) {
+  if (!slug && S.liveBusy) return;
+  if (!slug) S.liveBusy = true;
+  try {
+    const j = await api(`/api/live?${slug ? `slug=${encodeURIComponent(slug)}` : 'run=1'}`);
+    if (j.live && typeof j.live === 'object') { S.settings.live = j.live; saveCache(); }
+    if (slug) { const r = j.live?.results?.[slug]; toast(r ? `${j.ran ? '' : 'Checked a moment ago. '}${LIVE_L[r.state]?.[1] || 'Checked'}: ${liveDetail(r)}` : j.why || 'Checked'); }
+    if (S.view !== 'detail') { renderTop(); renderContent(); }
+  } catch (err) {
+    if (slug) toast(`Couldn't check. ${err.message}`, true);
+  } finally { if (!slug) S.liveBusy = false; }
+}
+// On open (and when coming back to the app): run the check if the last full run is over 30 min old.
+function liveMaybe() {
+  if (!S.token) return;
+  const t = Date.parse(S.settings.live?.checked_at || '') || 0;
+  if (Date.now() - t >= LIVE_STALE) liveCheck();
+}
+
+// ---------- Your Move (threads-26): replaces Do This Next ----------
+// Every next step that's Joe's (Building + Shipped), plus Live Check problems and Tier Nudges. Text always comes
+// from the sync, never made up here. Checking one off hands the project to Claude (next_owner: claude).
+const nudgeAfter = () => Math.max(1, +(S.settings.health || {}).nudge || 10);
+const snoozed = (s, k) => (Date.parse(docOf(s).nudge_snooze?.[k] || '') || 0) > Date.now();
+const nextSince = (s) => Date.parse(syncOf(s).next_since || syncOf(s).synced_at || '') || null;
+const ageTxt = (t) => { if (!t) return ''; const d = Math.floor((Date.now() - t) / 864e5); return d < 1 ? 'today' : `${d}d`; };
+const claudeTurn = (s) => { const sy = syncOf(s); return sy.next_owner === 'claude' && !!sy.next_done_text && docOf(s).next === sy.next_done_text; };
+const ctTag = (s) => (claudeTurn(s) ? '<span class="tagx ct" title="You checked off your step. Waiting on the next build or sync.">Claude\'s Turn</span>' : '');
+const TRY_RE = /\b(check|test|play|try|reload|swap|open|look at|soft-launch|screenshot)/i;
+function yourMove() {
+  const mine = [], claude = [];
   for (const s of projects()) {
     const tier = tierOf(s);
     if (tier !== 'building' && tier !== 'shipped') continue;
-    const h = health(s), sy = syncOf(s), d = normDoc(s), cur = currentChat(s), tr = tier === 'building' ? 0 : 1;
-    if (tier === 'shipped' && h.key !== 'waiting') continue;
+    const h = health(s), sy = syncOf(s), d = normDoc(s), cur = currentChat(s), app = projLink(s, 'live'), vercel = projLink(s, 'vercel'), lv = liveOf(s);
     const chatBtn = cur ? { btn: 'chat', chat: cur } : { btn: 'prompt', prompt: syncPhrase(s) };
-    if (h.key === 'stuck') out.push({ s, tr, rank: 0, tag: 'stuck', h, text: d.next || h.why[0], ...chatBtn });
-    else if (h.key === 'waiting') {
-      const v = sy.deployed === false && projLink(s, 'vercel');
-      out.push({ s, tr, rank: 1, tag: 'waiting', h, text: d.next || h.why.find((w) => /deployed|on you/.test(w)) || '', ...(v ? { btn: 'link', link: v } : chatBtn) });
+    if (lv?.state === 'down') mine.push({ s, h, kind: 'down', rank: 0, text: `${s.name} is down: ${liveErr(lv)}`, ...(app ? { btn: 'app', link: app } : chatBtn) });
+    else if (lv?.state === 'mismatch') mine.push({ s, h, kind: 'mismatch', rank: 1, text: `Live shows ${lv.version}, log says ${lv.build}`, ...(vercel ? { btn: 'link', link: vercel } : chatBtn) });
+    // Tier Nudges ("Tidy Up"): Move changes the tier, Keep snoozes that nudge for 30 days.
+    const st = String(d.status || '').trim().toLowerCase(), days = h.la ? Math.floor((Date.now() - h.la) / 864e5) : null;
+    if (tier === 'building' && /^(paused|blocked)$/.test(st)) { if (!snoozed(s, 'paused')) mine.push({ s, h, kind: 'nudge', nk: 'paused', to: 'hold', rank: 2, text: `${s.name} says ${d.status}. Move to On Hold?` }); }
+    else if (tier === 'building' && days !== null && days >= nudgeAfter() && !snoozed(s, 'idle')) mine.push({ s, h, kind: 'nudge', nk: 'idle', to: 'hold', rank: 2, t: h.la, text: `${s.name} untouched ${days}d. Move to On Hold?` });
+    if (tier === 'shipped' && sy.next_owner === 'claude' && d.next && !snoozed(s, 'plan')) mine.push({ s, h, kind: 'nudge', nk: 'plan', to: 'building', rank: 2, text: `Planned: ${d.next}. Plan an Update?` });
+    // Joe's next step
+    if (d.next && sy.next_owner === 'joe') {
+      let b = chatBtn;
+      if (sy.deployed === false && vercel) b = { btn: 'link', link: vercel };
+      else if (app && TRY_RE.test(d.next)) b = { btn: 'app', link: app };
+      mine.push({ s, h, kind: 'next', rank: 3, t: nextSince(s), text: d.next, ...b });
     }
-    if (h.long) out.push({ s, tr, rank: 2, tag: 'long', h, text: `${sy.current_chat || 'Current chat'} is at ${sy.updates_in_chat} of ~10 updates. Wrap it up, then start Build ${nextSession(s)}.`, btn: 'next', chat: cur });
-    if (tier === 'building') for (const g of sy.gaps || []) out.push({ s, tr, rank: 3, tag: 'gap', h, text: g.text, btn: 'prompt', prompt: g.fix || 'playbook check', chat: cur });
+    // Claude's Turn: long chat, Claude-owned next steps, Stuck
+    if (tier !== 'building') continue;
+    if (h.long) claude.push({ s, h, kind: 'long', text: `${sy.current_chat || 'Current chat'} is at ${sy.updates_in_chat} of ~10 updates. Wrap it up, then start Build ${nextSession(s)}.`, btn: 'next', chat: cur });
+    if (h.long) continue; // the long-chat row is the next move; its next step waits for the new chat
+    if (sy.next_owner === 'claude' && d.next) claude.push({ s, h, kind: h.key === 'stuck' ? 'stuck' : 'claude', text: d.next, ...chatBtn });
+    else if (h.key === 'stuck' && sy.next_owner !== 'joe') claude.push({ s, h, kind: 'stuck', text: d.next || h.why[0], ...chatBtn });
   }
-  return out.sort((a, b) => a.tr - b.tr || a.rank - b.rank);
+  const at = (x) => x.t || Infinity; // oldest first, undated last
+  mine.sort((a, b) => a.rank - b.rank || at(a) - at(b));
+  claude.sort((a, b) => ({ stuck: 0, long: 1, claude: 2 }[a.kind] - { stuck: 0, long: 1, claude: 2 }[b.kind]));
+  return { mine, claude };
 }
-function dnTag(it) {
-  if (it.tag === 'stuck') return `<span class="hb ${hcls(it.h)}">Stuck</span>`;
-  if (it.tag === 'waiting') return '<span class="hb waiting">Waiting on you</span>';
-  if (it.tag === 'long') return '<span class="tagx warn">Chat getting long</span>';
-  return '<span class="tagx bad">Playbook gap</span>';
+function ymTag(it) {
+  if (it.kind === 'down') return '<span class="hb stuck">Down</span>';
+  if (it.kind === 'mismatch') return '<span class="tagx warn">Version Mismatch</span>';
+  if (it.kind === 'nudge') return '<span class="tagx tidy">Tidy Up</span>';
+  if (it.kind === 'long') return '<span class="tagx warn">Chat getting long</span>';
+  if (it.kind === 'stuck') return `<span class="hb ${hcls(it.h)}">Stuck</span>`;
+  if (it.kind === 'claude') return '';
+  return `${it.h.key === 'stuck' ? '<span class="hb stuck">Stuck</span>' : ''}${it.t ? `<span class="ym-age" title="Next step since ${esc(new Date(it.t).toLocaleDateString())}">${ageTxt(it.t)}</span>` : ''}`;
+}
+function ymBtn(it) {
+  if (it.kind === 'nudge') return `<div class="ym-b"><button class="act pri" data-act="nudge-move" data-id="${it.s.id}" data-v="${it.to}" title="${it.to === 'hold' ? 'Moves it to On Hold' : 'Moves it to Building'}">Move</button><button class="act" data-act="nudge-keep" data-id="${it.s.id}" data-k="${it.nk}" title="Hides this nudge for 30 days">Keep</button></div>`;
+  if (it.btn === 'app') return `<a class="act pri" href="${esc(it.link.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>`;
+  return dnBtn(it);
+}
+const ymRow = (it, mine) => `<div class="dn-row ym-row${colorCls(colorOf(it.s))}" data-ym="${it.s.id}">${mine ? (it.kind === 'next' ? `<button class="ymck" data-act="ym-done" data-id="${it.s.id}" aria-label="Done: hand ${esc(it.s.name)} to Claude" title="Done: it's Claude's turn">${ICON.check}</button>` : '<span class="ymck-sp"></span>') : ''}${gIcon(it.s)}<div class="dn-t" data-act="proj" data-id="${it.s.id}" role="button"><div><b>${esc(it.s.name)}</b>${ymTag(it)}</div>${it.text ? `<p>${esc(it.text)}</p>` : ''}</div>${ymBtn(it)}</div>`;
+function ymDone(id, el) {
+  const s = secById(id);
+  if (!s || !docOf(s).next) return;
+  const prev = { ...syncOf(s) }, text = docOf(s).next;
+  const save = (sy) => { s.doc = { ...docOf(s), sync: sy, updated_at: nowISO() }; renderTop(); renderContent(); push([{ op: 'patch', table: 'sections', rows: [{ id: s.id, doc: s.doc }] }]); };
+  el?.classList.add('done');
+  el?.closest('.ym-row')?.classList.add('out');
+  setTimeout(() => {
+    save({ ...prev, next_owner: 'claude', next_done_at: nowISO(), next_done_text: text });
+    toastUndo(`${s.name}: Claude's turn`, () => save(prev));
+  }, reduceMotion() ? 0 : 240);
+}
+function nudgeKeep(id, k) {
+  const s = secById(id);
+  if (!s) return;
+  setDoc(s, { nudge_snooze: { ...(docOf(s).nudge_snooze || {}), [k]: new Date(Date.now() + 30 * 864e5).toISOString() } }, true);
+  toast('Hidden for 30 days');
 }
 const pasteMsg = (c) => (c ? `Copied. Paste it in ${c.name}.` : 'Copied. Paste it in the project\'s current chat.');
 function dnBtn(it) {
@@ -1197,7 +1323,6 @@ function dnBtn(it) {
   if (it.btn === 'link') return `<a class="act pri" href="${esc(it.link.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.vercel}Open Vercel</a>`;
   return `<button class="act" data-act="copy-text" data-await="1" data-t="${esc(it.prompt)}" data-msg="${esc(pasteMsg(it.chat))}">${ICON.copy}Copy prompt</button>`;
 }
-const dnRow = (it) => `<div class="dn-row${colorCls(colorOf(it.s))}">${gIcon(it.s)}<div class="dn-t" data-act="proj" data-id="${it.s.id}" role="button"><div><b>${esc(it.s.name)}</b>${dnTag(it)}</div>${it.text ? `<p>${esc(it.text)}</p>` : ''}</div>${dnBtn(it)}</div>`;
 
 // ---------- chats that need naming ----------
 const needsNaming = () => active().filter((c) => c.suggest && !sysOf(topOf(secOf(c))));
@@ -1266,6 +1391,7 @@ function contextFor(s) {
   const L = [`Context from Threads for ${s.name} (${new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}):`];
   L.push(`- Tier: ${TIER_NAME[tierOf(s)]} · Health: ${HL[h.key]}${h.why.length && h.key !== 'unknown' ? ` (${h.why.slice(0, 2).join('; ')})` : ''}`);
   if (d.status || sy.build) L.push(`- Status: ${d.status || '?'}${sy.build ? ` · Latest build: ${sy.build}${sy.deployed === true ? ' (deployed)' : sy.deployed === false ? ' (not deployed yet)' : ''}` : ''}`);
+  if (liveOf(s)) L.push(`- Live check: ${LIVE_L[liveOf(s).state]?.[1] || '?'} (${liveTip(liveOf(s)).replace(/\. Up means.*$/, '')})`);
   if (d.now) L.push(`- Now: ${d.now}`);
   if (d.next) L.push(`- Next: ${d.next}${sy.next_owner ? ` (on ${sy.next_owner === 'joe' ? 'me' : sy.next_owner})` : ''}`);
   if (sy.current_chat || cur) L.push(`- Current chat: ${sy.current_chat || cur.name}${sy.updates_in_chat != null ? ` (${sy.updates_in_chat} of ~10 updates)` : ''}`);
@@ -1610,6 +1736,7 @@ function renderMain() {
 function pcard(s, h) {
   const sy = syncOf(s), d = normDoc(s), cur = currentChat(s);
   const meta = [sy.build ? `<code>${esc(sy.build)}</code>` : '', sy.deployed === true ? '<span class="tagx ok">Deployed</span>' : sy.deployed === false ? '<span class="tagx warn">Not deployed</span>' : '',
+    liveChip(s), ctTag(s),
   ].filter(Boolean).join('');
   const links = ARC.map(([k, label]) => { const l = projLink(s, k); return l ? `<a class="li" href="${esc(l.url)}" target="_blank" rel="noopener" data-act="ext" title="${label}" aria-label="${label}">${LINK_ICON[k]}</a>` : ''; }).join('');
   return `<article class="pcard${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}">
@@ -1621,22 +1748,24 @@ function pcard(s, h) {
 }
 function prow(s, h) {
   const d = normDoc(s), line = d.next ? `Next: ${d.next}` : d.now || syncOf(s).build || 'No status yet';
-  return `<button class="prow${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}">${gIcon(s)}<span class="prow-t"><b>${esc(s.name)}</b><span>${esc(line)}</span></span>${hbadge(h)}</button>`;
+  return `<button class="prow${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}">${gIcon(s)}<span class="prow-t"><b>${esc(s.name)}</b><span>${esc(line)}</span></span>${liveOf(s)?.state === 'down' ? liveChip(s) : ''}${hbadge(h)}</button>`;
 }
 function dashHTML() {
   const hs = projectsIn('building').map((s) => [s, health(s)]);
   const cnt = (k) => hs.filter(([, h]) => h.key === k).length;
   const unk = cnt('unknown'), f = S.hfilter;
   const cards = f ? hs.filter(([, h]) => h.key === f) : hs;
-  const items = nextItems(), shown = S.allNext ? items : items.slice(0, 3);
+  const ym = yourMove(), shown = S.allMove ? ym.mine : ym.mine.slice(0, 6), cShown = S.allClaude ? ym.claude : ym.claude.slice(0, 4);
   const nm = needsNaming(), p = pins();
   const cardsHTML = cards.length ? (wide() ? `<div class="pgrid">${cards.map(([s, h]) => pcard(s, h)).join('')}</div>` : `<div class="plist glass">${cards.map(([s, h]) => prow(s, h)).join('')}</div>`)
     : `<div class="empty-card">${f ? 'None right now.' : `Nothing in Building. ${wide() ? 'Drag a project into Building in the sidebar, or Plan an Update on a shipped one.' : 'Move one to Building from Projects.'}`}</div>`;
   return `<div class="page">
     <header class="ph"><h1>Dashboard</h1><span class="muted">${syncLabel()}</span><div class="ph-a"><button class="act" data-act="sync">${ICON.sync}Sync</button><button class="add-btn" data-act="add">${ICON.plus}Add</button></div></header>
     <section class="hstrip">${['ok', 'waiting', 'stuck', 'unknown'].map((k) => `<button class="hs glass ${k}${f === k ? ' on' : ''}" data-act="hfilter" data-v="${k}"><b>${cnt(k)}</b><span><i class="dot ${k}"></i>${HL[k]}</span></button>`).join('')}</section>
-    <section class="blk"><div class="blk-h"><h2>Do This Next</h2>${items.length > 3 ? `<button class="lnkbtn" data-act="all-next">${S.allNext ? 'Show less' : `Show all ${items.length}`}</button>` : ''}</div>
-      <div class="dn glass">${shown.length ? shown.map(dnRow).join('') : `<div class="dn-empty">${unk ? 'Some projects aren\'t synced yet. Run a deep sync on them to fill this in.' : 'Nothing waiting. Everything in Building is healthy.'}</div>`}</div></section>
+    <section class="blk"><div class="blk-h"><h2>Your Move</h2><span class="muted">${ym.mine.length}</span>${ym.mine.length > 6 ? `<button class="lnkbtn" data-act="all-move">${S.allMove ? 'Show less' : `Show all ${ym.mine.length}`}</button>` : ''}</div>
+      <div class="dn glass ym">${shown.length ? shown.map((it) => ymRow(it, true)).join('') : `<div class="dn-empty">${unk ? 'Some projects aren\'t synced yet. Run a deep sync on them to fill this in.' : 'Nothing on you right now.'}</div>`}</div></section>
+    ${ym.claude.length ? `<section class="blk"><div class="blk-h"><h2>Claude's Turn</h2><span class="muted">${ym.claude.length}</span>${ym.claude.length > 4 ? `<button class="lnkbtn" data-act="all-claude">${S.allClaude ? 'Show less' : `Show all ${ym.claude.length}`}</button>` : ''}</div>
+      <div class="dn glass ym-c">${cShown.map((it) => ymRow(it, false)).join('')}</div></section>` : ''}
     <section class="blk"><div class="blk-h"><h2>${f ? `${HL[f]} (${cards.length})` : `Building`}</h2>${f ? '<button class="lnkbtn" data-act="hfilter" data-v="">Show all building</button>' : `<span class="muted">${cards.length}</span>`}</div>${cardsHTML}</section>
     ${!wide() && p.length ? `<section class="blk"><div class="blk-h"><h2>Pinned</h2></div><div class="dn glass ppins">${p.map(pinRow).join('')}</div></section>` : ''}
     ${nm.length ? `<section class="blk"><div class="blk-h"><h2>Chats That Need a Proper Name</h2><span class="muted">${nm.length}</span><button class="lnkbtn" data-act="go" data-r="triage">Open Triage</button></div><div class="dn glass">${nm.slice(0, wide() ? 4 : 3).map(nmRow).join('')}</div></section>` : ''}
@@ -1655,7 +1784,7 @@ function shippedHTML() {
     const since = s.activated_at ? `shipped ${new Date(s.activated_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : '';
     return `<article class="pcard shipcard${colorCls(colorOf(s))}" data-act="proj" data-id="${s.id}">
       <div class="pc-h">${gIcon(s)}<b>${esc(s.name)}</b>${hbadge(h)}</div>
-      <div class="pc-m">${sy.build ? `<code>${esc(sy.build)}</code>` : ''}${since ? `<span>${since}</span>` : ''}${g ? `<span>· ${g} playbook note${g > 1 ? 's' : ''}</span>` : ''}</div>
+      <div class="pc-m">${sy.build ? `<code>${esc(sy.build)}</code>` : ''}${liveChip(s)}${since ? `<span>${since}</span>` : ''}${g ? `<span>· ${g} playbook note${g > 1 ? 's' : ''}</span>` : ''}</div>
       <p class="pc-n">${h.key === 'waiting' ? esc(h.why[0]) : d.next ? `<em>Planned</em>${esc(d.next)}` : '<span class="muted">No updates planned</span>'}</p>
       <div class="pc-f">${app ? `<a class="act" href="${esc(app.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : ''}<span class="sp"></span><button class="act" data-act="plan-update" data-id="${s.id}" title="Moves it to Building">${ICON.redo}Plan an Update</button></div></article>`;
   };
@@ -1729,7 +1858,7 @@ const CHECKS = [
 function projectHTML(s) {
   const h = health(s), sy = syncOf(s), app = projLink(s, 'live'), cur = currentChat(s), gapsN = (sy.gaps || []).length;
   const head = `<header class="pj-h${colorCls(colorOf(s))}">${gIcon(s)}<div class="pj-t"><h1>${esc(s.name)}</h1>
-      <div class="pj-sub"><button class="tierbtn" data-act="tier-menu" data-id="${s.id}" title="Move to another tier">${TIER_NAME[tierOf(s)]}${ICON.chev}</button>${hbadge(h)}${sy.build ? `<code>${esc(sy.build)}</code>` : ''}${sy.deployed === false ? '<span class="tagx warn">Not deployed</span>' : sy.deployed ? '<span class="tagx ok">Deployed</span>' : ''}${sy.synced_at ? `<span>synced ${ago(sy.synced_at)}</span>` : ''}</div></div>
+      <div class="pj-sub"><button class="tierbtn" data-act="tier-menu" data-id="${s.id}" title="Move to another tier">${TIER_NAME[tierOf(s)]}${ICON.chev}</button>${hbadge(h)}${sy.build ? `<code>${esc(sy.build)}</code>` : ''}${sy.deployed === false ? '<span class="tagx warn">Not deployed</span>' : sy.deployed ? '<span class="tagx ok">Deployed</span>' : ''}${liveChip(s)}${ctTag(s)}${liveCheckable(s) ? `<button class="lnkbtn recheck" data-act="live-recheck" data-id="${s.id}" title="Check the live site and its version.json now">${ICON.sync}Recheck</button>` : ''}${sy.synced_at ? `<span>synced ${ago(sy.synced_at)}</span>` : ''}</div></div>
     <div class="pj-a">${tierOf(s) === 'shipped' ? `<button class="act pri" data-act="plan-update" data-id="${s.id}" title="Moves ${esc(s.name)} to Building so it gets health and Do This Next again">${ICON.redo}Plan an Update</button>` : ''}
       ${tierOf(s) === 'building' && sy.deployed === true ? `<button class="act" data-act="mark-shipped" data-id="${s.id}" title="Done for now: moves ${esc(s.name)} to Shipped and stops the health nudges">${ICON.shipped}Mark Shipped</button>` : ''}
       ${app ? `<a class="act${tierOf(s) === 'shipped' ? '' : ' pri'}" href="${esc(app.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : ''}
@@ -2161,6 +2290,13 @@ function mergeLinks(cur, map) {
   const rank = (l) => { const i = ARC.findIndex((a) => a[0] === linkKind(l)); return i < 0 ? 9 : i; };
   return out.sort((a, b) => rank(a) - rank(b)).slice(0, 40);
 }
+// Your Move (threads-26): stamp when the next step changed; a step Joe checked off stays Claude's when a sync resends it.
+function keepDone(sy, old, oldNext, patch, at) {
+  const next = 'next' in patch ? patch.next : oldNext;
+  if ('next' in patch && String(patch.next || '') !== String(oldNext || '')) sy.next_since = at || nowISO();
+  if (sy.next_owner === 'joe' && old.next_owner === 'claude' && old.next_done_text && String(next || '') === old.next_done_text) sy.next_owner = 'claude';
+  return sy;
+}
 function mergeBuilds(old, add) {
   const m = new Map();
   for (const b of [...(Array.isArray(old) ? old : []), ...add]) m.set(b.n != null ? 'n' + b.n : 's' + b.summary, b);
@@ -2294,6 +2430,7 @@ function applySync() {
     const sy = { ...old, ...pt.sync };
     if (pt.sync.builds) sy.builds = mergeBuilds(old.builds, pt.sync.builds);
     if (u.isNew) sy.is_new = true;
+    keepDone(sy, old, docOf(s).next, pt, p.at); // same rule as api/_lib/apply.js
     d.sync = sy; d.updated_at = nowISO();
     s.doc = d; Object.assign(s, u.look);
     if (!p.newSecs.includes(s)) secRows.push({ id: s.id, doc: d, ...u.look });
@@ -2690,8 +2827,8 @@ function openSettings() {
     <section class="set"><h3>Home Screen Widget</h3><p class="muted">Feeds the Scriptable "Build Status" widget on your iPhone. It can only read: current build, active builds, health and Do This Next. Tapping a project in the widget opens it here.</p>
       <div class="inp" style="font:600 13px ui-monospace,Menlo,monospace;word-break:break-all;margin-bottom:8px">${esc(location.origin)}/widget/<span style="color:var(--dawn)">THREADS_WIDGET_KEY</span></div>
       <p class="muted">The widget asks for the key the first time you run it. It's in 1Password (Threads — env), separate from the connector key.</p></section>
-    <section class="set"><h3>Health</h3><p class="muted">A Building project shows as Stuck after this many days with no activity in Claude. Shipped, On Hold and Backlog are never flagged.</p>
-      <div class="thr"><label>Building (days)<input class="inp" id="th-a" type="number" min="1" max="90" value="${limits().building}"></label></div>
+    <section class="set"><h3>Health</h3><p class="muted">A Building project shows as Stuck after this many days with no activity in Claude. Shipped, On Hold and Backlog are never flagged. Nudge After: a Building project untouched this long gets a "Move to On Hold?" row in Your Move.</p>
+      <div class="thr"><label>Building (days)<input class="inp" id="th-a" type="number" min="1" max="90" value="${limits().building}"></label><label>Nudge After (days)<input class="inp" id="th-n" type="number" min="1" max="180" value="${nudgeAfter()}"></label></div>
       <button class="btn ghost" data-act="th-save">Save Thresholds</button></section>
     <section class="set"><h3>All tools</h3><p class="muted">Every tool across your projects, and which projects use it.</p>
       <button class="btn ghost" data-act="all-tools">${ICON.gear}See all tools</button></section>
@@ -3005,7 +3142,13 @@ const A = {
   config: (el) => { if (!S.dragging) openProject(el.dataset.id, 'setup'); },
   ptab: (el) => { S.ptab = el.dataset.v; renderContent(); },
   hfilter: (el) => { S.hfilter = S.hfilter === el.dataset.v ? '' : el.dataset.v; renderContent(); },
-  'all-next': () => { S.allNext = !S.allNext; renderContent(); },
+  'all-move': () => { S.allMove = !S.allMove; renderContent(); },
+  'all-claude': () => { S.allClaude = !S.allClaude; renderContent(); },
+  'ym-done': (el) => ymDone(el.dataset.id, el),
+  'toast-undo': () => { const f = S.undo; S.undo = null; $('#toast').classList.remove('on', 'has-btn'); if (f) { f(); toast('Undone'); } },
+  'nudge-move': (el) => setTier(el.dataset.id, el.dataset.v),
+  'nudge-keep': (el) => nudgeKeep(el.dataset.id, el.dataset.k),
+  'live-recheck': (el) => { const x = secById(el.dataset.id); if (x) { toast('Checking…'); liveCheck(slugOf(x)); } },
   fold: (el) => {
     const k = el.dataset.v;
     const c = !folds.has(k);
@@ -3031,9 +3174,9 @@ const A = {
     } catch { toast("Couldn't copy.", true); }
   },
   'th-save': () => {
-    const a = Math.min(90, Math.max(1, +$('#th-a').value || 5));
-    S.settings.health = { ...(S.settings.health || {}), active: a }; // stored as "active" so the widget feed keeps reading it
-    closeSheet(); renderContent(); toast(`Building projects show Stuck after ${a} days`);
+    const a = Math.min(90, Math.max(1, +$('#th-a').value || 5)), n = Math.min(180, Math.max(1, +$('#th-n').value || 10));
+    S.settings.health = { ...(S.settings.health || {}), active: a, nudge: n }; // stored as "active" so the widget feed keeps reading it
+    closeSheet(); renderContent(); toast(`Stuck after ${a} days · nudge after ${n}`);
     push([{ op: 'upsert', table: 'settings', row: { id: 'health', value: S.settings.health } }]);
   },
   'all-tools': () => openAllTools(),

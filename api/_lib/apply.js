@@ -81,6 +81,15 @@ function syncPatch(p, kind, at) {
   return { patch, sy };
 }
 
+// Your Move (threads-26): stamp when the next step changed, and keep a step Joe checked off on Claude's side
+// when a sync resends the same text as Joe's. A new next step goes back to whoever the sync says.
+export function keepDone(sy, old, oldNext, patch, at) {
+  const next = 'next' in patch ? patch.next : oldNext;
+  if ('next' in patch && String(patch.next || '') !== String(oldNext || '')) sy.next_since = at;
+  if (sy.next_owner === 'joe' && old.next_owner === 'claude' && old.next_done_text && String(next || '') === old.next_done_text) sy.next_owner = 'claude';
+  return sy;
+}
+
 export async function loadAll() {
   const [sections, chats, settings] = await Promise.all([
     q(db().from(T.sections).select('*').order('position')),
@@ -189,6 +198,7 @@ export async function applySync(j, source = 'connector') {
     const sy = { ...old, ...u.sy };
     if (u.sy.builds) sy.builds = mergeBuilds(old.builds, u.sy.builds);
     if (u.isNew) sy.is_new = true;
+    keepDone(sy, old, docOf(u.s).next, u.patch, at); // Your Move (threads-26); same rule in index.html applySync
     d.sync = sy; d.updated_at = nowISO();
     const clean = cleanDoc(d);
     if (u.isNew) { u.s.doc = clean; Object.assign(u.s, u.look); }
