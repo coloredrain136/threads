@@ -4,6 +4,7 @@
 // It only touches Threads' own tables, and every write goes through the same secret stripping as the app.
 import { safeEqual, body } from './_lib/auth.js';
 import { applySync, status, savePlan } from './_lib/apply.js';
+import { syncDocs } from './_lib/docs.js';
 import { APP_VERSION } from './_lib/version.js';
 
 const PROTOCOLS = ['2025-06-18', '2025-03-26', '2024-11-05'];
@@ -11,6 +12,7 @@ const INSTRUCTIONS = `Threads is Joe's dashboard for his Builds projects. Keep i
 - After every build in a Builds project chat (once the build log is updated), call threads_update_project with that project's status.
 - When Joe says "sync threads", "sync <project>" or "deep sync <project>", build the threads_sync v2 payload as the threads-sync skill describes and send it with threads_apply_sync instead of replying with a JSON block.
 - Use threads_status to see where projects stand before suggesting what to work on.
+- When Joe says "sync docs", read every doc in the Builds project and send them with threads_sync_docs (full text; Threads files each under its project). After a build changes a project's docs, send just those docs.
 - When Joe brings up an idea for a project outside that project's current build chat, ask whether he's working on it now or saving it for later. For later, save it with threads_save_plan (it lands in the project's Plans and goes into the next build chat's handoff).
 Never send passwords, API keys, tokens or env var values. Env vars are names only.`;
 
@@ -72,6 +74,20 @@ const TOOLS = [
     annotations: { title: 'Save a Plan to a Project', readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   },
   {
+    name: 'threads_sync_docs',
+    title: 'Sync Builds Docs into Threads',
+    description: 'Copy Builds project docs (claude/<slug>-scope.md, -build-log.md, -carryover.md, the playbook, templates, scripts) into Threads so Joe can read them on any device, filed under their project by file name. Send the full text of each doc. Use it for "sync docs" (all docs, prune: true) and after a build changes docs (just those). Never include secret values; anything that looks like a key is redacted.',
+    inputSchema: {
+      type: 'object',
+      required: ['docs'],
+      properties: {
+        docs: { type: 'array', description: 'Up to 120 docs per call; split bigger syncs into several calls.', items: { type: 'object', required: ['path', 'content'], properties: { path: s('Doc path in the Builds project, e.g. "claude/rally-build-log.md".'), content: s('The full text of the doc.'), title: s('Optional display title.'), project: s('Optional project slug if the file name does not start with it.'), updated_at: s('Optional ISO time the doc last changed.') } } },
+        prune: { type: 'boolean', description: 'true only on a full "sync docs" (the last call of it): removes docs no longer in the Builds project.' },
+      },
+    },
+    annotations: { title: 'Sync Builds Docs into Threads', readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
     name: 'threads_status',
     title: 'Read Threads Status',
     description: 'Read where Joe\'s Builds projects stand in Threads: tier (Building, Shipped, On Hold, Backlog, Archived; Joe moves tiers himself in the app), status, latest build, deployed, now/next, current chat, gaps. Pass a project name for its details, saved plans, links, recent builds and chat links.',
@@ -84,6 +100,7 @@ const text = (obj, isError) => ({ content: [{ type: 'text', text: typeof obj ===
 
 async function callTool(name, args = {}) {
   if (name === 'threads_status') return text(await status(args.project));
+  if (name === 'threads_sync_docs') return text({ ...(await syncDocs(args)), note: 'Docs are in Threads (More → Docs, and each project page). Tell Joe in one line.' });
   if (name === 'threads_save_plan') {
     const r = await savePlan(args);
     return text(r.error ? r.error : { ...r, note: `Saved to ${r.project}'s Plans in Threads. Tell Joe in one line.` }, !!r.error);

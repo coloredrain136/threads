@@ -694,6 +694,58 @@ html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:10
 /* project colors (last so they win) */
 .c-gold{--c:#f2c46d}.c-coral{--c:#ff8a65}.c-rose{--c:#f48fb1}.c-violet{--c:#b39ddb}
 .c-blue{--c:#64b5f6}.c-teal{--c:#4dd0e1}.c-green{--c:#81c784}.c-slate{--c:#90a4ae}
+/* threads-30: project page redesign, Guide, Docs */
+.pj2{--c:var(--dawn)}
+.hero2{position:relative;overflow:hidden;padding:20px 20px 16px;border-radius:var(--r-lg);display:grid;gap:12px}
+.hero2::before{content:'';position:absolute;inset:-40% -10% auto auto;width:70%;height:180%;background:radial-gradient(closest-side,color-mix(in srgb,var(--c) 34%,transparent),transparent);pointer-events:none;opacity:.9}
+.hero2 > *{position:relative}
+.hero-top{display:flex;align-items:center;gap:14px;min-width:0}
+.hero-top > .gicon{width:60px;height:60px;min-width:60px;border-radius:17px;font-size:32px}
+.hero-t{flex:1;min-width:0}.hero-t h1{font-size:28px;line-height:1.1;margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hero-now{font-size:15px;color:var(--ink-2);line-height:1.45}
+.hero-a{display:flex;gap:8px;flex-wrap:wrap}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}
+@media (max-width:899px){.tiles{grid-template-columns:minmax(0,1fr)}}
+html[data-duo-wide] .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+.tile{border-radius:var(--r-lg);padding:14px 16px 16px;min-width:0;display:grid;gap:10px;align-content:start}
+.tile.t-wide{grid-column:1 / -1}
+.tile-h{display:flex;align-items:center;gap:9px;min-width:0}
+.tile-h h3{font-size:15px;font-weight:700;flex:1;min-width:0}
+.tile-h .act{height:30px}
+.tile-i{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-size:15px;background:color-mix(in srgb,var(--c) 18%,var(--field))}
+.qbtn{width:24px;height:24px;border-radius:50%;font-size:12.5px;font-weight:800;color:var(--ink-3);border:1px solid var(--line2);flex:none}
+.qbtn:hover{color:var(--ink);border-color:var(--dawn)}
+.ph .qbtn{margin-left:8px}
+.tile-b .dcard,.tile-b .sec,.tile-b .glass{background:none!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;padding:0}
+.next-big{font-size:17px;line-height:1.4;font-weight:600}
+.next-m{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.next-m .act{margin-left:auto}
+.tile-more{border-top:1px solid var(--line2);padding-top:8px}.tile-more + .tile-more{margin-top:4px}
+.tile-more summary{display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:650;font-size:14px;list-style:none;padding:6px 0}
+.tile-more summary::-webkit-details-marker{display:none}.tile-more summary svg{width:14px;height:14px;transition:transform .2s}.tile-more[open] summary svg{transform:rotate(90deg)}
+.doc-list{display:grid}.doc-row{display:flex;align-items:center;gap:10px;padding:9px 2px;text-align:left;border-radius:8px;min-width:0}
+.doc-row + .doc-row{border-top:1px solid var(--line2)}.doc-row:hover{background:var(--field)}
+.doc-row .row-t{flex:1;min-width:0;display:grid}.doc-row .row-t b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.doc-row .row-t span{font-size:12px;color:var(--ink-3)}
+.doc-row > svg{width:14px;height:14px;color:var(--ink-3)}
+.doc-i{font-size:17px}
+.doc-group{border-radius:var(--r-lg);padding:6px 14px}
+.sheet.wide-sheet{max-width:860px;background:color-mix(in srgb,var(--night) 92%,transparent)}
+.doc-view{min-width:0}.md{min-width:0;overflow-wrap:anywhere}.md code{word-break:break-word}.md pre code{word-break:normal}
+@media (min-width:900px){.sheet.wide-sheet{width:min(860px,90vw)}}
+.md{font-size:14.5px;line-height:1.6;color:var(--ink-2);display:grid;gap:10px;margin-top:8px}
+.md h2,.md h3,.md h4,.md h5{color:var(--ink);margin-top:8px;line-height:1.25}.md h2{font-size:19px}.md h3{font-size:16.5px}.md h4,.md h5{font-size:15px}
+.md ul,.md ol{padding-left:20px;display:grid;gap:4px}.md li.sub{margin-left:18px}
+.md code{font:12.5px ui-monospace,Menlo,monospace;background:var(--field);padding:1px 5px;border-radius:5px;color:var(--ink)}
+.md pre{background:rgba(0,0,0,.28);border:1px solid var(--line2);border-radius:10px;padding:12px;overflow:auto}.md pre code{background:none;padding:0;white-space:pre}
+.md a{color:var(--dawn)}.md b{color:var(--ink)}.md hr{border:0;border-top:1px solid var(--line2)}
+.md blockquote{border-left:3px solid var(--dawn);padding-left:12px;color:var(--ink-3)}
+.md-t{overflow:auto}.md table{border-collapse:collapse;font-size:13px}.md th,.md td{border:1px solid var(--line2);padding:6px 9px;text-align:left;vertical-align:top}.md th{color:var(--ink)}
+.guide .tile p{font-size:14px;line-height:1.5;color:var(--ink-2)}
+.g-pic{display:flex;gap:6px;flex-wrap:wrap;padding:12px;border-radius:12px;background:rgba(0,0,0,.18);border:1px dashed var(--line2)}
+.g-chip{font-size:12.5px;font-weight:650;padding:5px 10px;border-radius:9px;background:var(--field);border:1px solid var(--line2)}
+.g-chip.on{background:var(--dawn);color:var(--dawn-ink);border-color:var(--dawn)}
+.sheet .guide-c{background:none;border:0;box-shadow:none;padding:0}
+.pg-links{margin-bottom:14px}
+.tile[data-tile="chats"] .pg-chats > .sec > .sec-h{display:none}.tile[data-tile="chats"] .pg-chats > .sec{padding:0}
 /* threads-29: Liquid Glass theme — frosted see-through surfaces over a soft aurora */
 html[data-theme="glass"]{background:radial-gradient(120% 90% at 50% 0%,#17133f,#0a0c1a 62%) fixed #0a0c1a}
 html[data-theme="glass"] body{background:transparent}
@@ -783,7 +835,7 @@ html[data-duo] .act{height:36px}
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-29'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-30'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1083,6 +1135,7 @@ async function load() {
     renderTop(); renderContent();
     openDeepLink();
     liveMaybe(); // Live Check on open (threads-26)
+    if (!S.docsAt || Date.now() - S.docsAt > 5 * 60e3) loadDocs(); // Docs list (threads-30)
   } catch (err) {
     if (S.token) toast(S.loaded ? 'Offline. Showing your saved list.' : err.message, true);
   }
@@ -1380,6 +1433,103 @@ function ymDone(id, el) {
     toastUndo(`${s.name}: Claude's turn`, () => save(prev));
   }, reduceMotion() ? 0 : 240);
 }
+// Guide (threads-30): how every part of Threads works, with a small picture of each. The ? on any section opens its part.
+const GUIDE = [
+  ['home', '🏠', 'Home', 'Two lists: what\'s waiting on you, then everything you\'re building. If it isn\'t on Home, it doesn\'t need you right now.', ['Waiting on You', 'Building']],
+  ['waiting', '⏳', 'Waiting on You', 'Every next step that\'s yours, from Building and Shipped projects. Sites that are down come first, then Tidy Up suggestions, then your to-dos, oldest first. Tap Done when you\'ve done your part: it becomes Claude\'s turn.', ['Down', 'Tidy Up', 'Done']],
+  ['tidy', '🧹', 'Tidy Up', 'Gentle suggestions: a project marked Paused, untouched for 10+ days, or a shipped app with a planned update. Move does it; Keep hides it for 30 days.', ['Move', 'Keep']],
+  ['next', '🎯', 'Next Step', 'The one thing that happens next on this project, and whose turn it is. Builds and syncs set it; Done hands it to Claude.', ['Waiting on You', 'Done']],
+  ['plans', '📌', 'Plans', 'Ideas saved for later. In any Builds chat, mention an idea and say it\'s for later: Claude saves it here. Start Next Chat puts them in the next build chat\'s first message.', ['Add', '✓ removes']],
+  ['chats', '💬', 'Chats', 'Every Claude chat for this project. The current build chat is marked; tapping a chat opens it in the Claude app.', ['Open']],
+  ['docs', '📄', 'Docs', 'Your Builds docs (scope, build log, carryover, plans), synced by Claude and filed under their project. Say "sync docs" in a Builds chat to refresh them. Read-only here: edits happen in Claude.', ['sync docs']],
+  ['links', '🔗', 'Links', 'The four links every project should have: the live app, GitHub, Vercel and Supabase.', ['Live', 'GitHub', 'Vercel', 'Supabase']],
+  ['health', '🩺', 'Health', 'Is the site up, and does its version match the latest build? Threads checks every day and when you open it. Up means the site answers, not that every feature works.', ['Up', 'Down', 'Recheck']],
+  ['builds', '🧱', 'Builds', 'The latest builds, newest first, with one line on what each changed.', ['threads-29']],
+  ['setup', '🛠️', 'Setup', 'Stack, accounts, env var names (never values) and the playbook checklist. Tap a chip to confirm something is set in Vercel or saved in 1Password.', ['Vercel ✓', '1Password ✓']],
+  ['tiers', '🗂️', 'Tiers', 'Building = working on it now. Shipped = live and done for now. On Hold = paused. Backlog = not started. Archived = not building it. Only Building and Shipped ever ask for anything.', ['Building', 'Shipped', 'On Hold']],
+  ['nextchat', '➡️', 'Start Next Chat', 'At about 10 updates a chat gets long. Step 1 wraps up the current chat (writes the carryover); step 2 copies a handoff (with your saved plans) and opens a fresh Builds chat.', ['Wrap Up', 'Start Build N']],
+  ['sync', '🔄', 'Sync', 'Builds update Threads by themselves. Sync is for catching up: it copies "sync threads" and opens a new Builds chat after asking first.', ['Yes, Sync']],
+  ['duo', '📱', 'On the Duo', 'Folded: the main buttons live in the strip on the right, under the clock. Unfolded: the sidebar layout, with cards in two columns.', ['Home', 'Projects', 'Shipped', 'Triage']],
+];
+function guideCard(g) {
+  const [k, icon, title, text, chips] = g;
+  return `<section class="tile glass guide-c" id="g-${k}"><div class="tile-h"><span class="tile-i">${icon}</span><h3>${title}</h3></div>
+    <div class="g-pic">${chips.map((c, i) => `<span class="g-chip${i === 0 ? ' on' : ''}">${esc(c)}</span>`).join('')}</div><p>${text}</p></section>`;
+}
+function guideHTML() {
+  return `<div class="page"><header class="ph"><h1>Guide</h1><span class="muted">How Threads works</span></header><div class="tiles guide">${GUIDE.map(guideCard).join('')}</div></div>`;
+}
+function openGuide(k) {
+  const g = GUIDE.find((x) => x[0] === k) || GUIDE[0];
+  openSheet(`${guideCard(g)}<button class="btn ghost" data-act="go" data-r="guide" style="margin-top:12px">Open the Full Guide</button>`);
+}
+
+// Docs (threads-30): Claude syncs the Builds project docs into Threads (connector threads_sync_docs); each doc is
+// filed under its project by its path (claude/<slug>-…). The list loads with the app; a doc's text loads when opened.
+const docsFor = (slug) => (S.docs || []).filter((x) => x.project === slug).sort((a, b) => DOC_ORDER(a) - DOC_ORDER(b) || a.title.localeCompare(b.title));
+const DOC_KIND = { scope: 'Scope', log: 'Build Log', carryover: 'Carryover', plan: 'Plan', code: 'Code', other: 'Doc' };
+const DOC_ORDER = (x) => ({ scope: 0, log: 1, carryover: 2, plan: 3, other: 4, code: 5 }[x.kind] ?? 6);
+function docsList(slug, empty) {
+  const list = docsFor(slug);
+  if (!list.length) return `<p class="muted">${empty || 'No docs synced yet. Say <code>sync docs</code> in a Builds chat and they show up here.'}</p>`;
+  return `<div class="doc-list">${list.map((x) => `<button class="doc-row" data-act="doc-open" data-path="${esc(x.path)}"><span class="doc-i">${x.kind === 'code' ? '⌨️' : '📄'}</span><span class="row-t"><b>${esc(x.title)}</b><span>${DOC_KIND[x.kind] || 'Doc'} · ${x.updated_at ? `updated ${ago(x.updated_at)}` : ''}${x.size ? ` · ${Math.max(1, Math.round(x.size / 1024))} KB` : ''}</span></span>${ICON.go}</button>`).join('')}</div>`;
+}
+async function loadDocs() {
+  try { const j = await api('/api/docs'); S.docs = j.docs || []; S.docsAt = Date.now(); if (S.view !== 'detail' && ['project', 'docs'].includes(S.route)) renderContent(); } catch {}
+}
+async function openDoc(path) {
+  const meta = (S.docs || []).find((x) => x.path === path);
+  openSheet(`<div class="doc-view"><h2>${esc(meta?.title || path)}</h2><p class="hint" style="margin-top:0">${esc(path)}</p><div class="md" id="doc-body"><p class="muted">Loading…</p></div></div>`);
+  $('#sheet')?.classList.add('wide-sheet');
+  try {
+    const j = await api(`/api/docs?path=${encodeURIComponent(path)}`);
+    const el = $('#doc-body'); if (el) el.innerHTML = /\.(js|json|html)$/i.test(path) ? `<pre><code>${esc(j.doc?.content || '')}</code></pre>` : md(j.doc?.content || '');
+  } catch (err) { const el = $('#doc-body'); if (el) el.innerHTML = `<p class="muted">Couldn't load it. ${esc(err.message)}</p>`; }
+}
+// Small, safe Markdown renderer (headings, lists, tables, code, quotes, bold, italic, links). Everything is escaped first.
+function md(src) {
+  const inl = (t) => esc(t).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/(^|[\s(])\*([^*\s][^*]*)\*/g, '$1<i>$2</i>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" data-act="ext">$1</a>');
+  const lines = String(src).replace(/\r/g, '').split('\n'), out = [];
+  let i = 0;
+  while (i < lines.length) {
+    const l = lines[i];
+    if (/^```/.test(l)) { const buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]); i++; out.push(`<pre><code>${esc(buf.join('\n'))}</code></pre>`); continue; }
+    const hm = l.match(/^(#{1,4})\s+(.*)/); if (hm) { const n = hm[1].length + 1; out.push(`<h${n}>${inl(hm[2])}</h${n}>`); i++; continue; }
+    if (/^\s*---+\s*$/.test(l)) { out.push('<hr>'); i++; continue; }
+    if (/^\|/.test(l) && i + 1 < lines.length && /^\|[\s:|-]+\|?\s*$/.test(lines[i + 1])) {
+      const cells = (r) => r.replace(/^\||\|\s*$/g, '').split('|').map((c) => c.trim());
+      const head = cells(l); i += 2; const rows = [];
+      while (i < lines.length && /^\|/.test(lines[i])) rows.push(cells(lines[i++]));
+      out.push(`<div class="md-t"><table><tr>${head.map((c) => `<th>${inl(c)}</th>`).join('')}</tr>${rows.map((r) => `<tr>${r.map((c) => `<td>${inl(c)}</td>`).join('')}</tr>`).join('')}</table></div>`); continue;
+    }
+    if (/^\s*([-*]|\d+\.)\s+/.test(l)) {
+      const ol = /^\s*\d+\./.test(l), items = [];
+      while (i < lines.length && /^\s*([-*]|\d+\.)\s+/.test(lines[i])) {
+        const m = lines[i].match(/^(\s*)([-*]|\d+\.)\s+(.*)/); items.push(`<li${m[1].length >= 2 ? ' class="sub"' : ''}>${inl(m[3])}</li>`); i++;
+        while (i < lines.length && /^\s{2,}\S/.test(lines[i]) && !/^\s*([-*]|\d+\.)\s+/.test(lines[i])) items[items.length - 1] = items[items.length - 1].replace(/<\/li>$/, ' ' + inl(lines[i++].trim()) + '</li>');
+      }
+      out.push(`<${ol ? 'ol' : 'ul'}>${items.join('')}</${ol ? 'ol' : 'ul'}>`); continue;
+    }
+    if (/^>\s?/.test(l)) { const buf = []; while (i < lines.length && /^>\s?/.test(lines[i])) buf.push(lines[i++].replace(/^>\s?/, '')); out.push(`<blockquote>${inl(buf.join(' '))}</blockquote>`); continue; }
+    if (!l.trim()) { i++; continue; }
+    const buf = [l]; i++;
+    while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|```|\||>|\s*([-*]|\d+\.)\s)/.test(lines[i])) buf.push(lines[i++]);
+    out.push(`<p>${inl(buf.join(' '))}</p>`);
+  }
+  return out.join('');
+}
+// Docs page: every synced doc, grouped by project (General = playbook, templates).
+function docsPageHTML() {
+  const groups = {};
+  for (const x of S.docs || []) (groups[x.project] = groups[x.project] || []).push(x);
+  const nameOf = (slug) => (slug === 'general' ? 'General' : projects().find((p) => slugOf(p) === slug)?.name || slug);
+  const order = Object.keys(groups).sort((a, b) => (a === 'general' ? -1 : b === 'general' ? 1 : nameOf(a).localeCompare(nameOf(b))));
+  return `<div class="page"><header class="ph"><h1>Docs</h1><span class="muted">${(S.docs || []).length} files</span><button class="qbtn" data-act="guide" data-k="docs" aria-label="How Docs work">?</button></header>
+    ${order.length ? order.map((k) => `<section class="blk"><div class="blk-h"><h2>${esc(nameOf(k))}</h2><span class="muted">${groups[k].length}</span></div><div class="glass tile-b doc-group">${docsList(k)}</div></section>`).join('')
+      : `<div class="empty-card">No docs yet. In a Builds chat, say <code>sync docs</code>: Claude copies your Builds docs (scopes, build logs, carryovers, the playbook) into Threads and files each one under its project.</div>`}</div>`;
+}
+
 // Plans (threads-27): add by hand here, or Claude saves them with the connector's threads_save_plan.
 function openPlanAdd(id) {
   const s = secById(id);
@@ -1639,6 +1789,7 @@ function renderTop() {
   else if (S.route === 'project' && secById(S.pid)) top.innerHTML = back(S.back === 'projects' ? 'Projects' : S.back === 'triage' ? 'Triage' : S.back === 'shipped' ? 'Shipped' : 'Home');
   else if (S.route === 'archive') top.innerHTML = back('Archived Chats');
   else if (S.route === 'group' && secById(S.gid)) top.innerHTML = `${back(esc(secById(S.gid).name))}${duoOn() ? '' : `<button class="add-btn" data-act="add" aria-label="Add">${ICON.plus}<span>Add</span></button>`}`;
+  else if (S.route === 'docs' || S.route === 'guide') top.innerHTML = back(S.route === 'docs' ? 'Docs' : 'Guide');
   else if (duoOn()) top.innerHTML = `<h1>${{ home: 'Threads', projects: 'Projects', shipped: 'Shipped', triage: 'Triage' }[S.route] || 'Threads'}</h1>`;
   else {
     const t = { home: 'Threads', projects: 'Projects', shipped: 'Shipped', triage: 'Triage' }[S.route] || 'Threads';
@@ -1666,7 +1817,9 @@ function renderSide() {
       ${foldBox(t, `<div class="slist" data-tier="${t}">${list.map(sideProj).join('')}</div>
       ${t === 'archived' ? `<button class="srow sub${on('archive')}" data-act="go" data-r="archive" title="Archived Chats">${ICON.archive}<span class="lbl">Archived Chats</span><small>${na || ''}</small></button>` : ''}`)}`;
   };
-  const more = `<button class="srow${on('triage')}" data-act="go" data-r="triage" title="Triage">${ICON.tag}<span class="lbl">Triage</span>${nn ? `<small>${nn}</small>` : ''}</button>
+  const more = `<button class="srow${on('docs')}" data-act="go" data-r="docs" title="Docs"><span class="sic">📄</span><span class="lbl">Docs</span><small>${(S.docs || []).length || ''}</small></button>
+    <button class="srow${on('guide')}" data-act="go" data-r="guide" title="Guide"><span class="sic">🧭</span><span class="lbl">Guide</span></button>
+    <button class="srow${on('triage')}" data-act="go" data-r="triage" title="Triage">${ICON.tag}<span class="lbl">Triage</span>${nn ? `<small>${nn}</small>` : ''}</button>
     ${['general', 'shortcuts', 'sync'].map(sysRow).join('')}
     ${p.length ? `<div class="sh sub${folds.has('pins') ? ' closed' : ''}" data-act="fold" data-v="pins" role="button">${ICON.chev}<span>Pinned</span></div>${foldBox('pins', `<div id="spins">${p.map(pinRow).join('')}</div>`)}` : ''}
     ${tierFold('shipped', 'Shipped Projects')}${tierFold('hold', 'On Hold')}${tierFold('backlog', 'Backlog')}${tierFold('archived', 'Archived')}`;
@@ -1827,6 +1980,8 @@ function renderMain() {
   if (S.filter) el.innerHTML = searchHTML();
   else if (s && !s.is_inbox) el.innerHTML = projectHTML(s);
   else if (S.route === 'triage') el.innerHTML = triageHTML();
+  else if (S.route === 'docs') el.innerHTML = docsPageHTML();
+  else if (S.route === 'guide') el.innerHTML = guideHTML();
   else if (S.route === 'group' && secById(S.gid)) el.innerHTML = sysPageHTML(secById(S.gid));
   else if (S.route === 'archive') el.innerHTML = archiveHTML();
   else if (S.route === 'shipped') el.innerHTML = shippedHTML();
@@ -1888,7 +2043,7 @@ function shippedHTML() {
   </div>`;
 }
 function projectsHTML() {
-  return `<div class="page">${TIERS.map(([t, label]) => {
+  return `<div class="page"><div class="plist glass pg-links"><button class="prow" data-act="go" data-r="docs"><span class="gicon">📄</span><span class="prow-t"><b>Docs</b><span>${(S.docs || []).length} files from your Builds project</span></span></button><button class="prow" data-act="go" data-r="guide"><span class="gicon">🧭</span><span class="prow-t"><b>Guide</b><span>How every part of Threads works</span></span></button></div>${TIERS.map(([t, label]) => {
     const list = projectsIn(t);
     return `<section class="blk"><div class="blk-h"><h2>${label}</h2><span class="muted">${list.length}</span></div><div class="plist glass"><div class="slist" data-tier="${t}">${list.map((s) => {
       const h = health(s), d = normDoc(s), line = d.next ? `Next: ${d.next}` : d.now || syncOf(s).build || TIER_HINT[t];
@@ -1947,27 +2102,56 @@ const CHECKS = [
   ['version', 'Version', 'APP_VERSION matches version.json'],
   ['links', 'Links', 'All 4 links recorded and pinned in Arc'],
 ];
+// Project page (threads-30, full redesign): a glass hero tinted with the project's color, one row of main actions
+// (the rest in ⋯), then tiles: Next Step, Plans, Chats, Docs, Links, Health, Builds, Setup. Every tile has a ? that opens the Guide.
+const TILE_I = { next: '🎯', plans: '📌', chats: '💬', docs: '📄', links: '🔗', health: '🩺', builds: '🧱', setup: '🛠️' };
+function tile(k, title, body, extra = '', cls = '') {
+  return `<section class="tile glass${cls}" data-tile="${k}"><div class="tile-h"><span class="tile-i">${TILE_I[k] || ''}</span><h3>${title}</h3>${extra}<button class="qbtn" data-act="guide" data-k="${k}" aria-label="How ${title} works" title="How this works">?</button></div><div class="tile-b">${body}</div></section>`;
+}
 function projectHTML(s) {
-  const h = health(s), sy = syncOf(s), app = projLink(s, 'live'), cur = currentChat(s), gapsN = (sy.gaps || []).length;
-  const head = `<header class="pj-h${colorCls(colorOf(s))}">${gIcon(s)}<div class="pj-t"><h1>${esc(s.name)}</h1>
-      <div class="pj-sub"><button class="tierbtn" data-act="tier-menu" data-id="${s.id}" title="Move to another tier">${TIER_NAME[tierOf(s)]}${ICON.chev}</button>${hbadge(h)}${sy.build ? `<code>${esc(sy.build)}</code>` : ''}${sy.deployed === false ? '<span class="tagx warn">Not deployed</span>' : sy.deployed ? '<span class="tagx ok">Deployed</span>' : ''}${liveChip(s)}${ctTag(s)}${liveCheckable(s) ? `<button class="lnkbtn recheck" data-act="live-recheck" data-id="${s.id}" title="Check the live site and its version.json now">${ICON.sync}Recheck</button>` : ''}${sy.synced_at ? `<span>synced ${ago(sy.synced_at)}</span>` : ''}</div></div>
-    <div class="pj-a">${tierOf(s) === 'shipped' ? `<button class="act pri" data-act="plan-update" data-id="${s.id}" title="Moves ${esc(s.name)} to Building so it gets health and Do This Next again">${ICON.redo}Plan an Update</button>` : ''}
-      ${tierOf(s) === 'building' && sy.deployed === true ? `<button class="act" data-act="mark-shipped" data-id="${s.id}" title="Done for now: moves ${esc(s.name)} to Shipped and stops the health nudges">${ICON.shipped}Mark Shipped</button>` : ''}
-      ${app ? `<a class="act${tierOf(s) === 'shipped' ? '' : ' pri'}" href="${esc(app.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : ''}
+  const h = health(s), sy = syncOf(s), d = normDoc(s), app = projLink(s, 'live'), cur = currentChat(s), tier = tierOf(s), gapsN = (sy.gaps || []).length;
+  const hero = `<header class="hero2 glass${colorCls(colorOf(s))}">
+    <div class="hero-top">${gIcon(s)}<div class="hero-t"><h1>${esc(s.name)}</h1>
+      <div class="pj-sub"><button class="tierbtn" data-act="tier-menu" data-id="${s.id}" title="Move to another tier">${TIER_NAME[tier]}${ICON.chev}</button>${sy.build ? `<code>${esc(sy.build)}</code>` : ''}${sy.deployed === false ? '<span class="tagx warn">Not deployed</span>' : ''}${liveChip(s)}${liveCheckable(s) ? `<button class="lnkbtn recheck" data-act="live-recheck" data-id="${s.id}" title="Check the live site now">${ICON.sync}Recheck</button>` : ''}</div></div>
+      <button class="more" data-act="pj-actions" data-id="${s.id}" aria-label="More actions for ${esc(s.name)}" title="More actions">${ICON.more}</button></div>
+    ${d.now ? `<p class="hero-now">${esc(d.now)}</p>` : ''}
+    <div class="hero-a">${app ? `<a class="act${tier === 'shipped' ? '' : ' pri'}" href="${esc(app.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : ''}
       ${cur ? `<a class="act" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}">${ICON.k_chat}Open ${esc(shortName(cur))}</a>` : ''}
-      <button class="act" data-act="copy-text" data-await="1" data-t="${esc(syncPhrase(s))}" data-msg="${esc(pasteMsg(cur))} Threads updates itself." title="Copies &quot;${esc(syncPhrase(s))}&quot;: a quick refresh from the build log">${ICON.copy}Sync ${esc(s.name)}${slugOf(s) === 'threads' ? ' Project' : ''}</button>
-      <button class="act" data-act="copy-text" data-await="1" data-t="${esc(deepPhrase(s))}" data-msg="${esc(pasteMsg(cur))} It asks its questions, then updates Threads." title="Copies &quot;${esc(deepPhrase(s))}&quot;: reads every chat, fixes the docs, asks you questions">${ICON.sync}Deep Sync</button>
-      ${tierOf(s) === 'building' ? `<button class="act" data-act="next-chat" data-id="${s.id}" title="Wrap up this chat, then copy the handoff and open Build ${nextSession(s)}">${ICON.next}Start Next Chat</button>` : ''}
-      <button class="act" data-act="copy-context" data-id="${s.id}" title="Copy a short brief of where this project stands, for a new chat">${ICON.clip}Copy Context</button>
-      <button class="more" data-act="sec-menu" data-id="${s.id}" aria-label="Edit ${esc(s.name)}">${ICON.more}</button></div></header>`;
-  if (wide()) {
-    const tab = PTABS.some(([k]) => k === S.ptab) ? S.ptab : 'overview';
-    return `<div class="page">${head}${longBar(s, h)}<nav class="ptabs">${PTABS.map(([k, l]) => `<button class="ptab${k === tab ? ' on' : ''}" data-act="ptab" data-v="${k}">${l}${k === 'chats' ? `<small>${allChatsIn(s).length}</small>` : k === 'playbook' && gapsN ? `<small class="bad">${gapsN}</small>` : ''}</button>`).join('')}</nav>
-      <div class="pbody">${TAB[tab](s)}</div></div>`;
-  }
-  const det = (k, label, extra) => `<details class="det-sec glass" data-det="${k}"${S.openDet.has(k) ? ' open' : ''}><summary>${ICON.chev}${label}${extra || ''}</summary><div class="pbody">${TAB[k](s)}</div></details>`;
-  return `<div class="page">${head}${longBar(s, h)}${TAB.overview(s)}<h3 class="sect-t">Chats</h3>${TAB.chats(s)}<h3 class="sect-t">Links</h3>${TAB.links(s)}
-    ${det('playbook', 'Playbook', gapsN ? `<small class="tagx bad">${gapsN} to fix</small>` : '')}${det('setup', 'Setup')}</div>`;
+      ${tier === 'building' ? `<button class="act" data-act="next-chat" data-id="${s.id}">${ICON.next}Start Next Chat</button>` : ''}
+      ${tier === 'shipped' ? `<button class="act pri" data-act="plan-update" data-id="${s.id}">${ICON.redo}Plan an Update</button>` : ''}
+      ${tier === 'building' && sy.deployed === true ? `<button class="act" data-act="mark-shipped" data-id="${s.id}">${ICON.shipped}Mark Shipped</button>` : ''}</div></header>`;
+  const mine = sy.next_owner === 'joe', t = nextSince(s);
+  const next = tile('next', 'Next Step', d.next ? `<p class="next-big">${esc(d.next)}</p>
+      <div class="next-m"><span class="tagx${mine ? ' warn' : ''}">${mine ? 'Waiting on You' : claudeTurn(s) ? "Claude's Turn" : sy.next_owner === 'claude' ? 'Claude Builds Next' : 'Next'}</span>${t ? `<span class="muted">since ${ageTxt(t)}</span>` : ''}${mine ? `<button class="act pri done" data-act="ym-done" data-id="${s.id}">${ICON.check}Done</button>` : ''}</div>`
+    : '<p class="muted">No next step yet. A build or a sync fills this in.</p>', `<button class="more" data-act="doc-edit" data-id="${s.id}" data-k="overview" aria-label="Edit">${ICON.edit}</button>`);
+  const pl = plansOf(s);
+  const plans = tile('plans', 'Plans', pl.length ? `<div class="plan-list">${pl.map((x) => `<div class="plan"><button class="ymck" data-act="plan-done" data-id="${s.id}" data-pid="${esc(x.id)}" title="Done or not doing it: remove" aria-label="Remove plan">${ICON.check}</button><div class="plan-t"><p>${esc(x.text)}</p><small>${x.added ? `Saved ${ago(x.added)}` : ''}${x.for ? ` · for ${esc(x.for)}` : ''}${x.from ? ` · <a href="${esc(x.from)}" target="_blank" rel="noopener" data-act="ext">from chat</a>` : ''}</small></div></div>`).join('')}</div>`
+    : '<p class="muted">Ideas saved for later land here. Start Next Chat brings them into the next build chat.</p>', `<button class="act" data-act="plan-add" data-id="${s.id}">${ICON.plus}Add</button>`);
+  const chats = tile('chats', 'Chats', TAB.chats(s), `<small class="muted">${allChatsIn(s).length}</small>`);
+  const docs = tile('docs', 'Docs', docsList(slugOf(s)), `<small class="muted">${docsFor(slugOf(s)).length || ''}</small>`);
+  const linkRows = ARC.map(([k, label]) => { const l = projLink(s, k); return l ? `<a class="row" href="${esc(l.url)}" target="_blank" rel="noopener" data-act="ext"><span class="li">${LINK_ICON[k]}</span><div class="row-t"><b>${label}</b><span>${esc(shortUrl(l.url))}</span></div>${ICON.go}</a>` : ''; }).join('');
+  const others = d.links.filter((l) => linkKind(l) === 'other').map((l) => `<a class="row" href="${esc(l.url)}" target="_blank" rel="noopener" data-act="ext"><span class="li">${linkIcon(l)}</span><div class="row-t"><b>${esc(l.label || 'Link')}</b><span>${esc(shortUrl(l.url))}</span></div>${ICON.go}</a>`).join('');
+  const links = tile('links', 'Links', linkRows + others || '<p class="muted">No links yet.</p>', `<button class="more" data-act="doc-edit" data-id="${s.id}" data-k="links" aria-label="Edit links">${ICON.edit}</button>`);
+  const lv = liveOf(s);
+  const healthT = tile('health', 'Health', `${lv ? `<div class="kv"><b>Live</b><div>${esc(LIVE_L[lv.state]?.[1] || '')} · ${esc(liveDetail(lv))}</div></div>` : ''}
+    ${h.why.length ? `<ul class="why">${h.why.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : '<p class="muted">Nothing flagged.</p>'}
+    <div class="kv"><b>Activity</b><div>${h.la ? agoMs(h.la) : 'None recorded'}</div>${sy.current_chat ? `<b>Chat</b><div>${esc(sy.current_chat)}${sy.updates_in_chat != null ? ` · ${sy.updates_in_chat} of ~10 updates` : ''}</div>` : ''}</div>`);
+  const all = (sy.builds || []).slice().sort((a, b) => (b.n ?? 0) - (a.n ?? 0));
+  const builds = tile('builds', 'Builds', all.length ? `<div class="tl">${all.slice(0, 8).map((b) => `<div class="tl-r"><code>${b.n != null ? `${esc(slugOf(s))}-${b.n}` : '—'}</code><span>${esc(fmtDate(b.date))}</span><div>${esc(b.summary)}</div></div>`).join('')}</div>` : '<p class="muted">No builds synced yet.</p>', `<small class="muted">${all.length || ''}</small>`);
+  const setup = tile('setup', 'Setup', `<details class="tile-more"${S.openDet.has('setup') ? ' open' : ''} data-det="setup"><summary>${ICON.chev}Stack, Accounts, Env Vars</summary>${TAB.setup(s)}</details>
+    <details class="tile-more"${S.openDet.has('playbook') ? ' open' : ''} data-det="playbook"><summary>${ICON.chev}Playbook${gapsN ? ` <small class="tagx bad">${gapsN} to fix</small>` : ''}</summary>${TAB.playbook(s)}</details>`, '', ' t-wide');
+  return `<div class="page pj2${colorCls(colorOf(s))}">${hero}${longBar(s, h)}<div class="tiles">${next}${plans}${chats}${docs}${links}${healthT}${builds}${setup}</div></div>`;
+}
+function openPjActions(id) {
+  const s = secById(id);
+  if (!s) return;
+  const cur = currentChat(s), row = (act, label, hint, extra = '') => `<button class="pick-row" data-act="${act}" data-id="${s.id}"${extra}><b>${label}</b><small>${hint}</small></button>`;
+  openSheet(`<h2>${esc(s.name)}</h2><div class="pick-list">
+    ${row('copy-text', `Sync ${esc(s.name)}`, 'Copies a quick refresh prompt for its chat', ` data-t="${esc(syncPhrase(s))}" data-msg="${esc(pasteMsg(cur))}"`)}
+    ${row('copy-text', 'Deep Sync', 'Copies the full catch-up prompt (reads every chat, fixes the docs)', ` data-t="${esc(deepPhrase(s))}" data-msg="${esc(pasteMsg(cur))}"`)}
+    ${row('copy-context', 'Copy Context', 'A short brief of where it stands, for another chat')}
+    ${row('tier-menu', 'Move to Another Tier', `Now: ${TIER_NAME[tierOf(s)]}`)}
+    ${row('sec-menu', 'Edit Name, Icon, Color', 'Or delete the project')}</div>`);
 }
 const TAB = {
   overview(s) {
@@ -2094,6 +2278,7 @@ function cfgCard(s, k, title, body) {
 
 // ---------- navigation ----------
 function go(r) {
+  closeSheet();
   flushSaves();
   if (S.panel && r !== S.route) closePanel();
   S.route = r; S.view = 'main'; S.detailId = null;
@@ -2634,6 +2819,7 @@ function backToMain() {
 
 // ---------- sheets ----------
 function openSheet(html) {
+  $('#sheet')?.classList.remove('wide-sheet');
   document.body.classList.add('sheet-open');
   $('#sheet').style.transform = '';
   $('#sheet').innerHTML = `<div class="grab" data-act="close" aria-label="Close"></div>${html}`;
@@ -3249,6 +3435,9 @@ const A = {
   ptab: (el) => { S.ptab = el.dataset.v; renderContent(); },
   hfilter: (el) => { S.hfilter = S.hfilter === el.dataset.v ? '' : el.dataset.v; renderContent(); },
   'all-move': () => { S.allMove = !S.allMove; renderContent(); },
+  'pj-actions': (el) => openPjActions(el.dataset.id),
+  guide: (el) => openGuide(el.dataset.k),
+  'doc-open': (el) => openDoc(el.dataset.path),
   'plan-add': (el) => openPlanAdd(el.dataset.id),
   'plan-save': (el) => savePlanLocal(el.dataset.id),
   'plan-done': (el) => planDone(el.dataset.id, el.dataset.pid),
