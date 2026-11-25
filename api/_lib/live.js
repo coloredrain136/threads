@@ -19,6 +19,7 @@ export function liveUrl(s) {
   const l = links.find((x) => {
     const u = norm(x?.url), t = norm(x?.label);
     if (!/^https?:\/\//.test(u) || /github\.com|vercel\.com|supabase\./.test(u)) return false;
+    if (/^old\b/.test(t)) return false; // threads-37: "Old Address" links aren't checked
     return /^(live|app|site|website|prod)/.test(t) || /\.vercel\.app|netlify\.app|pages\.dev|zerogee\.dev/.test(u);
   });
   if (!l) return null;

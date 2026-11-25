@@ -24,7 +24,7 @@
   --dawn:#f2c46d; --dawn-ink:#1d1606; --danger:#ff6b61; --ok:#3ecf8e; --warn:#f2c46d;
   --sky:rgba(90,165,255,.20); --sky2:rgba(120,200,255,.10);
   --card:color-mix(in srgb,var(--ink) 6%,transparent); --line2:color-mix(in srgb,var(--ink) 11%,transparent);
-  /* Arc / macOS: rounded rectangles, no pills */
+  /* macOS: rounded rectangles, no pills */
   --r-lg:12px; --r-md:10px; --r-sm:8px;
   --side:264px; --gap:0px; --topgap:10px;
 }
@@ -951,6 +951,22 @@ div.prow{cursor:pointer}
 .ym-xl .lnkbtn{font-size:12.5px}
 .ym-xb{display:inline-flex;gap:10px;white-space:nowrap}
 .blk-h .qbtn{margin-left:0}
+.hl{display:grid;gap:12px}
+.hl-live{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-md,13px);border:1px solid var(--line2);background:color-mix(in srgb,var(--hc,var(--ink-3)) 12%,transparent)}
+.hl-live.ok{--hc:var(--ok)}.hl-live.bad{--hc:var(--danger)}.hl-live.warn{--hc:#f2b84b}.hl-live.none,.hl-live:not(.ok):not(.bad):not(.warn){--hc:var(--ink-3)}
+.hl-dot{width:12px;height:12px;flex:none;border-radius:50%;background:var(--hc);box-shadow:0 0 0 4px color-mix(in srgb,var(--hc) 22%,transparent)}
+.hl-live.ok .hl-dot{animation:hlPulse 2.4s ease-in-out infinite}
+@keyframes hlPulse{50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--hc) 8%,transparent)}}
+.hl-lt{flex:1;min-width:0;display:grid;gap:2px}.hl-lt b{font-size:16px;font-weight:700}.hl-lt small{font-size:12.5px;color:var(--ink-3);overflow-wrap:anywhere}
+.hl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.hl-c{display:grid;gap:5px;padding:11px 13px;border-radius:var(--r-md,13px);background:var(--hi);border:1px solid var(--line);min-width:0}
+.hl-c small{font-size:11.5px;color:var(--ink-3);font-weight:600;letter-spacing:.02em}.hl-c b{font-size:14.5px;font-weight:700;overflow-wrap:anywhere}
+.hl-bar{height:6px;border-radius:4px;background:color-mix(in srgb,var(--ink) 10%,transparent);overflow:hidden}
+.hl-bar i{display:block;height:100%;border-radius:4px;background:var(--ok);transition:width .5s ease}
+.hl-bar.old i{background:#f2b84b}.hl-bar.chat i{background:var(--dawn)}.hl-bar.chat.full i{background:#f2b84b}
+.hl-flags{display:flex;flex-wrap:wrap;gap:6px}
+.hl-flag{padding:5px 10px;border-radius:8px;font-size:12.5px;font-weight:600;background:color-mix(in srgb,#f2b84b 15%,transparent);color:var(--ink-2)}
+.hl-flag.ok{background:color-mix(in srgb,var(--ok) 15%,transparent);color:color-mix(in srgb,var(--ok) 70%,var(--ink))}
 @keyframes pgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes pgBack{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
 @keyframes heroIn{from{opacity:0;transform:scale(.975) translateY(6px)}to{opacity:1;transform:none}}
@@ -978,7 +994,7 @@ div.prow{cursor:pointer}
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-36'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-37'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1435,7 +1451,8 @@ function linkKind(l) {
   if (u.includes('github.com')) return 'github';
   if (u.includes('vercel.com')) return 'vercel';
   if (u.includes('supabase.')) return 'supabase';
-  if (/^(live|app|site|website|prod)/.test(t) || /\.vercel\.app|netlify\.app|pages\.dev/.test(u)) return 'live';
+  if (/^old\b/.test(t)) return 'other'; // "Old Address" (threads-37): kept for reference, never the live link
+  if (/^(live|app|site|website|prod)/.test(t) || /\.vercel\.app|netlify\.app|pages\.dev|zerogee\.dev/.test(u)) return 'live';
   return 'other';
 }
 const projLink = (s, k) => normDoc(s).links.find((l) => linkKind(l) === k) || null;
@@ -1554,15 +1571,15 @@ function yourMove() {
     if (tier !== 'building' && tier !== 'shipped') continue;
     const h = health(s), sy = syncOf(s), d = normDoc(s), cur = currentChat(s), app = projLink(s, 'live'), vercel = projLink(s, 'vercel'), lv = liveOf(s);
     const chatBtn = cur ? { btn: 'chat', chat: cur } : { btn: 'prompt', prompt: syncPhrase(s) };
+    const quiet = tier === 'shipped'; // threads-37: Shipped only asks for something when its site is down
     if (lv?.state === 'down') mine.push({ s, h, kind: 'down', rank: 0, text: `${s.name} is down: ${liveErr(lv)}`, ...(app ? { btn: 'app', link: app } : chatBtn) });
-    else if (lv?.state === 'mismatch' && docOf(s).live_ignore !== lv.version) mine.push({ s, h, kind: 'mismatch', rank: 1, text: `Live shows ${lv.version}, log says ${lv.build}`, ...(vercel ? { btn: 'link', link: vercel } : chatBtn) });
+    else if (!quiet && lv?.state === 'mismatch' && docOf(s).live_ignore !== lv.version) mine.push({ s, h, kind: 'mismatch', rank: 1, text: `Live shows ${lv.version}, log says ${lv.build}`, ...(vercel ? { btn: 'link', link: vercel } : chatBtn) });
     // Tier Nudges ("Tidy Up"): Move changes the tier, Keep snoozes that nudge for 30 days.
     const st = String(d.status || '').trim().toLowerCase(), days = h.la ? Math.floor((Date.now() - h.la) / 864e5) : null;
     if (tier === 'building' && /^(paused|blocked)$/.test(st)) { if (!snoozed(s, 'paused')) mine.push({ s, h, kind: 'nudge', nk: 'paused', to: 'hold', rank: 2, text: `${s.name} says ${d.status}. Move to On Hold?` }); }
     else if (tier === 'building' && days !== null && days >= nudgeAfter() && !snoozed(s, 'idle') && !hasUpcoming(s) && !isNow(s)) mine.push({ s, h, kind: 'nudge', nk: 'idle', to: 'hold', rank: 2, t: h.la, text: `${s.name} untouched ${days}d. Move to On Hold?` });
-    if (tier === 'shipped' && sy.next_owner === 'claude' && d.next && !snoozed(s, 'plan')) mine.push({ s, h, kind: 'nudge', nk: 'plan', to: 'building', rank: 2, text: `Planned: ${d.next}. Plan an Update?` });
     // Joe's next step
-    if (d.next && sy.next_owner === 'joe') {
+    if (!quiet && d.next && sy.next_owner === 'joe') {
       let b = chatBtn;
       if (sy.deployed === false && vercel) b = { btn: 'link', link: vercel };
       else if (app && TRY_RE.test(d.next)) b = { btn: 'app', link: app };
@@ -1674,8 +1691,8 @@ function ymDone(id, el) {
 const GUIDE = [
   ['home', '🏠', 'Home', 'Two lists: what\'s waiting on you, then everything you\'re building. If it isn\'t on Home, it doesn\'t need you right now.', ['Waiting on You', 'Building']],
   ['now', '🔨', 'Building Now', 'The top of Home: what you\'re actively building. A project shows up by itself when a build chat updated it in the last 12 hours, and you can pin anything else (⋯ → Pin to Building Now). × unpins it, or hides an automatic one until its next build.', ['Auto', 'Pinned', '×']],
-  ['waiting', '⏳', 'Waiting on You', 'Every next step that\'s yours, from Building and Shipped projects, one row per project (anything else on that project shows as a small line under it). Sub-projects sit under their parent. Sites that are down come first, then Tidy Up suggestions, then your to-dos, oldest first. Tap Done when you\'ve done your part: it becomes Claude\'s turn.', ['Down', 'Tidy Up', 'Done']],
-  ['tidy', '🧹', 'Tidy Up', 'Gentle suggestions: a project marked Paused, untouched for 10+ days, or a shipped app with a planned update. Move… lets you pick the tier; Keep hides it for 30 days. A project with an upcoming milestone, or on Building Now, never gets the untouched nudge.', ['Move…', 'Keep']],
+  ['waiting', '⏳', 'Waiting on You', 'Every next step that\'s yours from Building projects, one row per project (Shipped projects only show up here if their site is down) (anything else on that project shows as a small line under it). Sub-projects sit under their parent. Sites that are down come first, then Tidy Up suggestions, then your to-dos, oldest first. Tap Done when you\'ve done your part: it becomes Claude\'s turn.', ['Down', 'Tidy Up', 'Done']],
+  ['tidy', '🧹', 'Tidy Up', 'Gentle suggestions: a Building project marked Paused or untouched for 10+ days. Move… lets you pick the tier; Keep hides it for 30 days. A project with an upcoming milestone, or on Building Now, never gets the untouched nudge.', ['Move…', 'Keep']],
   ['time', '🗓️', 'Timeline', 'Optional dates for a project: milestones like "Phone fully set up, tonight". Add them on the project page, or a build chat adds them for you. The next one shows on the project\'s card; late ones turn red. ✓ marks one done.', ['Add', 'Tonight', '✓']],
   ['next', '🎯', 'Next Step', 'The one thing that happens next on this project, and whose turn it is. Builds and syncs set it; Done hands it to Claude.', ['Waiting on You', 'Done']],
   ['plans', '📌', 'Plans', 'Ideas saved for later. In any Builds chat, mention an idea and say it\'s for later: Claude saves it here. Start Next Chat puts them in the next build chat\'s first message.', ['Add', '✓ removes']],
@@ -1900,11 +1917,18 @@ function makeBundle() {
 const ideaName = (c) => String(c.name || '').replace(/^idea\s*(for later)?\s*[-–:]\s*/i, '').trim();
 const ideaDoc = (c) => (S.docs || []).find((x) => x.path === `claude/${slugify(ideaName(c))}-idea.md`) || null;
 const ideasList = () => { const g = sysSec('ideas'); return g ? allChatsIn(g).sort(bySort('position')) : []; };
+// threads-37: an idea note with no chat of its own picks up a saved chat whose name starts with the idea's name ("Cheapest gas idea scope doc").
+function ideaChat(c) {
+  if (linkFor(c)) return c;
+  const k = slugify(ideaName(c));
+  if (!k) return null;
+  return S.chats.find((x) => x.id !== c.id && !x.archived_at && x.chat_uuid && (x.kind || 'chat') === 'chat' && slugify(x.name).startsWith(k)) || null;
+}
 function ideaRow(c) {
-  const doc = ideaDoc(c), href = linkFor(c), note = String(c.notes || '').split('\n').find((x) => x.trim()) || '';
+  const ch = ideaChat(c), doc = ideaDoc(c), href = ch ? linkFor(ch) : null, note = String(c.notes || '').split('\n').find((x) => x.trim()) || '';
   return `<div class="nm idea"><div class="nm-t" data-act="detail" data-id="${c.id}" role="button"><b>💡 ${esc(ideaName(c))}</b><span>${doc ? '<i class="tagx ok">Scope Doc Ready</i>' : '<i class="tagx">No Scope Doc Yet</i>'}${note ? esc(note.slice(0, 90)) : ''}</span></div>
     <div class="nm-a">${doc ? `<button class="act" data-act="doc-open" data-path="${esc(doc.path)}">📄 Scope Doc</button><button class="act pri" data-act="idea-start" data-id="${c.id}">${ICON.star}Start Scope</button>`
-      : `<button class="act" data-act="idea-prep" data-id="${c.id}" title="Copies a prompt that has Claude write the prepped scope doc">📝 Prep Scope Doc</button>`}${href ? `<a class="act" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${c.id}">${ICON.go}Open</a>` : ''}</div></div>`;
+      : `<button class="act" data-act="idea-prep" data-id="${c.id}" title="Copies a prompt that has Claude write the prepped scope doc">📝 Prep Scope Doc</button>`}${href ? `<a class="act" href="${esc(href)}"${linkTarget()} data-act="open" data-id="${ch.id}">${ICON.go}Open</a>` : `<button class="act" data-act="edit-link" data-id="${c.id}" title="Paste the link to this idea's chat">${ICON.clip}Link Chat</button>`}</div></div>`;
 }
 async function ideaGo(id, k) {
   const c = chatById(id);
@@ -2565,7 +2589,7 @@ const CHECKS = [
   ['supabase', 'Supabase', 'In Builds with slug_ tables, RLS on'],
   ['env', 'Env Vars', 'Standard names and a 1Password env item'],
   ['version', 'Version', 'APP_VERSION matches version.json'],
-  ['links', 'Links', 'All 4 links recorded and pinned in Arc'],
+  ['links', 'Links', 'All 4 links recorded; live link is <slug>.zerogee.dev'],
 ];
 // Project page (threads-30, full redesign): a glass hero tinted with the project's color, one row of main actions
 // (the rest in ⋯), then tiles: Next Step, Plans, Chats, Docs, Links, Health, Builds, Setup. Every tile has a ? that opens the Guide.
@@ -2601,9 +2625,17 @@ function projectHTML(s) {
   const others = d.links.filter((l) => linkKind(l) === 'other').map((l) => `<a class="row" href="${esc(l.url)}" target="_blank" rel="noopener" data-act="ext"><span class="li">${linkIcon(l)}</span><div class="row-t"><b>${esc(l.label || 'Link')}</b><span>${esc(shortUrl(l.url))}</span></div>${ICON.go}</a>`).join('');
   const links = tile('links', 'Links', linkRows + others || '<p class="muted">No links yet.</p>', `<button class="more" data-act="doc-edit" data-id="${s.id}" data-k="links" aria-label="Edit links">${ICON.edit}</button>`);
   const lv = liveOf(s);
-  const healthT = tile('health', 'Health', `${lv ? `<div class="kv"><b>Live</b><div>${esc(LIVE_L[lv.state]?.[1] || '')} · ${esc(liveDetail(lv))}</div></div>` : ''}
-    ${h.why.length ? `<ul class="why">${h.why.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : '<p class="muted">Nothing flagged.</p>'}
-    <div class="kv"><b>Activity</b><div>${h.la ? agoMs(h.la) : 'None recorded'}</div>${sy.current_chat ? `<b>Chat</b><div>${esc(sy.current_chat)}${sy.updates_in_chat != null ? ` · ${sy.updates_in_chat} of ~10 updates` : ''}</div>` : ''}</div>`);
+  // threads-37: Health as a status card + two meters + flag chips
+  const laDays = h.la ? (Date.now() - h.la) / 864e5 : null, upd = sy.updates_in_chat;
+  const fresh = laDays == null ? 0 : Math.max(4, Math.round(100 - Math.min(laDays, 30) / 30 * 100));
+  const lvCls = lv ? (LIVE_L[lv.state]?.[0] || 'none') : 'none';
+  const healthT = tile('health', 'Health', `<div class="hl">
+    <div class="hl-live ${lvCls}"><span class="hl-dot"></span><div class="hl-lt"><b>${lv ? esc(LIVE_L[lv.state]?.[1] || 'Checked') : projLink(s, 'live') ? 'Not Checked Yet' : 'No Live Link'}</b><small>${lv ? `${esc(liveDetail(lv).replace(/^./, (x) => x.toUpperCase()))}${lv.checked_at ? ` · checked ${esc(ago(lv.checked_at))}` : ''}` : projLink(s, 'live') ? 'Threads checks the site daily and when it opens' : 'Add a live link to check the site'}</small></div>${projLink(s, 'live') ? `<button class="lnkbtn" data-act="live-recheck" data-id="${s.id}">Recheck</button>` : ''}</div>
+    <div class="hl-grid">
+      <div class="hl-c"><small>Last Activity</small><b>${h.la ? esc(agoMs(h.la)) : 'None yet'}</b><div class="hl-bar${laDays != null && laDays > 10 ? ' old' : ''}"><i style="width:${fresh}%"></i></div></div>
+      ${sy.current_chat ? `<div class="hl-c"><small>Current Chat</small><b>${esc(sy.current_chat)}</b>${upd != null ? `<div class="hl-bar chat${upd >= 9 ? ' full' : ''}"><i style="width:${Math.max(4, Math.min(100, upd * 10))}%"></i></div><small>${upd} of ~10 updates</small>` : ''}</div>` : ''}
+    </div>
+    <div class="hl-flags">${h.why.length ? h.why.map((w) => `<span class="hl-flag">${esc(w)}</span>`).join('') : '<span class="hl-flag ok">✓ All Clear</span>'}</div></div>`);
   const all = (sy.builds || []).slice().sort((a, b) => (b.n ?? 0) - (a.n ?? 0));
   const builds = tile('builds', 'Builds', all.length ? `<div class="tl">${all.slice(0, 8).map((b) => `<div class="tl-r"><code>${b.n != null ? `${esc(slugOf(s))}-${b.n}` : '—'}</code><span>${esc(fmtDate(b.date))}</span><div>${esc(b.summary)}</div></div>`).join('')}</div>` : '<p class="muted">No builds synced yet.</p>', `<small class="muted">${all.length || ''}</small>`, ' t-wide'); // wide: the summary gets room (threads-34)
   const setup = tile('setup', 'Setup', `<details class="tile-more"${S.openDet.has('setup') ? ' open' : ''} data-det="setup"><summary>${ICON.chev}Stack, Accounts, Env Vars</summary>${TAB.setup(s)}</details>
@@ -3106,6 +3138,8 @@ function mergeLinks(cur, map) {
     const u = String(map[k] || '').trim();
     if (!URL_OK(u)) continue;
     const l = { label, url: u.slice(0, 500) }, i = out.findIndex((x) => linkKind(x) === k);
+    // threads-37: a sync never puts an old .vercel.app address back over a zerogee.dev one
+    if (k === 'live' && i >= 0 && /zerogee\.dev/i.test(out[i].url) && /\.vercel\.app/i.test(u)) continue;
     if (i >= 0) out[i] = l; else out.push(l);
   }
   for (const [k, v] of Object.entries(map)) {
@@ -4459,6 +4493,10 @@ function fixSoon() {
   fixTimers = [120, 400, 900].map((t) => setTimeout(() => { duoCheck(); fixViewport(); }, t));
 }
 window.addEventListener('resize', fixSoon);
+// threads-37: coming back to the app (swipe away and back) doesn't fire resize, so measure again then too.
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { fixSoon(); setTimeout(fixSoon, 1200); } });
+window.addEventListener('pageshow', () => fixSoon());
+window.addEventListener('focus', () => fixSoon());
 window.addEventListener('orientationchange', fixSoon);
 window.visualViewport?.addEventListener('resize', fixSoon);
 // Folding / unfolding the Duo changes the screen size: re-check Duo mode and redraw the header + rail.

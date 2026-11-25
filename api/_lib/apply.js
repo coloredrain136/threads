@@ -37,7 +37,8 @@ function linkKind(l) {
   if (u.includes('github.com')) return 'github';
   if (u.includes('vercel.com')) return 'vercel';
   if (u.includes('supabase.')) return 'supabase';
-  if (/^(live|app|site|website|prod)/.test(t) || /\.vercel\.app|netlify\.app|pages\.dev/.test(u)) return 'live';
+  if (/^old\b/.test(t)) return 'other'; // "Old Address" (threads-37): kept for reference, never the live link
+  if (/^(live|app|site|website|prod)/.test(t) || /\.vercel\.app|netlify\.app|pages\.dev|zerogee\.dev/.test(u)) return 'live';
   return 'other';
 }
 function mergeLinks(cur, map) {
@@ -46,6 +47,8 @@ function mergeLinks(cur, map) {
     const u = String(map[k] || '').trim();
     if (!URL_OK(u)) continue;
     const l = { label, url: u.slice(0, 500) }, i = out.findIndex((x) => linkKind(x) === k);
+    // threads-37: a sync never puts an old .vercel.app address back over a zerogee.dev one
+    if (k === 'live' && i >= 0 && /zerogee\.dev/i.test(out[i].url) && /\.vercel\.app/i.test(u)) continue;
     if (i >= 0) out[i] = l; else out.push(l);
   }
   for (const [k, v] of Object.entries(map)) {
