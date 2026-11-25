@@ -3,7 +3,7 @@
 // The key in the URL is the password. Wrong or missing key → 404, so the endpoint stays hidden.
 // It only touches Threads' own tables, and every write goes through the same secret stripping as the app.
 import { safeEqual, body } from './_lib/auth.js';
-import { applySync, status } from './_lib/apply.js';
+import { applySync, status, savePlan } from './_lib/apply.js';
 import { APP_VERSION } from './_lib/version.js';
 
 const PROTOCOLS = ['2025-06-18', '2025-03-26', '2024-11-05'];
@@ -11,6 +11,7 @@ const INSTRUCTIONS = `Threads is Joe's dashboard for his Builds projects. Keep i
 - After every build in a Builds project chat (once the build log is updated), call threads_update_project with that project's status.
 - When Joe says "sync threads", "sync <project>" or "deep sync <project>", build the threads_sync v2 payload as the threads-sync skill describes and send it with threads_apply_sync instead of replying with a JSON block.
 - Use threads_status to see where projects stand before suggesting what to work on.
+- When Joe brings up an idea for a project outside that project's current build chat, ask whether he's working on it now or saving it for later. For later, save it with threads_save_plan (it lands in the project's Plans and goes into the next build chat's handoff).
 Never send passwords, API keys, tokens or env var values. Env vars are names only.`;
 
 const s = (description, extra = {}) => ({ type: 'string', description, ...extra });
@@ -55,9 +56,25 @@ const TOOLS = [
     annotations: { title: 'Apply a Threads Sync', readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   },
   {
+    name: 'threads_save_plan',
+    title: 'Save a Plan to a Project',
+    description: 'Save an idea Joe wants to do later to a project\'s Plans list in Threads. Use it when Joe mentions an idea for a project and says it\'s for later (ask him first: working on it now, or saving it for later?). Plans show on the project page and go into the next build chat\'s handoff. One plan per call; write it as one or two plain sentences in Joe\'s words.',
+    inputSchema: {
+      type: 'object',
+      required: ['project', 'text'],
+      properties: {
+        project: s('Project name or slug, e.g. "Rally".'),
+        text: s('The plan, one or two sentences (under 500 characters).'),
+        for_chat: s('Optional: which build chat it\'s for, e.g. "Rally - Build 4". Leave out to use the chat after the project\'s current one.'),
+        chat_link: s('Optional: https://claude.ai/chat/<id> of the chat the idea came from.'),
+      },
+    },
+    annotations: { title: 'Save a Plan to a Project', readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
     name: 'threads_status',
     title: 'Read Threads Status',
-    description: 'Read where Joe\'s Builds projects stand in Threads: tier (Building, Shipped, On Hold, Backlog, Archived; Joe moves tiers himself in the app), status, latest build, deployed, now/next, current chat, gaps. Pass a project name for its details, links, recent builds and chat links.',
+    description: 'Read where Joe\'s Builds projects stand in Threads: tier (Building, Shipped, On Hold, Backlog, Archived; Joe moves tiers himself in the app), status, latest build, deployed, now/next, current chat, gaps. Pass a project name for its details, saved plans, links, recent builds and chat links.',
     inputSchema: { type: 'object', properties: { project: s('Optional project name or slug.') } },
     annotations: { title: 'Read Threads Status', readOnlyHint: true, openWorldHint: false },
   },
@@ -67,6 +84,10 @@ const text = (obj, isError) => ({ content: [{ type: 'text', text: typeof obj ===
 
 async function callTool(name, args = {}) {
   if (name === 'threads_status') return text(await status(args.project));
+  if (name === 'threads_save_plan') {
+    const r = await savePlan(args);
+    return text(r.error ? r.error : { ...r, note: `Saved to ${r.project}'s Plans in Threads. Tell Joe in one line.` }, !!r.error);
+  }
   if (name === 'threads_apply_sync') {
     const r = await applySync(args.sync, 'connector: sync');
     return text({ ok: true, ...r, note: 'Applied to Threads. Tell Joe in one line what changed.' });

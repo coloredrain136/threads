@@ -221,6 +221,31 @@ export async function applySync(j, source = 'connector') {
   };
 }
 
+// Plans (threads-27): save an idea to a project's Plans list for its next build chat.
+// "for" defaults to the next session chat after the project's current one (e.g. "Rally - Build 4").
+export function nextChatName(s) {
+  const cur = String(docOf(s).sync?.current_chat || '');
+  const m = cur.match(/build\s*(\d+)\s*$/i);
+  return `${s.name} - Build ${m ? +m[1] + 1 : 1}`;
+}
+export async function savePlan({ project, text, for_chat, chat_link } = {}) {
+  const t = str(text, 500);
+  if (!project || !t) throw bad('project and text are required.');
+  const { sections } = await loadAll();
+  const projects = sections.filter((s) => !s.parent_id && !s.is_inbox && !sysOf(s));
+  const key = String(project).trim().toLowerCase();
+  const s = projects.find((x) => slugOf(x) === key || x.name.toLowerCase() === key || slugOf(x) === key.replace(/[^a-z0-9]+/g, '-'));
+  if (!s) return { error: `No project called "${project}". Projects: ${projects.map((x) => x.name).join(', ')}` };
+  const d = { ...docOf(s) }, plans = Array.isArray(d.plans) ? [...d.plans] : [];
+  if (plans.some((p) => String(p.text).toLowerCase() === t.toLowerCase())) return { ok: true, project: s.name, duplicate: true, plans: plans.length };
+  const id = chatIdFrom(chat_link);
+  const plan = { id: uid(), text: t, added: nowISO(), for: str(for_chat, 80) || nextChatName(s), from: id ? `https://claude.ai/chat/${id}` : '' };
+  plans.push(plan);
+  d.plans = plans; d.updated_at = nowISO();
+  await q(db().from(T.sections).update({ doc: cleanDoc(d) }).eq('id', s.id));
+  return { ok: true, project: s.name, saved: plan.text, for: plan.for, plans: plans.length };
+}
+
 // Short read-only view for Claude: where every project stands (no secrets live in Threads anyway).
 export async function status(projectName) {
   const { sections, chats, settings } = await loadAll();
@@ -230,12 +255,12 @@ export async function status(projectName) {
     const d = docOf(s), sy = d.sync || {};
     return { name: s.name, slug: slugOf(s), tier: normTier(s.status), status: d.status || null, build: sy.build || null, deployed: sy.deployed ?? null,
       now: d.now || null, next: d.next || null, next_owner: sy.next_owner || null, current_chat: sy.current_chat || null, updates_in_chat: sy.updates_in_chat ?? null,
-      synced_at: sy.synced_at || null, gaps: (sy.gaps || []).map((g) => g.text) };
+      synced_at: sy.synced_at || null, gaps: (sy.gaps || []).map((g) => g.text), plans: (d.plans || []).length };
   };
   if (projectName && !one) return { error: `No project called "${projectName}". Projects: ${projects.map((s) => s.name).join(', ')}` };
   if (one) {
     const d = docOf(one), ids = new Set([one.id, ...sections.filter((s) => s.parent_id === one.id).map((s) => s.id)]);
-    return { ...brief(one), links: d.links || [], recent_builds: (d.sync?.builds || []).slice(0, 10),
+    return { ...brief(one), plans: (d.plans || []).map((p) => ({ text: p.text, for: p.for, added: p.added })), links: d.links || [], recent_builds: (d.sync?.builds || []).slice(0, 10),
       chats: chats.filter((c) => ids.has(c.section_id) && !c.archived_at).map((c) => ({ title: c.name, link: c.chat_uuid ? `https://claude.ai/chat/${c.chat_uuid}` : c.url })),
       stack: (d.tools || []).map((t) => t.name), env_names: (d.env || []).map((e) => e.name) };
   }

@@ -48,6 +48,9 @@ export function cleanDoc(d) {
     o.nudge_snooze = {};
     for (const k of ['paused', 'idle', 'plan']) if (iso(d.nudge_snooze[k])) o.nudge_snooze[k] = iso(d.nudge_snooze[k]);
   }
+  // Plans (threads-27): ideas saved for a project's next build chat. Text only.
+  if ('plans' in d) o.plans = list(d.plans, 50).map((x) => ({ id: str(x?.id, 40), text: str(x?.text, 500), added: iso(x?.added) || null,
+    for: str(x?.for, 80), from: /^https:\/\/claude\.ai\/chat\/[0-9a-f-]{36}$/i.test(str(x?.from, 80)) ? str(x.from, 80) : '' })).filter((x) => x.id && x.text);
   if (['ideas', 'general', 'shortcuts', 'sync'].includes(d.system)) o.system = d.system; // system folders (threads-10)
   return o;
 }
