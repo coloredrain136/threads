@@ -204,6 +204,9 @@ body.v-detail .main{padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
   html[data-duo-wide] #app.authed{height:calc(100dvh + var(--gap));min-height:0;overflow:hidden}
   html[data-duo-wide] .side{position:relative;top:auto;bottom:auto;height:100%;min-height:0}
   html[data-duo-wide] .main{height:100%;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  /* threads-34: use the strip under the clock. Only the top of each page (title row, project hero, banner) stays clear of it. */
+  html[data-duo-wide] .main{padding-right:24px}
+  html[data-duo-wide] #banner,html[data-duo-wide] #content > .page > :first-child,html[data-duo-wide] #content .ph{margin-right:calc(var(--sar) + 4px)}
 }
 .spin{display:flex;align-items:center;gap:9px;min-height:30px;padding:0 8px;border-radius:var(--r-sm);font-size:13.5px;color:var(--ink-2);user-select:none;-webkit-user-select:none}
 .spin:hover{background:var(--field);color:var(--ink)}
@@ -863,6 +866,10 @@ html[data-duo] .act{height:36px}
 .ym-row.out{opacity:0;transform:translateX(28px)}
 .ym-age{font-size:12px;font-weight:650;color:var(--ink-3)}
 .ym-b{display:flex;gap:6px;flex:none;flex-wrap:wrap;justify-content:flex-end}
+/* threads-34: when the buttons don't fit beside the text, they drop under it instead of covering it */
+.ym .ym-row{flex-wrap:wrap;row-gap:10px}
+.ym .ym-row .dn-t{flex:1 1 300px;min-width:0}
+.ym .ym-row > .ym-b{flex:0 1 auto;margin-left:auto}
 @media (max-width:899px){.ym-b{flex:1 1 100%;justify-content:flex-start}}
 .tagx.tidy{background:color-mix(in srgb,#b39ddb 24%,transparent);color:color-mix(in srgb,#9b7fd4 85%,var(--ink))}
 .tagx.ct{background:color-mix(in srgb,#64a8ff 18%,transparent);color:color-mix(in srgb,#64a8ff 80%,var(--ink))}
@@ -889,7 +896,7 @@ html[data-duo] .act{height:36px}
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-33'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-34'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1190,6 +1197,7 @@ async function load() {
     renderTop(); renderContent();
     openDeepLink();
     liveMaybe(); // Live Check on open (threads-26)
+    tierMovedCheck(); // tier moves made by Claude (threads-34)
     if (!S.docsAt || Date.now() - S.docsAt > 5 * 60e3) loadDocs(); // Docs list (threads-30)
   } catch (err) {
     if (S.token) toast(S.loaded ? 'Offline. Showing your saved list.' : err.message, true);
@@ -1424,6 +1432,16 @@ async function liveCheck(slug) {
   } finally { if (!slug) S.liveBusy = false; }
 }
 // On open (and when coming back to the app): run the check if the last full run is over 30 min old.
+// threads-34: Claude can move a project's tier through the connector (only when Joe asks). Show each move once, with Undo.
+function tierMovedCheck() {
+  const list = projects().filter((x) => { const m = docOf(x).tier_moved; return m && !m.seen && tierOf(x) === m.to && Date.now() - Date.parse(m.at) < 7 * 864e5; });
+  if (!list.length) return;
+  const moves = list.map((x) => ({ s: x, m: docOf(x).tier_moved }));
+  const rows = moves.map(({ s: x, m }) => { x.doc = { ...docOf(x), tier_moved: { ...m, seen: true } }; return { id: x.id, doc: x.doc }; });
+  push([{ op: 'patch', table: 'sections', rows }]);
+  const { s: x, m } = moves[0], more = moves.length > 1 ? ` (and ${moves.length - 1} more)` : '';
+  toastUndo(`Claude moved ${x.name} to ${TIER_NAME[m.to]}${more}`, () => setTier(x.id, m.from));
+}
 function liveMaybe() {
   if (!S.token) return;
   const t = Date.parse(S.settings.live?.checked_at || '') || 0;
@@ -1539,7 +1557,7 @@ const GUIDE = [
   ['health', '🩺', 'Health', 'Is the site up, and does its version match the latest build? Threads checks every day and when you open it. Up means the site answers, not that every feature works.', ['Up', 'Down', 'Recheck']],
   ['builds', '🧱', 'Builds', 'The latest builds, newest first, with one line on what each changed.', ['threads-29']],
   ['setup', '🛠️', 'Setup', 'Stack, accounts, env var names (never values) and the playbook checklist. Tap a chip to confirm something is set in Vercel or saved in 1Password.', ['Vercel ✓', '1Password ✓']],
-  ['tiers', '🗂️', 'Tiers', 'Building = working on it now. Shipped = live and done for now. On Hold = paused. Backlog = not started. Archived = not building it. Only Building and Shipped ever ask for anything.', ['Building', 'Shipped', 'On Hold']],
+  ['tiers', '🗂️', 'Tiers', 'Building = working on it now. Shipped = live and done for now. On Hold = paused. Backlog = not started. Archived = not building it. Only Building and Shipped ever ask for anything. Move one with the tier button, or ask Claude in any chat ("move Bars to Shipped"): you get an Undo either way.', ['Building', 'Shipped', 'On Hold']],
   ['nextchat', '➡️', 'Start Next Chat', 'At about 10 updates a chat gets long. Step 1 wraps up the current chat (writes the carryover); step 2 copies a handoff (with your saved plans) and opens a fresh Builds chat.', ['Wrap Up', 'Start Build N']],
   ['new', '✨', 'New', 'Start something. Full Project: a scope chat, then build chats. Quick Build: one chat, no scope doc. Idea for Later: saved to Ideas, and Claude writes a prepped scope doc you can start from later. Or add a chat link.', ['Full Project', 'Quick Build', 'Idea for Later']],
   ['sync', '🔄', 'Sync', 'Builds update Threads by themselves. Sync is for catching up: Sync Threads (chats + status), Sync Docs (your docs), Sync a Project (one card), Deep Sync (full cleanup of one project). Each copies its prompt and opens a new Builds chat.', ['Sync Threads', 'Sync Docs', 'Sync a Project', 'Deep Sync']],
@@ -2362,7 +2380,7 @@ function projectHTML(s) {
     ${h.why.length ? `<ul class="why">${h.why.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : '<p class="muted">Nothing flagged.</p>'}
     <div class="kv"><b>Activity</b><div>${h.la ? agoMs(h.la) : 'None recorded'}</div>${sy.current_chat ? `<b>Chat</b><div>${esc(sy.current_chat)}${sy.updates_in_chat != null ? ` · ${sy.updates_in_chat} of ~10 updates` : ''}</div>` : ''}</div>`);
   const all = (sy.builds || []).slice().sort((a, b) => (b.n ?? 0) - (a.n ?? 0));
-  const builds = tile('builds', 'Builds', all.length ? `<div class="tl">${all.slice(0, 8).map((b) => `<div class="tl-r"><code>${b.n != null ? `${esc(slugOf(s))}-${b.n}` : '—'}</code><span>${esc(fmtDate(b.date))}</span><div>${esc(b.summary)}</div></div>`).join('')}</div>` : '<p class="muted">No builds synced yet.</p>', `<small class="muted">${all.length || ''}</small>`);
+  const builds = tile('builds', 'Builds', all.length ? `<div class="tl">${all.slice(0, 8).map((b) => `<div class="tl-r"><code>${b.n != null ? `${esc(slugOf(s))}-${b.n}` : '—'}</code><span>${esc(fmtDate(b.date))}</span><div>${esc(b.summary)}</div></div>`).join('')}</div>` : '<p class="muted">No builds synced yet.</p>', `<small class="muted">${all.length || ''}</small>`, ' t-wide'); // wide: the summary gets room (threads-34)
   const setup = tile('setup', 'Setup', `<details class="tile-more"${S.openDet.has('setup') ? ' open' : ''} data-det="setup"><summary>${ICON.chev}Stack, Accounts, Env Vars</summary>${TAB.setup(s)}</details>
     <details class="tile-more"${S.openDet.has('playbook') ? ' open' : ''} data-det="playbook"><summary>${ICON.chev}Playbook${gapsN ? ` <small class="tagx bad">${gapsN} to fix</small>` : ''}</summary>${TAB.playbook(s)}</details>`, '', ' t-wide');
   const sub = subsOf(s);

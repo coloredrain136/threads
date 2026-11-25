@@ -1,6 +1,6 @@
 // Applies a threads_sync v2 payload straight to the database (used by the Threads connector).
 // Same rules as the in-app Import: chats by link (Claude title wins), projects by slug/name,
-// tiers never change, new projects Building if touched in 7 days else On Hold, folder chats filed,
+// tiers never change in a sync (threads-34: moveTier moves one when Joe asks), new projects Building if touched in 7 days else On Hold, folder chats filed,
 // builds merged, secrets stripped (by api/data.js cleanDoc on the way in).
 import crypto from 'node:crypto';
 import { db, q } from './db.js';
@@ -267,6 +267,26 @@ export async function savePlan({ project, text, for_chat, chat_link } = {}) {
   d.plans = plans; d.updated_at = nowISO();
   await q(db().from(T.sections).update({ doc: cleanDoc(d) }).eq('id', s.id));
   return { ok: true, project: s.name, saved: plan.text, for: plan.for, plans: plans.length };
+}
+
+// Move a project to another tier (threads-34). Only when Joe asked or confirmed in the chat (the connector says so).
+// Leaves doc.tier_moved so the app can show "Moved by Claude" with Undo.
+const TIER_WORDS = { building: 'building', active: 'building', shipped: 'shipped', ship: 'shipped', live: 'shipped', done: 'shipped',
+  hold: 'hold', 'on hold': 'hold', onhold: 'hold', paused: 'hold', parked: 'hold', backlog: 'backlog', archived: 'archived', archive: 'archived' };
+export const tierWord = (v) => TIER_WORDS[String(v || '').trim().toLowerCase().replace(/[_-]+/g, ' ')] || null;
+export async function moveTier({ project, tier } = {}) {
+  const t = tierWord(tier);
+  if (!t) return { error: 'tier must be Building, Shipped, On Hold, Backlog or Archived.' };
+  const { sections } = await loadAll();
+  const projects = sections.filter((s) => !s.parent_id && !s.is_inbox && !sysOf(s));
+  const key = String(project || '').trim().toLowerCase();
+  const s = projects.find((x) => slugOf(x) === key || x.name.toLowerCase() === key || slugOf(x) === key.replace(/[^a-z0-9]+/g, '-'));
+  if (!s) return { error: `No project called "${project}".` };
+  const from = normTier(s.status);
+  if (from === t) return { project: s.name, tier: t, unchanged: true };
+  const at = nowISO(), d = { ...docOf(s), tier_moved: { from, to: t, at } };
+  await q(db().from(T.sections).update({ status: t, position: Math.max(0, ...projects.map((x) => x.position || 0)) + 1, activated_at: at, archived_at: null, doc: cleanDoc(d) }).eq('id', s.id));
+  return { project: s.name, from, to: t };
 }
 
 // Short read-only view for Claude: where every project stands (no secrets live in Threads anyway).

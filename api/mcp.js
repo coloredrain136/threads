@@ -3,7 +3,7 @@
 // The key in the URL is the password. Wrong or missing key → 404, so the endpoint stays hidden.
 // It only touches Threads' own tables, and every write goes through the same secret stripping as the app.
 import { safeEqual, body } from './_lib/auth.js';
-import { applySync, status, savePlan } from './_lib/apply.js';
+import { applySync, status, savePlan, moveTier } from './_lib/apply.js';
 import { syncDocs } from './_lib/docs.js';
 import { APP_VERSION } from './_lib/version.js';
 
@@ -13,6 +13,7 @@ const INSTRUCTIONS = `Threads is Joe's dashboard for his Builds projects. Keep i
 - When Joe says "sync threads", "sync <project>" or "deep sync <project>", build the threads_sync v2 payload as the threads-sync skill describes and send it with threads_apply_sync instead of replying with a JSON block.
 - Use threads_status to see where projects stand before suggesting what to work on.
 - When Joe says "sync docs", read every doc in the Builds project and send them with threads_sync_docs (full text; Threads files each under its project). After a build changes a project's docs, send just those docs.
+- Tiers (Building, Shipped, On Hold, Backlog, Archived): move a project with threads_update_project's "tier" ONLY when Joe asks ("move Bars to Shipped") or says yes when you offer (e.g. when a project is done: "Want me to move it to Shipped?"). Never move one on your own initiative, never in a sync. Say what moved; Threads shows Joe an Undo.
 - Sub-projects: a project can sit under a parent project (Pocket, Build Screen and Remember This are under Phone Setup). If a sync finds a project or chat that looks like it belongs under another project, ask Joe which project is the parent and recommend one; only after he confirms, send "parent" (the parent's slug) on that project.
 - Inbox: in a sync, a chat you're sure about gets "project" (or "folder": general / ideas / shortcuts) and is filed automatically. A chat you're unsure about gets "home" (a project name or folder) plus a short "home_why", so Joe can file it with one tap in Threads → Inbox. Only the naming is left to Joe.
 - When Joe brings up an idea for a project outside that project's current build chat, ask whether he's working on it now or saving it for later. For later, save it with threads_save_plan (it lands in the project's Plans and goes into the next build chat's handoff).
@@ -37,6 +38,7 @@ const TOOLS = [
         now: s('One short line (under 90 characters): where the project stands.'),
         next: s('One short line (under 90 characters): the single next step.'),
         next_owner: s('"joe" if the next step is Joe\'s (deploy, test, answer), "claude" if it\'s building.', { enum: ['joe', 'claude'] }),
+        tier: s('Optional: move the project to this tier: Building, Shipped, On Hold, Backlog or Archived. ONLY when Joe asked for it ("move Bars to Shipped") or said yes when you offered. Never on your own. Tell him what moved.'),
         parent: s('Optional: the parent project\'s name or slug when this is a sub-project (e.g. "phone-setup" for Pocket). "" makes it top level again. Only set it after Joe confirmed which project is the parent.'),
         current_chat: s('Title of the current session chat, e.g. "Bracket - Build 2".'),
         updates_in_chat: { type: 'integer', description: 'How many updates this build chat has had (about 10 means time for the next session chat).' },
@@ -116,7 +118,13 @@ async function callTool(name, args = {}) {
     if (!args.name) return text('name is required.', true);
     const p = { ...args };
     if (!p.last_activity) p.last_activity = new Date().toISOString();
+    const tier = p.tier; delete p.tier;
     const r = await applySync({ threads_sync: 2, kind: 'project', synced_at: new Date().toISOString(), projects: [p], chats: [] }, 'connector: build');
+    if (tier) {
+      const m = await moveTier({ project: p.slug || p.name, tier });
+      if (m.error) return text({ ok: true, ...r, tier_error: m.error }, false);
+      return text({ ok: true, ...r, tier: m, note: m.unchanged ? `${m.project} is already in that tier.` : `Moved ${m.project} from ${m.from} to ${m.to}. Tell Joe in one line; Threads shows him an Undo.` });
+    }
     return text({ ok: true, ...r });
   }
   return text(`Unknown tool: ${name}`, true);

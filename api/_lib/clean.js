@@ -48,6 +48,10 @@ export function cleanDoc(d) {
     o.nudge_snooze = {};
     for (const k of ['paused', 'idle', 'plan']) if (iso(d.nudge_snooze[k])) o.nudge_snooze[k] = iso(d.nudge_snooze[k]);
   }
+  if (d.tier_moved && typeof d.tier_moved === 'object') { // threads-34: last tier move made by Claude, for the app's Undo toast
+    const tm = d.tier_moved, T5 = ['building', 'shipped', 'hold', 'backlog', 'archived'], at = Date.parse(tm.at);
+    if (T5.includes(tm.from) && T5.includes(tm.to) && Number.isFinite(at)) o.tier_moved = { from: tm.from, to: tm.to, at: new Date(at).toISOString(), ...(tm.seen ? { seen: true } : {}) };
+  }
   if ('live_ignore' in d) o.live_ignore = str(d.live_ignore, 60); // Ignore a Version Mismatch until the live version changes (threads-28)
   // Plans (threads-27): ideas saved for a project's next build chat. Text only.
   if ('plans' in d) o.plans = list(d.plans, 50).map((x) => ({ id: str(x?.id, 40), text: str(x?.text, 500), added: iso(x?.added) || null,
