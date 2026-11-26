@@ -1040,6 +1040,71 @@ html[data-theme="graphite"] .hero2{background:#17181b}
 .dk-row + .dk-row{border-top:1px solid rgba(255,255,255,.07)}
 .dk-row small{margin-left:auto;color:var(--ink-3);font-weight:500}.dk-row svg{width:14px;height:14px;color:var(--ink-3)}
 .dk-sheet .dk-card{background:transparent;border:0;padding:4px 0 0}
+/* ---------- threads-39: Whose move + full-height deck ---------- */
+.wm{display:flex;flex-direction:column;gap:2px}
+.wm-h{display:flex;align-items:center;gap:8px;padding:12px 8px 6px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.wm-h small{font-weight:600;color:var(--ink-3);letter-spacing:0}
+.wm-h.mine span{color:#f0b44c}.wm-h.claude span{color:#8fb3ff}
+.sproj.wmr{align-items:center;min-height:46px;padding:6px 8px;border-radius:12px;color:var(--ink)}
+.sproj.wmr.on{background:var(--hi)}
+.sproj.wmr .gicon{width:32px;height:32px;min-width:32px;border-radius:9px;font-size:16px}
+.wm-t{display:flex;flex-direction:column;min-width:0;flex:1;text-align:left}
+.wm-t b{font-size:14.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wm-t small{font-size:12px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.wm-empty{font-size:12.5px;color:var(--ink-3);padding:2px 10px 6px;margin:0}
+.wm-shelf{border-top:1px solid var(--line);margin-top:12px;padding-top:4px}
+.wm-chips{display:flex;flex-wrap:wrap;gap:6px;padding:2px 4px 8px}
+.wm-chip{height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line2);font-size:13px;font-weight:600;color:var(--ink)}
+.wm-chip small{color:var(--ink-3);font-weight:600;margin-left:3px}
+.wm-chip.on{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.28)}
+.wm-list{display:flex;flex-direction:column}
+.wm-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;font-size:14px;text-align:left;color:var(--ink);min-height:40px}
+.wm-item:hover{background:var(--hi)}
+.wm-item span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wm-item small{font-size:12px;color:var(--ink-3)}
+.wm-dot{width:8px;height:8px;flex:none;border-radius:50%;background:#6b6e76}
+.wm-dot.ok{background:#3ccf7a}.wm-dot.warn{background:#f0b44c}.wm-dot.bad{background:#f2545b}.wm-dot.blue{background:#8fb3ff}
+body.rail .wm-t,body.rail .wm-h,body.rail .wm-shelf,body.rail .wm-empty{display:none!important}
+.deckpage.narrow .wm{background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:4px 6px 10px}
+.deckpage.narrow .sproj.wmr{display:flex;gap:10px;padding:8px;border-radius:12px;width:100%}
+.deckpage.full{display:flex;flex-direction:column;min-height:calc(var(--app-h, 100dvh) - 120px)}
+.deckpage.full .dk-bar{margin:2px 4px 12px}
+.deckpage.full .dk-bar h2{font-size:13px;font-weight:600;color:var(--ink-3);letter-spacing:0}
+.dk-dots{display:flex;gap:6px;margin-left:10px}
+.dk-dt{width:10px;height:10px;border-radius:50%;padding:0;opacity:.45}
+.dk-dt.mine{background:#f0b44c}.dk-dt.claude{background:#8fb3ff}.dk-dt.on{opacity:1;transform:scale(1.25)}
+.deckpage.full .deck{grid-auto-columns:100%!important;flex:1;align-items:stretch;margin-bottom:0}
+.deckpage.full .dk-card{min-height:calc(var(--app-h, 100dvh) - 190px);align-content:start}
+.dk-card.v2{background:#17181b;border:1px solid #2a2c31;border-radius:28px;padding:24px;gap:16px;display:flex;flex-direction:column}
+.dk-card.v2 .dk-h .gicon{width:56px;height:56px;min-width:56px;border-radius:16px;font-size:28px;background:rgba(255,255,255,.07)}
+.dk-card.v2 .dk-n b{font-size:28px;font-weight:800;letter-spacing:-.02em}
+.dk-card.v2 .dk-n small{font-size:14px;color:#9a9ca3}
+.dk-dot.off{background:#6b6e76}
+.dk-lks{display:flex;gap:6px}
+.dk-lki{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:var(--ink-3);border:1px solid #2a2c31}
+.dk-lki svg{width:16px;height:16px}
+.dk-card.v2 .dk-next{border-radius:20px;padding:18px 20px}
+.dk-card.v2 .dk-next small{font-size:12px;font-weight:800;letter-spacing:.1em}
+.dk-card.v2 .dk-next p{font-size:21px;font-weight:600;line-height:1.3;margin-top:8px}
+.dk-next.mine{background:rgba(240,180,76,.08);border-color:rgba(240,180,76,.35)}.dk-next.mine small{color:#f0b44c}
+.dk-next.claude{background:rgba(143,179,255,.08);border-color:rgba(143,179,255,.35)}.dk-next.claude small{color:#8fb3ff}
+.dk-now{font-size:15px;color:#c4c6cc;line-height:1.45;margin:0}.dk-now span{color:#9a9ca3;font-weight:600}
+.dk-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.dk-tile{text-align:left;background:#1f2125;border:1px solid #2a2c31;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px;min-height:84px;color:var(--ink)}
+.dk-tile b{font-size:15px;font-weight:700}.dk-tile small{font-size:12px;color:#9a9ca3}
+.dk-tile:hover{border-color:#3a3d44}
+.dk-card.v2 .dk-acts{margin-top:auto}
+.dk-card.v2 .dk-btn{height:52px;border-radius:16px;font-size:16px;font-weight:700}
+.dk-card.v2 .dk-btn.app{flex:0 0 160px;background:transparent;border-color:#34363c}
+@media (max-width:560px){.dk-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.dk-card.v2 .dk-btn.app{flex:0 0 120px}.dk-card.v2 .dk-n b{font-size:22px}.dk-card.v2 .dk-next p{font-size:17px}}
+.dk-sheet .dk-card.v2{border:0;background:transparent;padding:4px 0 0}
+.dsum-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.dsum-h small{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--ink-3)}
+.dsum-h h2{font-size:24px;font-weight:800;margin:2px 0 0}
+.dsum-l{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.dsum-l li{position:relative;padding-left:18px;font-size:15.5px;line-height:1.45;color:#dcdde1}
+.dsum-l li::before{content:'';position:absolute;left:2px;top:9px;width:6px;height:6px;border-radius:50%;background:#f0b44c}
+.dsum-full{display:inline-block;margin-top:16px;color:#8fb3ff;font-weight:600}
 @keyframes pgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes pgBack{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
 @keyframes heroIn{from{opacity:0;transform:scale(.975) translateY(6px)}to{opacity:1;transform:none}}
@@ -1067,7 +1132,7 @@ html[data-theme="graphite"] .hero2{background:#17181b}
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-38'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-39'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -2271,15 +2336,58 @@ function renderSide() {
     <label class="sfield">${ICON.search}<input class="filter-inp" id="filter" type="search" placeholder="Search" autocomplete="off" value="${esc(S.filter)}">${S.filter ? '<button class="clear" data-act="filter-clear" aria-label="Clear">×</button>' : '<kbd>⌘K</kbd>'}</label>
     <button class="srow rail-only" data-act="rail-search" title="Search (⌘K)">${ICON.search}</button>
     <button class="syncbtn" data-act="sync" title="Copy &quot;sync threads&quot; and open a new Builds chat">${ICON.sync}<span class="lbl">Sync</span><small>${syncLabel()}</small></button>
-    <button class="srow${on('home')}" data-act="go" data-r="home" title="Home">${ICON.home}<span class="lbl">Home</span></button>
-    <div class="sh plain"><span>Building</span><small>${projectsIn('building').length}</small><button class="mini" data-act="sec-new" data-tier="building" title="New project in Building" aria-label="New project in Building">${ICON.plus}</button></div>
-    <div class="slist" data-tier="building">${nestedIn('building').map(([x, d]) => sideProj(x, d)).join('')}</div>
+    ${whoseMoveHTML()}
     <div class="sgap"></div>
-    <button class="srow${on('shipped')}" data-act="go" data-r="shipped" title="Shipped">${ICON.shipped}<span class="lbl">Shipped</span><small>${projectsIn('shipped').length || ''}</small></button>
     <button class="srow${on('triage')}${ideas && S.route === 'group' && S.gid === ideas.id && !S.filter ? ' on' : ''}" data-act="go" data-r="triage" title="Inbox: ideas and chats to file">${ICON.tag}<span class="lbl">Inbox</span>${nn ? `<i class="ncount">${nn}</i>` : sysCount('ideas') ? `<small>${sysCount('ideas')}</small>` : ''}</button>
     <div class="sh${folds.has('more') ? ' closed' : ''}" data-act="fold" data-v="more" role="button">${ICON.chev}<span>More</span></div>
     ${foldBox('more', more)}
     <div class="side-foot"><button class="srow" data-act="settings" title="Settings">${ICON.gear}<span class="lbl">Settings</span></button></div>`;
+}
+// ---------- Whose move (threads-39, concept A): Your Move / Claude's Move / The Shelf ----------
+// Building projects split by whose turn it is (flat: a sub-project shows "in <parent>" under its name), then the Shelf:
+// one chip per other tier with its count; the picked chip's projects list below it with a status dot.
+const isMine = (s) => !!normDoc(s).next && syncOf(s).next_owner === 'joe';
+function wmRow(s) {
+  const sel = (S.route === 'project' && S.pid === s.id) || (wide() && S.route === 'home' && !S.filter && deckList()[S.deckIdx || 0] === s);
+  const par = parentProj(s), chat = currentChat(s);
+  const sub = [par ? `in ${par.name}` : '', chat ? shortName(chat) : syncOf(s).build || ''].filter(Boolean).join(' · ');
+  return `<button class="sproj wmr${sel ? ' on' : ''}${colorCls(colorOf(s))}" data-act="wm-go" data-id="${s.id}" title="${esc(s.name)}">${gIcon(s)}<span class="wm-t"><b>${esc(s.name)}</b><small>${esc(sub)}</small></span>${liveOf(s)?.state === 'down' ? '<i class="dot stuck" title="Down"></i>' : ''}</button>`;
+}
+const SHELF = [['shipped', 'Shipped'], ['hold', 'On Hold'], ['backlog', 'Backlog'], ['archived', 'Archived']];
+function shelfDot(s) {
+  const lv = liveOf(s), st = String(normDoc(s).status || '').toLowerCase();
+  if (lv?.state === 'down') return 'bad';
+  if (lv?.state === 'up' || lv?.state === 'no_version' || st === 'live') return 'ok';
+  if (lv?.state === 'mismatch') return 'warn';
+  if (st === 'scoping' || st === 'building') return 'blue';
+  return '';
+}
+function whoseMoveHTML(narrow) {
+  const list = deckList(), mine = list.filter(isMine), theirs = list.filter((s) => !isMine(s));
+  const tier = S.shelf ?? localStorage.getItem('threads.shelf') ?? 'shipped';
+  const items = tier ? projectsIn(tier) : [];
+  return `<div class="wm${narrow ? ' wm-narrow' : ''}">
+    <div class="wm-h mine"><span>Your Move</span><small>${mine.length}</small></div>
+    ${mine.length ? mine.map(wmRow).join('') : '<p class="wm-empty">Nothing on you right now.</p>'}
+    <div class="wm-h claude"><span>Claude's Move</span><small>${theirs.length}</small></div>
+    ${theirs.length ? theirs.map(wmRow).join('') : '<p class="wm-empty">Nothing waiting on Claude.</p>'}
+    <div class="wm-shelf"><div class="wm-h"><span>The Shelf</span></div>
+      <div class="wm-chips">${SHELF.map(([k, l]) => `<button class="wm-chip${tier === k ? ' on' : ''}" data-act="shelf" data-v="${k}" aria-pressed="${tier === k}">${l} <small>${projectsIn(k).length}</small></button>`).join('')}</div>
+      ${tier ? `<div class="wm-list">${items.length ? items.map((s) => `<button class="wm-item" data-act="proj" data-id="${s.id}" title="${esc(s.name)}"><i class="wm-dot ${shelfDot(s)}"></i><span>${esc(s.name)}</span><small>${esc(normDoc(s).status || TIER_NAME[tier])}</small></button>`).join('') : '<p class="wm-empty">Nothing here.</p>'}</div>` : ''}
+    </div></div>`;
+}
+function wmGo(id) {
+  const list = deckList(), i = list.findIndex((x) => x.id === id);
+  if (i < 0) { openProject(id); return; }
+  localStorage.setItem('threads.lastProj', id);
+  if (!wide()) { openDeckSheet(id); return; }
+  if (S.route !== 'home' || S.filter || S.view !== 'main') { S.deckIdx = i; go('home'); return; }
+  S.deckIdx = i; deckGo(i); renderSide();
+}
+function shelfPick(k) {
+  const cur = S.shelf ?? localStorage.getItem('threads.shelf') ?? 'shipped';
+  S.shelf = cur === k ? '' : k; localStorage.setItem('threads.shelf', S.shelf);
+  renderSide(); if (!wide() && S.route === 'home') renderMain();
 }
 function sideProj(s, depth) {
   const sel = S.route === 'project' && S.pid === s.id && !S.filter, down = liveOf(s)?.state === 'down';
@@ -2578,43 +2686,81 @@ function deckList() {
 }
 const DECK_DOCS = ['scope', 'log', 'carryover'];
 function deckCard(s, inSheet) {
-  const d = normDoc(s), sy = syncOf(s), cur = currentChat(s), app = projLink(s, 'live'), chain = chainOf(s), lv = liveOf(s);
-  const mine = d.next && sy.next_owner === 'joe', docs = docsFor(slugOf(s));
-  const dot = !lv ? '' : lv.state === 'down' ? 'bad' : lv.state === 'up' || lv.state === 'no_version' ? 'ok' : 'warn';
-  const docRow = (k) => { const x = docs.find((y) => y.kind === k); return `<button class="dk-doc" ${x ? `data-act="doc-open" data-path="${esc(x.path)}"` : 'disabled'}><span class="dk-di">${LINK_ICON.doc}</span><span>${DOC_KIND[k]}</span><small>${x?.updated_at ? esc(ago(x.updated_at)) : '—'}</small></button>`; };
-  const lk = (k, label) => { const l = projLink(s, k); return l ? `<a class="dk-lk" href="${esc(l.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON[k]}<span>${label}</span></a>` : `<span class="dk-lk off">${LINK_ICON[k]}<span>${label}</span></span>`; };
+  const d = normDoc(s), sy = syncOf(s), cur = currentChat(s), app = projLink(s, 'live'), par = parentProj(s), lv = liveOf(s);
+  const mine = isMine(s), docs = docsFor(slugOf(s)), plans = plansOf(s);
+  const up = sy.deployed === false ? ['off', 'Not deployed'] : !lv ? ['off', TIER_NAME[tierOf(s)]] : lv.state === 'down' ? ['bad', 'Down'] : lv.state === 'mismatch' ? ['warn', 'Version mismatch'] : ['ok', 'Up'];
+  const dk = (k) => docs.find((y) => y.kind === k);
+  const lastLog = (sy.builds || [])[0];
+  const tiles = [
+    ['scope', 'Scope', dk('scope') ? 'What it is' : 'Not synced yet'],
+    ['log', 'Build Log', sy.build ? `Last: ${sy.build}` : dk('log') ? 'History' : 'Not synced yet'],
+    ['plans', 'Plans', plans.length ? `${plans.length} queued` : 'Nothing queued'],
+    ['carryover', 'Carryover', dk('carryover') ? 'For next chat' : 'None yet'],
+  ];
+  const lk = (k, label) => { const l = projLink(s, k); return l ? `<a class="dk-lki" href="${esc(l.url)}" target="_blank" rel="noopener" data-act="ext" title="${label}" aria-label="${label}">${LINK_ICON[k]}</a>` : ''; };
   const tm = tlNext(s);
-  return `<article class="dk-card${colorCls(colorOf(s))}" data-id="${s.id}">
-    ${chain.length ? `<div class="dk-crumb">${chain.map((x) => esc(x.name)).join(' › ')} ›</div>` : ''}
-    <div class="dk-h">${gIcon(s)}<div class="dk-n"><b>${esc(s.name)}</b><small>${dot ? `<i class="dk-dot ${dot}"></i>${esc(LIVE_L[lv.state]?.[1] || '')} · ` : ''}${esc(sy.build || TIER_NAME[tierOf(s)])}${sy.deployed === false ? ' · not deployed' : ''}</small></div>
-      ${inSheet ? '' : `<button class="dk-more" data-act="proj" data-id="${s.id}" aria-label="Open ${esc(s.name)}" title="Everything about ${esc(s.name)}">More</button>`}</div>
-    ${d.next ? `<div class="dk-next${mine ? ' mine' : ''}"><small>${mine ? 'NEXT · YOURS' : 'NEXT · CLAUDE\'S TURN'}</small><p>${esc(d.next)}</p></div>` : d.now ? `<div class="dk-next"><small>NOW</small><p>${esc(d.now)}</p></div>` : ''}
+  return `<article class="dk-card v2${colorCls(colorOf(s))}" data-id="${s.id}">
+    <div class="dk-h">${gIcon(s)}<div class="dk-n"><b>${esc(s.name)}</b><small><i class="dk-dot ${up[0]}"></i>${up[1]}${sy.build ? ` · ${esc(sy.build)}` : ''}${par ? ` · in ${esc(par.name)}` : ''}</small></div>
+      <div class="dk-lks">${lk('github', 'GitHub')}${lk('vercel', 'Vercel')}${lk('supabase', 'Supabase')}</div>
+      ${inSheet ? '' : `<button class="dk-more" data-act="proj" data-id="${s.id}" data-proj="${s.id}" title="Everything about ${esc(s.name)}">More</button>`}</div>
+    ${d.next ? `<div class="dk-next ${mine ? 'mine' : 'claude'}"><small>${mine ? 'NEXT · YOUR MOVE' : "NEXT · CLAUDE'S MOVE"}</small><p>${esc(d.next)}</p></div>` : ''}
+    ${d.now ? `<p class="dk-now"><span>Now · </span>${esc(d.now)}</p>` : ''}
     ${tm ? `<div class="dk-tl${tlLate(tm) ? ' late' : ''}">🗓️ ${esc(tm.text)} · ${esc(tlWhen(tm))}</div>` : ''}
+    <div class="dk-tiles">${tiles.map(([k, l, sub]) => `<button class="dk-tile" data-act="doc-sum" data-id="${s.id}" data-k="${k}"><b>${l}</b><small>${esc(sub)}</small></button>`).join('')}</div>
     <div class="dk-acts">${cur ? `<a class="dk-btn pri" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}" data-proj="${s.id}">${ICON.k_chat}Continue ${esc(shortName(cur))}</a>` : `<button class="dk-btn pri" data-act="proj" data-id="${s.id}">${ICON.k_chat}Open Chats</button>`}
-      ${app ? `<a class="dk-btn" href="${esc(app.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : ''}</div>
-    <div class="dk-docs">${DECK_DOCS.map(docRow).join('')}</div>
-    <div class="dk-links">${lk('live', 'Live')}${lk('github', 'GitHub')}${lk('vercel', 'Vercel')}${lk('supabase', 'Data')}</div>
+      ${app ? `<a class="dk-btn app" href="${esc(app.url)}" target="_blank" rel="noopener" data-act="ext">Open App</a>` : ''}</div>
     ${inSheet ? `<button class="dk-btn wide" data-act="proj" data-id="${s.id}">Everything About ${esc(s.name)}</button>` : ''}
   </article>`;
 }
+// Doc tiles (threads-39): a short bullet summary in a sheet, with the full doc one tap away.
+const strip = (x) => String(x).replace(/\*\*([^*]+)\*\*/g, '$1').replace(/`([^`]+)`/g, '$1').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/\s+/g, ' ').trim();
+const clip = (x, n = 150) => (x.length > n ? x.slice(0, n - 1).replace(/\s+\S*$/, '') + '…' : x);
+function docBullets(text, kind) {
+  const lines = String(text || '').replace(/\r/g, '').split('\n');
+  const bullets = (from, to) => lines.slice(from, to).filter((l) => /^\s{0,2}[-*]\s+/.test(l)).map((l) => clip(strip(l.replace(/^\s*[-*]\s+/, ''))));
+  if (kind === 'log') {
+    const v = lines.filter((l) => /^- \*\*[a-z0-9-]+-\d+/i.test(l)).map((l) => clip(strip(l.slice(2)), 130));
+    if (v.length) return v.slice(-5).reverse();
+  }
+  const want = { scope: /what it is|decisions/i, carryover: /where things stand|loose ends|what this chat did/i, log: /status/i }[kind];
+  if (want) {
+    const h = lines.findIndex((l) => /^#{1,4}\s/.test(l) && want.test(l));
+    if (h >= 0) { let e = lines.findIndex((l, i) => i > h && /^#{1,4}\s/.test(l)); if (e < 0) e = lines.length;
+      const b = bullets(h + 1, e); if (b.length) return b.slice(0, 5);
+      const para = lines.slice(h + 1, e).map(strip).filter(Boolean).join(' '); if (para) return para.split(/(?<=\.)\s+/).slice(0, 4).map((x) => clip(x)); }
+  }
+  return bullets(0, lines.length).slice(0, 5);
+}
+async function openDocSummary(id, k) {
+  const s = secById(id); if (!s) return;
+  const title = { scope: 'Scope', log: 'Build Log', plans: 'Plans', carryover: 'Carryover' }[k] || 'Doc';
+  const doc = k === 'plans' ? null : docsFor(slugOf(s)).find((y) => y.kind === k);
+  const shell = (body) => `<div class="dsum"><div class="dsum-h"><div><small>${esc(s.name.toUpperCase())}</small><h2>${title}</h2></div><button class="act" data-act="sheet-close">Done</button></div>${body}</div>`;
+  const ul = (arr) => `<ul class="dsum-l">${arr.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`;
+  if (k === 'plans') { const pl = plansOf(s); openSheet(shell(pl.length ? ul(pl.map((p) => clip(strip(p.text), 110))) : '<p class="muted">Nothing queued for the next build.</p>')); return; }
+  if (!doc) { openSheet(shell(`<p class="muted">No ${title.toLowerCase()} synced for ${esc(s.name)} yet. Say <code>sync docs</code> in a Builds chat.</p>`)); return; }
+  openSheet(shell(`<div id="dsum-body"><p class="muted">Loading…</p></div><button class="lnkbtn dsum-full" data-act="doc-open" data-path="${esc(doc.path)}">Open the Full Doc</button>`));
+  try {
+    const j = await api(`/api/docs?path=${encodeURIComponent(doc.path)}`), b = docBullets(j.doc?.content, k), el = $('#dsum-body');
+    if (el) el.innerHTML = b.length ? ul(b) : '<p class="muted">No summary lines in this doc. Open the full doc.</p>';
+  } catch (err) { const el = $('#dsum-body'); if (el) el.innerHTML = `<p class="muted">Couldn't load it. ${esc(err.message)}</p>`; }
+}
 function deckHTML() {
-  const list = deckList(), ship = projectsIn('shipped');
-  const other = [['hold', 'On Hold'], ['backlog', 'Backlog'], ['archived', 'Archived']].map(([t, l]) => [t, l, projectsIn(t).length]).filter((x) => x[2]);
-  const ix = Math.min(S.deckIdx || 0, Math.max(0, list.length - 1));
-  return `<div class="page deckpage">
-    ${wide() ? `<header class="dk-top"><h1>Threads</h1><span class="muted">${syncLabel()}</span><span class="sp"></span><button class="icon-btn" data-act="add" aria-label="New" title="New">${ICON.plus}</button><button class="icon-btn" data-act="settings" aria-label="Settings" title="Settings">${ICON.gear}</button></header>` : ''}
-    ${list.length ? `<div class="dk-bar"><h2>Building</h2><span class="muted" id="dk-pos">${ix + 1} of ${list.length}</span>${duoOn() ? `<span class="sp"></span><button class="icon-btn" data-act="add" aria-label="New" title="New">${ICON.plus}</button><button class="icon-btn" data-act="settings" aria-label="Settings" title="Settings">${ICON.gear}</button>` : ''}</div>
-    <div class="dk-icons">${list.map((s, i) => `<button class="dk-ic${i === ix ? ' on' : ''}${depthOf(s) ? ' sub' : ''}" data-act="deck-go" data-i="${i}" title="${esc(s.name)}" aria-label="${esc(s.name)}">${gIcon(s)}${syncOf(s).next_owner === 'joe' && normDoc(s).next ? '<i class="dk-badge"></i>' : ''}</button>`).join('')}</div>
+  const list = deckList(), ix = Math.min(S.deckIdx || 0, Math.max(0, list.length - 1));
+  if (!wide()) return `<div class="page deckpage narrow">
+    ${duoOn() ? `<div class="dk-bar"><span class="sp"></span><button class="icon-btn" data-act="add" aria-label="New" title="New">${ICON.plus}</button><button class="icon-btn" data-act="settings" aria-label="Settings" title="Settings">${ICON.gear}</button></div>` : ''}
+    ${whoseMoveHTML(true)}</div>`;
+  return `<div class="page deckpage full">
+    ${list.length ? `<div class="dk-bar"><h2>Building · swipe for the next one</h2><span class="sp"></span><span class="muted" id="dk-pos">${ix + 1} of ${list.length}</span>
+      <div class="dk-dots">${list.map((s, i) => `<button class="dk-dt ${isMine(s) ? 'mine' : 'claude'}${i === ix ? ' on' : ''}" data-act="deck-go" data-i="${i}" aria-label="${esc(s.name)}" title="${esc(s.name)}"></button>`).join('')}</div></div>
     <div class="deck">${list.map((s) => deckCard(s)).join('')}</div>`
-    : `<div class="empty-card">Nothing in Building. Open a project below and move it to Building.</div>`}
-    ${ship.length ? `<div class="dk-bar"><h2>Shipped</h2><span class="muted">${ship.length}</span></div><div class="dk-ship">${ship.map((s) => `<button class="dk-app" data-act="deck-sheet" data-id="${s.id}">${gIcon(s)}${liveOf(s)?.state === 'down' ? '<i class="dk-badge bad"></i>' : ''}<span>${esc(s.name)}</span></button>`).join('')}</div>` : ''}
-    ${other.length ? `<div class="dk-rest">${other.map(([t, l, n]) => `<button class="dk-row" data-act="go" data-r="projects"><span>${l}</span><small>${n}</small>${ICON.go}</button>`).join('')}</div>` : ''}
+    : `<div class="empty-card">Nothing in Building. Pick a project on the Shelf and move it to Building.</div>`}
   </div>`;
 }
 function deckWire(root) {
   const deck = root.querySelector('.deck');
   if (!deck) return;
-  const cards = [...deck.children], ics = [...root.querySelectorAll('.dk-ic')], pos = root.querySelector('#dk-pos');
+  const cards = [...deck.children], ics = [...root.querySelectorAll('.dk-dt')], pos = root.querySelector('#dk-pos');
   const ix = Math.min(S.deckIdx || 0, cards.length - 1);
   if (ix > 0) deck.scrollLeft = cards[ix].offsetLeft - deck.offsetLeft;
   let raf = 0;
@@ -2624,7 +2770,7 @@ function deckWire(root) {
       const x = deck.scrollLeft, i = cards.reduce((b, c, k) => Math.abs(c.offsetLeft - deck.offsetLeft - x) < Math.abs(cards[b].offsetLeft - deck.offsetLeft - x) ? k : b, 0);
       if (i === S.deckIdx) return;
       S.deckIdx = i; ics.forEach((b, k) => b.classList.toggle('on', k === i)); if (pos) pos.textContent = `${i + 1} of ${cards.length}`;
-      ics[i]?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+      $$('#side .sproj.wmr').forEach((b) => b.classList.toggle('on', b.dataset.id === cards[i].dataset.id));
     });
   }, { passive: true });
 }
@@ -4278,6 +4424,9 @@ const A = {
   'live-ignore': (el) => { const x = secById(el.dataset.id), v = liveOf(x)?.version; if (x && v) { setDoc(x, { live_ignore: v }, true); toast(`Hidden until ${x.name}'s live version changes`); } },
   'toast-undo': () => { const f = S.undo; S.undo = null; $('#toast').classList.remove('on', 'has-btn'); if (f) { f(); if (!$('#toast').classList.contains('on')) toast('Undone'); } },
   'deck-go': (el) => deckGo(el.dataset.i),
+  'wm-go': (el) => wmGo(el.dataset.id),
+  'shelf': (el) => shelfPick(el.dataset.v),
+  'doc-sum': (el) => openDocSummary(el.dataset.id, el.dataset.k),
   'deck-sheet': (el) => openDeckSheet(el.dataset.id),
   'search-open': () => searchOpen(),
   'nudge-move': (el) => openTierMenu(el.dataset.id, el.dataset.v),
