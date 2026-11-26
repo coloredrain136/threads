@@ -46,9 +46,11 @@ export async function syncDocs({ docs, prune = false } = {}) {
   for (let i = 0; i < rows.length; i += 20) await q(db().from('threads_docs').upsert(rows.slice(i, i + 20)));
   let removed = 0;
   if (prune) {
-    const keep = new Set(rows.map((r) => r.path));
-    const have = await q(db().from('threads_docs').select('path'));
-    const gone = have.map((r) => r.path).filter((p) => !keep.has(p));
+    // threads-40: a full sync arrives in several calls, so prune keeps every doc synced in the last 30 minutes,
+    // not just this call's docs (before, the last call deleted everything the earlier calls had sent).
+    const keep = new Set(rows.map((r) => r.path)), since = Date.now() - 30 * 60 * 1000;
+    const have = await q(db().from('threads_docs').select('path,synced_at'));
+    const gone = have.filter((r) => !keep.has(r.path) && !(Date.parse(r.synced_at) >= since)).map((r) => r.path);
     if (gone.length) { await q(db().from('threads_docs').delete().in('path', gone)); removed = gone.length; }
   }
   const byProject = {};

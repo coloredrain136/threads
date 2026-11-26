@@ -35,8 +35,8 @@ const TOOLS = [
         build: s('Latest delivered build, e.g. "bracket-17".'),
         build_n: { type: 'integer', description: 'Latest build number, e.g. 17.' },
         deployed: { type: ['boolean', 'null'], description: 'true if Joe confirmed the latest build is deployed, false if delivered but not confirmed, null if unknown.' },
-        now: s('One short line (under 90 characters): where the project stands.'),
-        next: s('One short line (under 90 characters): the single next step.'),
+        now: s('One short line (under 90 characters): where the project stands. Threads talks to Joe, so say "you", not "Joe".'),
+        next: s('One short line (under 90 characters): the single next step. Say "you", not "Joe" (e.g. "You test it on the Duo").'),
         next_owner: s('"joe" if the next step is Joe\'s (deploy, test, answer), "claude" if it\'s building.', { enum: ['joe', 'claude'] }),
         tier: s('Optional: move the project to this tier: Building, Shipped, On Hold, Backlog or Archived. ONLY when Joe asked for it ("move Bars to Shipped") or said yes when you offered. Never on your own. Tell him what moved.'),
         parent: s('Optional: the parent project\'s name or slug when this is a sub-project (e.g. "build-screen" for Pocket). Two levels at most. "" makes it top level again. Only set it after Joe confirmed which project is the parent.'),
@@ -66,7 +66,7 @@ const TOOLS = [
   {
     name: 'threads_save_plan',
     title: 'Save a Plan to a Project',
-    description: 'Save an idea Joe wants to do later to a project\'s Plans list in Threads. Use it when Joe mentions an idea for a project and says it\'s for later (ask him first: working on it now, or saving it for later?). Plans show on the project page and go into the next build chat\'s handoff. One plan per call; write it as one or two plain sentences in Joe\'s words.',
+    description: 'Save an idea Joe wants to do later to a project\'s Plans list in Threads. Use it when Joe mentions an idea for a project and says it\'s for later (ask him first: working on it now, or saving it for later?). Plans show on the project page and go into the next build chat\'s handoff. One plan per call. Start with a short one-line summary (under 90 characters, it shows as the plan\'s line in Threads); add a second sentence only if it\'s needed.',
     inputSchema: {
       type: 'object',
       required: ['project', 'text'],
@@ -88,7 +88,7 @@ const TOOLS = [
       required: ['docs'],
       properties: {
         docs: { type: 'array', description: 'Up to 120 docs per call; split bigger syncs into several calls.', items: { type: 'object', required: ['path', 'content'], properties: { path: s('Doc path in the Builds project, e.g. "claude/rally-build-log.md".'), content: s('The full text of the doc.'), title: s('Optional display title.'), project: s('Optional project slug if the file name does not start with it.'), updated_at: s('Optional ISO time the doc last changed.') } } },
-        prune: { type: 'boolean', description: 'true only on a full "sync docs" (the last call of it): removes docs no longer in the Builds project.' },
+        prune: { type: 'boolean', description: 'true only on a full "sync docs" (the last call of it): removes docs that weren\'t sent in this sync (anything synced in the last 30 minutes is kept).' },
       },
     },
     annotations: { title: 'Sync Builds Docs into Threads', readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
