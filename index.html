@@ -967,6 +967,79 @@ div.prow{cursor:pointer}
 .hl-flags{display:flex;flex-wrap:wrap;gap:6px}
 .hl-flag{padding:5px 10px;border-radius:8px;font-size:12.5px;font-weight:600;background:color-mix(in srgb,#f2b84b 15%,transparent);color:var(--ink-2)}
 .hl-flag.ok{background:color-mix(in srgb,var(--ok) 15%,transparent);color:color-mix(in srgb,var(--ok) 70%,var(--ink))}
+/* ---------- threads-38: Graphite theme + Home deck ---------- */
+html[data-theme="graphite"]{background:#0f1012}
+html[data-theme="graphite"] body{background:#0f1012}
+html[data-theme="graphite"] body::before{display:none}
+html[data-theme="graphite"] .glass,html[data-theme="graphite"] .pcard,html[data-theme="graphite"] .tile,html[data-theme="graphite"] .side,html[data-theme="graphite"] .duo-pill,html[data-theme="graphite"] .tabbar,html[data-theme="graphite"] .sheet{-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
+html[data-theme="graphite"] .glass,html[data-theme="graphite"] .pcard,html[data-theme="graphite"] .tile{background:#17181b;border:1px solid rgba(255,255,255,.075)}
+html[data-theme="graphite"] .side{background:#121315;border-right:1px solid rgba(255,255,255,.07)}
+html[data-theme="graphite"] .duo-pill,html[data-theme="graphite"]:not([data-duo]) .tabbar{background:#17181b;border:1px solid rgba(255,255,255,.12)}
+html[data-theme="graphite"][data-duo] .tabbar{background:transparent;border:0}
+html[data-theme="graphite"] .duo-glass{background:rgba(255,255,255,.09);box-shadow:none;border:0}
+html[data-theme="graphite"] .act.pri,html[data-theme="graphite"] .add-btn{background:#ececee;color:#111214;border-color:transparent;box-shadow:none}
+html[data-theme="graphite"] .hero2{background:#17181b}
+.deckpage{padding-bottom:30px}
+.dk-top{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+.dk-top h1{font-size:28px;font-weight:700;letter-spacing:-.02em;margin:0}
+.dk-top .sp{flex:1}.dk-top .muted{font-size:12.5px}
+.dk-bar{display:flex;align-items:baseline;gap:10px;margin:6px 2px 10px}
+.dk-bar h2{font-size:13px;font-weight:650;color:var(--ink-3);letter-spacing:.02em;margin:0}
+.dk-bar .muted{font-size:12.5px}
+.dk-icons{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:4px 2px 12px;margin:0 -2px}
+.dk-icons::-webkit-scrollbar{display:none}
+.dk-ic{position:relative;flex:none;padding:3px;border-radius:14px;border:2px solid transparent;opacity:.6;transition:opacity .2s,border-color .2s}
+.dk-ic .gicon{width:40px;height:40px;min-width:40px;border-radius:11px;font-size:20px}
+.dk-ic.on{opacity:1;border-color:var(--ink)}
+.dk-ic .gicon,.dk-app .gicon,.dk-h .gicon{background:rgba(255,255,255,.07)}
+.dk-bar .sp{flex:1}.dk-bar{align-items:center}.dk-bar .icon-btn{width:34px;height:34px}
+.dk-ic.sub .gicon{width:34px;height:34px;min-width:34px;margin:3px;font-size:17px}
+.dk-badge{position:absolute;top:0;right:0;width:11px;height:11px;border-radius:50%;background:#f5b84a;border:2px solid var(--night)}
+.dk-badge.bad{background:#f2545b}
+.deck{display:grid;grid-auto-flow:column;grid-auto-columns:100%;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;align-items:start;padding-bottom:4px;margin-bottom:22px}
+.deck::-webkit-scrollbar{display:none}
+@media (min-width:900px){.deck{grid-auto-columns:calc((100% - 14px)/2)}}
+@media (min-width:1380px){.deck{grid-auto-columns:calc((100% - 28px)/3)}}
+.dk-card{--c:var(--ink-3);scroll-snap-align:start;min-width:0;display:grid;gap:12px;padding:16px;border-radius:20px;background:color-mix(in srgb,var(--c) 10%,#17181b);border:1px solid color-mix(in srgb,var(--c) 22%,rgba(255,255,255,.08))}
+.dk-crumb{font-size:12px;color:var(--ink-3);font-weight:600;margin-bottom:-6px}
+.dk-h{display:flex;align-items:center;gap:12px;min-width:0}
+.dk-h .gicon{width:48px;height:48px;min-width:48px;border-radius:13px;font-size:24px}
+.dk-n{flex:1;min-width:0;display:grid;gap:2px}
+.dk-n b{font-size:20px;font-weight:700;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dk-n small{font-size:12.5px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dk-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:0;background:var(--ink-3)}
+.dk-dot.ok{background:#3ecf8e}.dk-dot.warn{background:#f5b84a}.dk-dot.bad{background:#f2545b}
+.dk-more{flex:none;height:32px;padding:0 12px;border-radius:9px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);font-size:13px;font-weight:600;color:var(--ink-2)}
+.dk-next{background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:10px 12px}
+.dk-next small{font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--ink-3)}
+.dk-next.mine small{color:#f5b84a}
+.dk-next p{font-size:15px;margin:3px 0 0;line-height:1.35;overflow-wrap:anywhere}
+.dk-tl{font-size:12.5px;font-weight:600;color:var(--ink-2)}.dk-tl.late{color:#f2545b}
+.dk-acts{display:flex;gap:8px}
+.dk-btn{flex:1;min-width:0;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14.5px;font-weight:650;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:var(--ink);text-decoration:none;white-space:nowrap;overflow:hidden;padding:0 10px}
+.dk-btn svg{width:17px;height:17px;flex:none}
+.dk-btn.pri{flex:1.6;background:#ececee;color:#111214;border-color:transparent}
+.dk-btn.wide{width:100%;flex:none}
+.dk-docs{display:grid;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.06);border-radius:13px;overflow:hidden}
+.dk-doc{display:flex;align-items:center;gap:11px;padding:10px 12px;font-size:14.5px;text-align:left;color:var(--ink)}
+.dk-doc + .dk-doc{border-top:1px solid rgba(255,255,255,.06)}
+.dk-doc[disabled]{color:var(--ink-3)}
+.dk-doc small{margin-left:auto;font-size:12px;color:var(--ink-3)}
+.dk-di{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;color:var(--ink-2)}
+.dk-di svg{width:15px;height:15px}
+.dk-links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.dk-lk{height:52px;border-radius:12px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:var(--ink-2);text-decoration:none}
+.dk-lk svg{width:17px;height:17px}.dk-lk.off{opacity:.35}
+.dk-ship{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:14px 8px;margin-bottom:22px}
+.dk-app{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.dk-app .gicon{width:56px;height:56px;min-width:56px;border-radius:15px;font-size:27px}
+.dk-app span{font-size:11.5px;color:var(--ink-2);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dk-app .dk-badge{top:-3px;right:calc(50% - 32px)}
+.dk-rest{display:grid;background:#17181b;border:1px solid rgba(255,255,255,.075);border-radius:14px;overflow:hidden}
+.dk-row{display:flex;align-items:center;gap:10px;padding:13px 14px;font-weight:600;color:var(--ink-2);text-align:left}
+.dk-row + .dk-row{border-top:1px solid rgba(255,255,255,.07)}
+.dk-row small{margin-left:auto;color:var(--ink-3);font-weight:500}.dk-row svg{width:14px;height:14px;color:var(--ink-3)}
+.dk-sheet .dk-card{background:transparent;border:0;padding:4px 0 0}
 @keyframes pgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes pgBack{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
 @keyframes heroIn{from{opacity:0;transform:scale(.975) translateY(6px)}to{opacity:1;transform:none}}
@@ -994,7 +1067,7 @@ div.prow{cursor:pointer}
 <div class="dock" id="dock" aria-hidden="true"><span class="bin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="lid"><rect x="3" y="4" width="18" height="5" rx="1.5"/></g><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></svg></span><span class="t1">Drop here to archive</span><span class="t2">Let go to archive</span></div>
 <script>
 // ---------- version ----------
-const APP_VERSION = 'threads-37'; // bump with version.json and api/_lib/version.js
+const APP_VERSION = 'threads-38'; // bump with version.json and api/_lib/version.js
 
 // ---------- icons ----------
 const ICON = {
@@ -1041,6 +1114,8 @@ const EMOJIS = ['📁', '🎮', '🎬', '🚀', '💪', '🧠', '💼', '🛠️
 
 // ---------- themes (same set as Launch) ----------
 const THEMES = {
+  graphite: { name: 'Graphite', v: { night: '#0f1012', 'night-2': '#141518', ink: '#ececee', 'ink-2': '#a3a5ab', 'ink-3': '#6e7178', line: 'rgba(255,255,255,.075)', glass: '#17181b', sheet: 'rgba(23,24,27,.985)', bar: 'rgba(20,21,24,.94)', hi: 'rgba(255,255,255,.08)', field: 'rgba(255,255,255,.05)', shadow: 'rgba(0,0,0,.4)', dawn: '#ececee', 'dawn-ink': '#111214' },
+    skies: [['transparent', 'transparent'], ['transparent', 'transparent'], ['transparent', 'transparent'], ['transparent', 'transparent'], ['transparent', 'transparent']] },
   glass: { name: 'Liquid Glass', v: { night: '#0a0c1a', 'night-2': '#110e24', ink: '#f5f7ff', 'ink-2': '#bcc3de', 'ink-3': '#8189a8', line: 'rgba(255,255,255,.13)', glass: 'rgba(255,255,255,.07)', sheet: 'rgba(28,30,58,.6)', bar: 'rgba(22,24,48,.42)', hi: 'rgba(255,255,255,.15)', field: 'rgba(255,255,255,.09)', shadow: 'rgba(4,4,20,.45)', dawn: '#a9c8ff', 'dawn-ink': '#0a1430' },
     skies: [['rgba(110,96,255,.30)', 'rgba(80,140,255,.2)'], ['rgba(110,96,255,.30)', 'rgba(80,140,255,.2)'], ['rgba(110,96,255,.30)', 'rgba(80,140,255,.2)'], ['rgba(110,96,255,.30)', 'rgba(80,140,255,.2)'], ['rgba(110,96,255,.30)', 'rgba(80,140,255,.2)']] },
   duo: { name: 'Bold Duo', v: { night: '#0e0e0f', 'night-2': '#131314', ink: '#f6f6f6', 'ink-2': '#a9a9ab', 'ink-3': '#6e6e72', line: 'rgba(255,255,255,.08)', glass: 'rgba(255,255,255,.05)', sheet: 'rgba(30,30,32,.97)', bar: 'rgba(24,24,26,.86)', hi: 'rgba(255,255,255,.1)', field: 'rgba(255,255,255,.07)', shadow: 'rgba(0,0,0,.5)', dawn: '#f2c46d', 'dawn-ink': '#1d1606' },
@@ -1069,18 +1144,19 @@ function setSky() {
 }
 // threads-28: Joe picked the Bold Duo look; switch every device to it once (Settings → Theme still changes it).
 // threads-29: then Liquid Glass (Joe, Nov 24). Same once-per-device switch.
+// threads-38: Graphite (Joe, Nov 25: "the theme is great"). Same once-per-device switch; Settings → Theme still has the rest.
 function lookOnce() {
-  if (localStorage.getItem('threads.look29')) return;
-  localStorage.setItem('threads.look28', '1'); localStorage.setItem('threads.look29', '1');
-  applyTheme('glass');
-  if (S.token) push([{ op: 'upsert', table: 'settings', row: { id: 'theme', value: { preset: 'glass' } } }]);
+  if (localStorage.getItem('threads.look38')) return;
+  ['threads.look28', 'threads.look29', 'threads.look38'].forEach((k) => localStorage.setItem(k, '1'));
+  applyTheme('graphite');
+  if (S.token) push([{ op: 'upsert', table: 'settings', row: { id: 'theme', value: { preset: 'graphite' } } }]);
 }
 function applyTheme(id) {
   const t = THEMES[id] || THEMES.midnight;
   const r = document.documentElement.style;
   for (const [k, v] of Object.entries(t.v)) r.setProperty('--' + k, v);
-  r.setProperty('--card', id === 'daylight' ? 'rgba(255,255,255,.92)' : 'color-mix(in srgb, var(--ink) 8%, transparent)');
-  r.setProperty('--line2', id === 'daylight' ? 'rgba(20,30,50,.14)' : 'color-mix(in srgb, var(--ink) 13%, transparent)');
+  r.setProperty('--card', id === 'graphite' ? '#17181b' : id === 'daylight' ? 'rgba(255,255,255,.92)' : 'color-mix(in srgb, var(--ink) 8%, transparent)');
+  r.setProperty('--line2', id === 'graphite' ? 'rgba(255,255,255,.12)' : id === 'daylight' ? 'rgba(20,30,50,.14)' : 'color-mix(in srgb, var(--ink) 13%, transparent)');
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t.v.night);
   S.theme = THEMES[id] ? id : 'midnight';
   document.documentElement.dataset.theme = S.theme; // theme-specific CSS (Liquid Glass, threads-29)
@@ -1734,7 +1810,7 @@ function docsList(slug, empty) {
   return `<div class="doc-list">${list.map((x) => `<button class="doc-row" data-act="doc-open" data-path="${esc(x.path)}"><span class="doc-i">${x.kind === 'code' ? '⌨️' : '📄'}</span><span class="row-t"><b>${esc(x.title)}</b><span>${DOC_KIND[x.kind] || 'Doc'} · ${x.updated_at ? `updated ${ago(x.updated_at)}` : ''}${x.size ? ` · ${Math.max(1, Math.round(x.size / 1024))} KB` : ''}</span></span>${ICON.go}</button>`).join('')}</div>`;
 }
 async function loadDocs() {
-  try { const j = await api('/api/docs'); S.docs = j.docs || []; S.docsAt = Date.now(); if (S.view !== 'detail' && ['project', 'docs'].includes(S.route)) renderContent(); } catch {}
+  try { const j = await api('/api/docs'); S.docs = j.docs || []; S.docsAt = Date.now(); if (S.view !== 'detail' && ['project', 'docs', 'home'].includes(S.route)) renderContent(); } catch {}
 }
 async function openDoc(path) {
   const meta = (S.docs || []).find((x) => x.path === path);
@@ -2220,14 +2296,15 @@ function renderTabbar() {
   if (wide()) { el.innerHTML = ''; return; }
   const r = S.route === 'project' ? (S.back || 'home') : S.route === 'archive' ? 'home' : S.route === 'group' ? 'triage' : S.route;
   const nn = namingCount();
-  const tabs = `<button class="tb${r === 'home' ? ' on' : ''}" data-act="go" data-r="home">${ICON.home}<span>Home</span></button>
-    <button class="tb${r === 'projects' ? ' on' : ''}" data-act="go" data-r="projects">${ICON.stack}<span>Projects</span></button>
-    <button class="tb${r === 'shipped' ? ' on' : ''}" data-act="go" data-r="shipped">${ICON.shipped}<span>Shipped</span></button>
-    <button class="tb${r === 'triage' ? ' on' : ''}" data-act="go" data-r="triage">${ICON.tag}<span>Inbox</span>${nn ? `<i>${nn}</i>` : ''}</button>`;
+  // threads-38: Home (the deck), Search, Ideas (the Inbox), then Sync on the Duo / Projects on other phones
+  const tabs = `<button class="tb${r === 'home' && !S.filter ? ' on' : ''}" data-act="go" data-r="home">${ICON.home}<span>Home</span></button>
+    <button class="tb${S.filter ? ' on' : ''}" data-act="search-open" aria-label="Search">${ICON.search}<span>Search</span></button>
+    <button class="tb${r === 'triage' ? ' on' : ''}" data-act="go" data-r="triage">${ICON.tag}<span>Ideas</span>${nn ? `<i>${nn}</i>` : ''}</button>
+    ${duoOn() ? '' : `<button class="tb${r === 'projects' ? ' on' : ''}" data-act="go" data-r="projects">${ICON.stack}<span>Projects</span></button>`}`;
   if (!duoOn()) { el.innerHTML = tabs; return; }
   // threads-22: the same buttons on every screen, pinned under the clock, so the pill never changes size or moves
   // (New Project lives at the bottom of the Projects page).
-  const acts = [['sync', ICON.sync, 'Sync'], ['settings', ICON.gear, 'Settings'], ['add', ICON.plus, 'New']];
+  const acts = [['sync', ICON.sync, 'Sync']];
   // threads-31: keep the same pill on screen and just move the highlight, so the bubble glides instead of redrawing
   const old = el.querySelector('.duo-pill');
   if (old && old.dataset.nn === String(nn)) {
@@ -2367,7 +2444,8 @@ function renderMain() {
   else if (S.route === 'archive') el.innerHTML = archiveHTML();
   else if (S.route === 'shipped') el.innerHTML = shippedHTML();
   else if (S.route === 'projects' && !wide()) el.innerHTML = projectsHTML();
-  else el.innerHTML = dashHTML();
+  else el.innerHTML = deckHTML();
+  if (el.querySelector('.deck')) deckWire(el);
   const bb = S.filter ? '' : backBtn(); // threads-35
   if (bb) el.querySelector('.page')?.insertAdjacentHTML('afterbegin', bb);
   // threads-36: animate only when the page itself changes (not on every re-render)
@@ -2485,6 +2563,87 @@ function prow(s, depth, tierBtn) {
     : `<button class="${cls}" data-act="proj" data-id="${s.id}">${inner}</button>`;
 }
 // Home (threads-27, clean-up; threads-32 adds Ideas): Waiting on You, Building (sub-projects inside their parent), Ideas.
+// ---------- Home deck (threads-38): one swipeable card per Building project ----------
+// Order: pinned (Building Now pin), then projects a build chat touched in the last 12h, then the project you opened last,
+// then the Building order. Sub-projects follow their parent. Icons on top jump to a card.
+function deckList() {
+  const rows = nestedIn('building').map(([s]) => s), last = localStorage.getItem('threads.lastProj');
+  const roots = [];
+  for (const s of rows) { const r = rootProj(s); if (!roots.includes(r)) roots.push(r); }
+  const score = (r) => { const fam = [r, ...allSubs(r)]; return fam.some((x) => docOf(x).now_pin) ? 0 : fam.some(nowAuto) ? 1 : fam.some((x) => x.id === last) ? 2 : 3; };
+  const ordered = roots.slice().sort((a, b) => score(a) - score(b) || roots.indexOf(a) - roots.indexOf(b));
+  const out = [];
+  for (const r of ordered) for (const s of rows) if (rootProj(s) === r) out.push(s);
+  return out;
+}
+const DECK_DOCS = ['scope', 'log', 'carryover'];
+function deckCard(s, inSheet) {
+  const d = normDoc(s), sy = syncOf(s), cur = currentChat(s), app = projLink(s, 'live'), chain = chainOf(s), lv = liveOf(s);
+  const mine = d.next && sy.next_owner === 'joe', docs = docsFor(slugOf(s));
+  const dot = !lv ? '' : lv.state === 'down' ? 'bad' : lv.state === 'up' || lv.state === 'no_version' ? 'ok' : 'warn';
+  const docRow = (k) => { const x = docs.find((y) => y.kind === k); return `<button class="dk-doc" ${x ? `data-act="doc-open" data-path="${esc(x.path)}"` : 'disabled'}><span class="dk-di">${LINK_ICON.doc}</span><span>${DOC_KIND[k]}</span><small>${x?.updated_at ? esc(ago(x.updated_at)) : '—'}</small></button>`; };
+  const lk = (k, label) => { const l = projLink(s, k); return l ? `<a class="dk-lk" href="${esc(l.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON[k]}<span>${label}</span></a>` : `<span class="dk-lk off">${LINK_ICON[k]}<span>${label}</span></span>`; };
+  const tm = tlNext(s);
+  return `<article class="dk-card${colorCls(colorOf(s))}" data-id="${s.id}">
+    ${chain.length ? `<div class="dk-crumb">${chain.map((x) => esc(x.name)).join(' › ')} ›</div>` : ''}
+    <div class="dk-h">${gIcon(s)}<div class="dk-n"><b>${esc(s.name)}</b><small>${dot ? `<i class="dk-dot ${dot}"></i>${esc(LIVE_L[lv.state]?.[1] || '')} · ` : ''}${esc(sy.build || TIER_NAME[tierOf(s)])}${sy.deployed === false ? ' · not deployed' : ''}</small></div>
+      ${inSheet ? '' : `<button class="dk-more" data-act="proj" data-id="${s.id}" aria-label="Open ${esc(s.name)}" title="Everything about ${esc(s.name)}">More</button>`}</div>
+    ${d.next ? `<div class="dk-next${mine ? ' mine' : ''}"><small>${mine ? 'NEXT · YOURS' : 'NEXT · CLAUDE\'S TURN'}</small><p>${esc(d.next)}</p></div>` : d.now ? `<div class="dk-next"><small>NOW</small><p>${esc(d.now)}</p></div>` : ''}
+    ${tm ? `<div class="dk-tl${tlLate(tm) ? ' late' : ''}">🗓️ ${esc(tm.text)} · ${esc(tlWhen(tm))}</div>` : ''}
+    <div class="dk-acts">${cur ? `<a class="dk-btn pri" href="${esc(linkFor(cur))}"${linkTarget()} data-act="open" data-await="1" data-id="${cur.id}" data-proj="${s.id}">${ICON.k_chat}Continue ${esc(shortName(cur))}</a>` : `<button class="dk-btn pri" data-act="proj" data-id="${s.id}">${ICON.k_chat}Open Chats</button>`}
+      ${app ? `<a class="dk-btn" href="${esc(app.url)}" target="_blank" rel="noopener" data-act="ext">${LINK_ICON.live}Open App</a>` : ''}</div>
+    <div class="dk-docs">${DECK_DOCS.map(docRow).join('')}</div>
+    <div class="dk-links">${lk('live', 'Live')}${lk('github', 'GitHub')}${lk('vercel', 'Vercel')}${lk('supabase', 'Data')}</div>
+    ${inSheet ? `<button class="dk-btn wide" data-act="proj" data-id="${s.id}">Everything About ${esc(s.name)}</button>` : ''}
+  </article>`;
+}
+function deckHTML() {
+  const list = deckList(), ship = projectsIn('shipped');
+  const other = [['hold', 'On Hold'], ['backlog', 'Backlog'], ['archived', 'Archived']].map(([t, l]) => [t, l, projectsIn(t).length]).filter((x) => x[2]);
+  const ix = Math.min(S.deckIdx || 0, Math.max(0, list.length - 1));
+  return `<div class="page deckpage">
+    ${wide() ? `<header class="dk-top"><h1>Threads</h1><span class="muted">${syncLabel()}</span><span class="sp"></span><button class="icon-btn" data-act="add" aria-label="New" title="New">${ICON.plus}</button><button class="icon-btn" data-act="settings" aria-label="Settings" title="Settings">${ICON.gear}</button></header>` : ''}
+    ${list.length ? `<div class="dk-bar"><h2>Building</h2><span class="muted" id="dk-pos">${ix + 1} of ${list.length}</span>${duoOn() ? `<span class="sp"></span><button class="icon-btn" data-act="add" aria-label="New" title="New">${ICON.plus}</button><button class="icon-btn" data-act="settings" aria-label="Settings" title="Settings">${ICON.gear}</button>` : ''}</div>
+    <div class="dk-icons">${list.map((s, i) => `<button class="dk-ic${i === ix ? ' on' : ''}${depthOf(s) ? ' sub' : ''}" data-act="deck-go" data-i="${i}" title="${esc(s.name)}" aria-label="${esc(s.name)}">${gIcon(s)}${syncOf(s).next_owner === 'joe' && normDoc(s).next ? '<i class="dk-badge"></i>' : ''}</button>`).join('')}</div>
+    <div class="deck">${list.map((s) => deckCard(s)).join('')}</div>`
+    : `<div class="empty-card">Nothing in Building. Open a project below and move it to Building.</div>`}
+    ${ship.length ? `<div class="dk-bar"><h2>Shipped</h2><span class="muted">${ship.length}</span></div><div class="dk-ship">${ship.map((s) => `<button class="dk-app" data-act="deck-sheet" data-id="${s.id}">${gIcon(s)}${liveOf(s)?.state === 'down' ? '<i class="dk-badge bad"></i>' : ''}<span>${esc(s.name)}</span></button>`).join('')}</div>` : ''}
+    ${other.length ? `<div class="dk-rest">${other.map(([t, l, n]) => `<button class="dk-row" data-act="go" data-r="projects"><span>${l}</span><small>${n}</small>${ICON.go}</button>`).join('')}</div>` : ''}
+  </div>`;
+}
+function deckWire(root) {
+  const deck = root.querySelector('.deck');
+  if (!deck) return;
+  const cards = [...deck.children], ics = [...root.querySelectorAll('.dk-ic')], pos = root.querySelector('#dk-pos');
+  const ix = Math.min(S.deckIdx || 0, cards.length - 1);
+  if (ix > 0) deck.scrollLeft = cards[ix].offsetLeft - deck.offsetLeft;
+  let raf = 0;
+  deck.addEventListener('scroll', () => {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      const x = deck.scrollLeft, i = cards.reduce((b, c, k) => Math.abs(c.offsetLeft - deck.offsetLeft - x) < Math.abs(cards[b].offsetLeft - deck.offsetLeft - x) ? k : b, 0);
+      if (i === S.deckIdx) return;
+      S.deckIdx = i; ics.forEach((b, k) => b.classList.toggle('on', k === i)); if (pos) pos.textContent = `${i + 1} of ${cards.length}`;
+      ics[i]?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+    });
+  }, { passive: true });
+}
+function deckGo(i) {
+  const deck = $('.deck'); if (!deck) return;
+  const c = deck.children[+i]; if (!c) return;
+  deck.scrollTo({ left: c.offsetLeft - deck.offsetLeft, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+}
+function openDeckSheet(id) { const s = secById(id); if (s) openSheet(`<div class="dk-sheet">${deckCard(s, true)}</div>`); }
+// The deck remembers the project you open (Continue or More) so it comes first next time.
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('[data-proj]'); if (a) localStorage.setItem('threads.lastProj', a.dataset.proj);
+}, true);
+function searchOpen() {
+  if (S.route !== 'home' || S.view !== 'main') go('home');
+  if (wide()) { const i = $('#side .filter-inp, .filter-inp'); i?.focus(); return; }
+  renderTop();
+  setTimeout(() => { const i = $('#filter-m'); if (i) { i.focus(); i.scrollIntoView({ block: 'center' }); } }, 30);
+}
 function dashHTML() {
   const list = projectsIn('building'), ym = yourMove(), tree = ymTree(ym.mine), nRows = tree.filter((r) => !r.head).length, shown = S.allMove ? tree : ymCut(tree, 6), p = pins();
   const cardsHTML = list.length ? (wide() ? `<div class="pgrid">${topIn('building').map((s) => pcard(s)).join('')}</div>` : `<div class="plist glass">${nestedIn('building').map(([s, dp]) => prow(s, dp, true)).join('')}</div>`)
@@ -2834,7 +2993,7 @@ function openProject(id, tab) {
   S.route = 'project'; S.pid = id; S.view = 'main';
   if (tab) S.ptab = tab;
   if (S.filter) { S.filter = ''; $$('.filter-inp').forEach((i) => { i.value = ''; }); }
-  localStorage.setItem('threads.route', 'project'); localStorage.setItem('threads.pid', id);
+  localStorage.setItem('threads.route', 'project'); localStorage.setItem('threads.pid', id); localStorage.setItem('threads.lastProj', id);
   if (syncOf(s).is_new) { s.doc = { ...docOf(s), sync: { ...syncOf(s), is_new: false } }; push([{ op: 'patch', table: 'sections', rows: [{ id: s.id, doc: s.doc }] }]); }
   renderTop(); renderContent(); toTop();
 }
@@ -4118,6 +4277,9 @@ const A = {
   'ym-done': (el) => ymDone(el.dataset.id, el),
   'live-ignore': (el) => { const x = secById(el.dataset.id), v = liveOf(x)?.version; if (x && v) { setDoc(x, { live_ignore: v }, true); toast(`Hidden until ${x.name}'s live version changes`); } },
   'toast-undo': () => { const f = S.undo; S.undo = null; $('#toast').classList.remove('on', 'has-btn'); if (f) { f(); if (!$('#toast').classList.contains('on')) toast('Undone'); } },
+  'deck-go': (el) => deckGo(el.dataset.i),
+  'deck-sheet': (el) => openDeckSheet(el.dataset.id),
+  'search-open': () => searchOpen(),
   'nudge-move': (el) => openTierMenu(el.dataset.id, el.dataset.v),
   'tl-add': (el) => openTlAdd(el.dataset.id),
   'tl-save': (el) => tlSave(el.dataset.id),
